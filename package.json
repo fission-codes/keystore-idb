@@ -92,5 +92,10 @@
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.12.0",
     "typescript": "^3.0.3"
+  },
+  "dependencies": {
+    "idb": "^5.0.1",
+    "idb-keyval": "^3.2.0",
+    "realistic-structured-clone": "^2.0.2"
   }
 }

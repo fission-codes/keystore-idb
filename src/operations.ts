@@ -2,7 +2,7 @@ import keys from './keys'
 import utils from './utils'
 import { DEFAULT_SYMM_ALG, DEFAULT_HASH_ALG } from './constants'
 
-export async function sign(msg: string) {
+export async function sign(msg: string): Promise<string>{
   const sigBytes = await signBytes(utils.strToArrBuf(msg))
   return utils.arrBufToHex(sigBytes)
 }

@@ -1,5 +1,3 @@
-type ByteArray = Uint8Array | Uint16Array
-
 export function structuralClone(obj: any) {
   return new Promise(resolve => {
     const {port1, port2} = new MessageChannel();
@@ -8,50 +6,40 @@ export function structuralClone(obj: any) {
   });
 }
 
-export function arrBufToStr(buf: ArrayBuffer) {
-  return arrToStr(new Uint16Array(buf))
+export function arrBufToStr(buf: ArrayBuffer): string {
+  return Array
+    .from(new Uint16Array(buf))
+    .map(b => String.fromCharCode(b))
+    .join("")
 }
 
-export function strToArrBuf(str: string) {
-  return strToArr(str, 2)
+export function arrBufToHex(buf: ArrayBuffer): string {
+  return Array
+    .from (new Uint8Array(buf))
+    .map (b => b.toString (16).padStart (2, "0"))
+    .join ("");
 }
 
-export function arrBufToHex(buf: ArrayBuffer) {
-  return arrToStr(new Uint8Array(buf))
-}
-
-export function hexToArrBuf(hex: string) {
-  return strToArr(hex, 1)
-}
-
-function arrToStr(arr: ByteArray) {
-  let result = ''
-  for(let i = 0; i < arr.length; i++){
-    result += String.fromCharCode(arr[i])
+export function strToArrBuf(str: string): ArrayBuffer {
+  const view = new Uint16Array(2 * str.length)
+  for(let i=0, strLen=str.length; i < strLen; i++){
+    view[i] = str.charCodeAt(i)
   }
-  return result
+  return view.buffer
 }
 
-function strToArr(str: string, bytesPerChar: 1 | 2){
-  const buf = new ArrayBuffer(str.length * bytesPerChar)
-  let bufView
-  if(bytesPerChar === 1){
-    bufView = new Uint8Array(buf)
-  }else if (bytesPerChar === 2) {
-    bufView = new Uint16Array(buf)
-  }else {
-    throw new Error("String converstion not supported")
+export function hexToArrBuf(hex: string): ArrayBuffer {
+  const view = new Uint8Array(hex.length / 2)
+  for (let i=0, hexLen=hex.length; i < hexLen; i += 2) {
+    view[i / 2] = parseInt(hex.substring(i, i + 2), 16)
   }
-  for (var i=0, strLen=str.length; i < strLen; i++) {
-    bufView[i] = str.charCodeAt(i);
-  }
-  return buf;
+  return view.buffer
 }
 
 export default {
   structuralClone,
   arrBufToStr,
-  strToArrBuf,
   arrBufToHex,
+  strToArrBuf,
   hexToArrBuf,
 }

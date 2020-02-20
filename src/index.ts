@@ -1,4 +1,3 @@
-import * as idb from 'idb'
 import Store from './store'
 import utils from './utils'
 
@@ -13,7 +12,7 @@ type SymmKey = CryptoKey
 type ReadKeyPair = CryptoKeyPair
 type WriteKeyPair = CryptoKeyPair
 
-async function sharedKey(publicKey: PublicKey): Promise<SymmKey> {
+async function getSharedKey(publicKey: PublicKey): Promise<SymmKey> {
   const { privateKey } = await getReadKey()
   return crypto.subtle.deriveKey(
     { name: 'ECDH', public: publicKey },
@@ -25,7 +24,7 @@ async function sharedKey(publicKey: PublicKey): Promise<SymmKey> {
 }
 
 async function encrypt(msg: string, publicKey: PublicKey): Promise<CipherText> {
-  const cipherKey = await sharedKey(publicKey)
+  const cipherKey = await getSharedKey(publicKey)
   return crypto.subtle.encrypt(
     { name: DEFAULT_SYMM_ALG,
       counter: new Uint8Array(16),
@@ -37,7 +36,7 @@ async function encrypt(msg: string, publicKey: PublicKey): Promise<CipherText> {
 }
 
 async function decrypt(cipherText: CipherText, publicKey: CryptoKey): Promise<string> {
-  const cipherKey = await sharedKey(publicKey)
+  const cipherKey = await getSharedKey(publicKey)
   const msgBuff = await crypto.subtle.encrypt(
     { name: DEFAULT_SYMM_ALG,
       counter: new Uint8Array(16),
@@ -91,27 +90,33 @@ async function makeWriteKey(): Promise<WriteKeyPair> {
   ) 
 }
 
-async function makeRSAKey(): Promise<CryptoKeyPair> {
-  return crypto.subtle.generateKey(
-    {
-        name: "RSA-OAEP",
-        modulusLength: 2048, //can be 1024, 2048, or 4096
-        publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-        hash: {name: "SHA-256"}, //can be "SHA-1", "SHA-256", "SHA-384", or "SHA-512"
-    },
-    false, //whether the key is extractable (i.e. can be used in exportKey)
-    ["encrypt", "decrypt"] //must be ["encrypt", "decrypt"] or ["wrapKey", "unwrapKey"]
-  ) 
-}
+// async function makeRSAKey(): Promise<CryptoKeyPair> {
+//   return crypto.subtle.generateKey(
+//     {
+//         name: "RSA-OAEP",
+//         modulusLength: 2048, //can be 1024, 2048, or 4096
+//         publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+//         hash: {name: "SHA-256"}, //can be "SHA-1", "SHA-256", "SHA-384", or "SHA-512"
+//     },
+//     false, //whether the key is extractable (i.e. can be used in exportKey)
+//     ["encrypt", "decrypt"] //must be ["encrypt", "decrypt"] or ["wrapKey", "unwrapKey"]
+//   ) 
+// }
 
 async function run() {
-  const otherKey = await makeReadKey()
-  const orig = 'blahblahlb'
-  const cipher = await encrypt(orig, otherKey.publicKey)
-  const msg = await decrypt(cipher, otherKey.publicKey)
-  console.log(orig)
-  console.log(cipher)
-  console.log(msg)
+  // const otherKey = await makeReadKey()
+  // const orig = 'blahblahlb'
+  // const cipher = await encrypt(orig, otherKey.publicKey)
+  // const msg = await decrypt(cipher, otherKey.publicKey)
+  const hex = '1234567890abcdef2340980abc098d'
+  const ab = utils.hexToArrBuff(hex)
+  const str = utils.arrBuffToHex(ab)
+  console.log(hex)
+  console.log(ab)
+  console.log(str)
+  // console.log(orig)
+  // console.log(cipher)
+  // console.log(msg)
 }
 
 run()

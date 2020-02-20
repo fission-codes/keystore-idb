@@ -8,8 +8,7 @@ export async function putKey(id: string, keypair: CryptoKeyPair) {
 				putData.onsuccess = resolve
 				putData.onerror = reject
 			}catch(err) {
-				console.log("ERROR: ")
-				console.log(err)
+				console.error(err)
 			}
 		})
 	})

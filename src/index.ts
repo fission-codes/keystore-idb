@@ -1,38 +1,61 @@
 import * as idb from 'idb'
 import Store from './store'
+import utils from './utils'
 
 const DEFAULT_EC_CURVE = 'P-256'
 const DEFAULT_SYMM_ALG = 'AES-CTR'
 const READ_KEY = 'ecdh-key'
 const WRITE_KEY = 'ecdsa-key'
 
-async function encrypt(msg: string, publicKey: CryptoKey) {
+type CipherText = ArrayBuffer
+type PublicKey = CryptoKey
+type SymmKey = CryptoKey
+type ReadKeyPair = CryptoKeyPair
+type WriteKeyPair = CryptoKeyPair
+
+async function sharedKey(publicKey: PublicKey): Promise<SymmKey> {
   const { privateKey } = await getReadKey()
-  const cipherKey = await crypto.subtle.deriveKey(
+  return crypto.subtle.deriveKey(
     { name: 'ECDH', public: publicKey },
     privateKey,
     { name: DEFAULT_SYMM_ALG, length: 256 },
     false,
     ['encrypt', 'decrypt']
   )
-  // window.crypto.subtle.encrypt(
-  //   { name: DEFAULT_SYMM_ALG,
-  //     counter: new Uint8Array(8),
-  //     length: 128
-  //   },
-  //   cipherKey,
-  //   msg
-  // )
-  // console.log(cipherKey)
 }
 
-async function getPublicReadKey() {
+async function encrypt(msg: string, publicKey: PublicKey): Promise<CipherText> {
+  const cipherKey = await sharedKey(publicKey)
+  return crypto.subtle.encrypt(
+    { name: DEFAULT_SYMM_ALG,
+      counter: new Uint8Array(16),
+      length: 128
+    },
+    cipherKey,
+    utils.strToArrBuff(msg)
+  )
+}
+
+async function decrypt(cipherText: CipherText, publicKey: CryptoKey): Promise<string> {
+  const cipherKey = await sharedKey(publicKey)
+  const msgBuff = await crypto.subtle.encrypt(
+    { name: DEFAULT_SYMM_ALG,
+      counter: new Uint8Array(16),
+      length: 128
+    },
+    cipherKey,
+    cipherText
+  )
+  return utils.arrBuffToStr(msgBuff)
+}
+
+async function getPublicReadKey(): Promise<string> {
   const keypair = await getReadKey()
   const buffer = await crypto.subtle.exportKey("raw", keypair.publicKey)
-  return buffer
+  return utils.arrBuffToStr(buffer)
 }
 
-async function getReadKey() {
+async function getReadKey(): Promise<ReadKeyPair> {
   let keypair = await Store.getKey(READ_KEY)
   if(!keypair) {
     console.log('creating read key')
@@ -42,7 +65,7 @@ async function getReadKey() {
   return keypair
 }
 
-async function getWriteKey() {
+async function getWriteKey(): Promise<WriteKeyPair> {
   let keypair = await Store.getKey(WRITE_KEY)
   if(!keypair) {
     console.log('creating write key')
@@ -52,7 +75,7 @@ async function getWriteKey() {
   return keypair
 }
 
-async function makeReadKey(): Promise<CryptoKeyPair> {
+async function makeReadKey(): Promise<ReadKeyPair> {
   return crypto.subtle.generateKey(
     { name: "ECDH", namedCurve: DEFAULT_EC_CURVE },
     false, 
@@ -60,7 +83,7 @@ async function makeReadKey(): Promise<CryptoKeyPair> {
   ) 
 }
 
-async function makeWriteKey(): Promise<CryptoKeyPair> {
+async function makeWriteKey(): Promise<WriteKeyPair> {
   return crypto.subtle.generateKey(
     { name: "ECDSA", namedCurve: DEFAULT_EC_CURVE },
     false, 
@@ -81,25 +104,14 @@ async function makeRSAKey(): Promise<CryptoKeyPair> {
   ) 
 }
 
-function structuralClone(obj: any) {
-  return new Promise(resolve => {
-    const {port1, port2} = new MessageChannel();
-    port2.onmessage = ev => resolve(ev.data);
-    port1.postMessage(obj);
-  });
-}
-
-function arrbuffToString(arr: ArrayBuffer) {
-  const view = new Uint8Array(arr)
-  let result = ''
-  view.forEach(x => {
-    result += x.toString(16)
-  })
-  console.log(result)
-  return result
-}
-
 async function run() {
+  const otherKey = await makeReadKey()
+  const orig = 'blahblahlb'
+  const cipher = await encrypt(orig, otherKey.publicKey)
+  const msg = await decrypt(cipher, otherKey.publicKey)
+  console.log(orig)
+  console.log(cipher)
+  console.log(msg)
 }
 
 run()

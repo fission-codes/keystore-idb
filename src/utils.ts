@@ -8,19 +8,19 @@ export function structuralClone(obj: any) {
   });
 }
 
-export function arrBuffToStr(buf: ArrayBuffer) {
+export function arrBufToStr(buf: ArrayBuffer) {
   return arrToStr(new Uint16Array(buf))
 }
 
-export function strToArrBuff(str: string) {
+export function strToArrBuf(str: string) {
   return strToArr(str, 2)
 }
 
-export function arrBuffToHex(buf: ArrayBuffer) {
+export function arrBufToHex(buf: ArrayBuffer) {
   return arrToStr(new Uint8Array(buf))
 }
 
-export function hexToArrBuff(hex: string) {
+export function hexToArrBuf(hex: string) {
   return strToArr(hex, 1)
 }
 
@@ -50,9 +50,8 @@ function strToArr(str: string, bytesPerChar: 1 | 2){
 
 export default {
   structuralClone,
-  arrBuffToStr,
-  strToArrBuff,
-  arrBuffToHex,
-  hexToArrBuff,
+  arrBufToStr,
+  strToArrBuf,
+  arrBufToHex,
+  hexToArrBuf,
 }
-

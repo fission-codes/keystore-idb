@@ -1,22 +1,23 @@
 import { structuralClone } from './utils'
 import ecc from './ecc'
-
-export const CRYPTOSYSTEM = 'ecc'
-export const ECC_CURVE = 'P-256'
-export const RSA_SIZE = 2048
-export const SYMM_ALG = 'AES-CTR'
-export const HASH_ALG = 'SHA-256'
-export const READ_KEY_NAME = 'read-key'
-export const WRITE_KEY_NAME = 'write-key'
+import {
+  DEFAULT_CRYPTOSYSTEM,
+  DEFAULT_ECC_CURVE,
+  DEFAULT_RSA_SIZE,
+  DEFAULT_SYMM_ALG,
+  DEFAULT_HASH_ALG,
+  DEFAULT_READ_KEY_NAME,
+  DEFAULT_WRITE_KEY_NAME,
+} from './constants'
 
 export const defaultConfig = {
-  type: CRYPTOSYSTEM,
-  curve: ECC_CURVE,
-  rsaSize: RSA_SIZE,
-  symmAlg: SYMM_ALG,
-  hashAlg: HASH_ALG,
-  readKeyName: READ_KEY_NAME,
-  writeKeyName: WRITE_KEY_NAME,
+  type: DEFAULT_CRYPTOSYSTEM,
+  curve: DEFAULT_ECC_CURVE,
+  rsaSize: DEFAULT_RSA_SIZE,
+  symmAlg: DEFAULT_SYMM_ALG,
+  hashAlg: DEFAULT_HASH_ALG,
+  readKeyName: DEFAULT_READ_KEY_NAME,
+  writeKeyName: DEFAULT_WRITE_KEY_NAME,
 } as Config
 
 export function normalize(cfg?: PartialConfig): Config {
@@ -32,7 +33,7 @@ export function normalize(cfg?: PartialConfig): Config {
 // Attempt a structural clone of an ECC Key (required to store in IndexedDB)
 // If it throws an error, use RSA, otherwise use ECC
 export async function eccEnabled(): Promise<boolean> {
-  const keypair = await ecc.makeReadKey(ECC_CURVE)
+  const keypair = await ecc.makeReadKey(DEFAULT_ECC_CURVE)
   try{
     await structuralClone(keypair)
   }catch(err) {

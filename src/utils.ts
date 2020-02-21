@@ -1,10 +1,4 @@
-export function structuralClone(obj: any) {
-  return new Promise(resolve => {
-    const {port1, port2} = new MessageChannel();
-    port2.onmessage = ev => resolve(ev.data);
-    port1.postMessage(obj);
-  });
-}
+import IDB from './idb'
 
 export function arrBufToStr(buf: ArrayBuffer): string {
   return Array
@@ -36,10 +30,24 @@ export function hexToArrBuf(hex: string): ArrayBuffer {
   return view.buffer
 }
 
+export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
+  const raw = await crypto.subtle.exportKey('raw', keypair.publicKey)
+  return arrBufToHex(raw)
+}
+
+export async function structuralClone(obj: any) {
+  return new Promise(resolve => {
+    const {port1, port2} = new MessageChannel();
+    port2.onmessage = ev => resolve(ev.data);
+    port1.postMessage(obj);
+  });
+}
+
 export default {
-  structuralClone,
   arrBufToStr,
   arrBufToHex,
   strToArrBuf,
   hexToArrBuf,
+  getPublicKey,
+  structuralClone,
 }

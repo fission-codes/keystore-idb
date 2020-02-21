@@ -22,7 +22,7 @@ export async function getKey(id: string): Promise<CryptoKeyPair | undefined> {
         if(getData.result && getData.result.keypair){
           return resolve(getData.result.keypair)
         }else {
-          return resolve(undefined)
+					return resolve(undefined)
         }
       }
       getData.onerror = reject

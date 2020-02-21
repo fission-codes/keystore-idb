@@ -37,6 +37,9 @@ type SymmAlg = 'AES-CTR' | 'AES-GCM' | 'AES-CBC'
 type HashAlg = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
 
 interface KeyStore {
+  cfg: Config
+  readKey: CryptoKeyPair
+  writeKey: CryptoKeyPair
   sign(msg: string): Promise<string>
   verify(msg: string, sig: string, publicKey: PublicKey): Promise<boolean>
   encrypt(msg: string, publicKey: PublicKey): Promise<string>

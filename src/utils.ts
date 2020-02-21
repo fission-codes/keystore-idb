@@ -30,6 +30,14 @@ export function hexToArrBuf(hex: string): ArrayBuffer {
   return view.buffer
 }
 
+export function hexToBase64(hex: string): string {
+  return Buffer.from(hex, 'hex').toString('base64')
+}
+
+export function base64ToHex(base64: string): string {
+  return Buffer.from(base64, 'base64').toString('hex')
+}
+
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
   const raw = await crypto.subtle.exportKey('raw', keypair.publicKey)
   return arrBufToHex(raw)
@@ -48,6 +56,8 @@ export default {
   arrBufToHex,
   strToArrBuf,
   hexToArrBuf,
+  hexToBase64,
+  base64ToHex,
   getPublicKey,
   structuralClone,
 }

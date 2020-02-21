@@ -16,7 +16,7 @@ export async function getWriteKey(curve: ECC_Curve, keyName: string): Promise<Ec
   if(maybeKey){
     return maybeKey
   }
-  const keypair = await makeReadKey(curve)
+  const keypair = await makeWriteKey(curve)
   await IDB.putKey(keyName, keypair)
   return keypair
 }

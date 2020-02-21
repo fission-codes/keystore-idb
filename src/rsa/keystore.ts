@@ -14,7 +14,7 @@ export async function init(maybeCfg?: PartialConfig): Promise<RSAKeyStore>{
   return new RSAKeyStore(readKey, writeKey, cfg)
 }
 
-export class RSAKeyStore implements KeyStore{
+export class RSAKeyStore implements KeyStore {
 
   cfg: Config
   readKey: CryptoKeyPair

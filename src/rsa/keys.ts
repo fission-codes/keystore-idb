@@ -16,7 +16,7 @@ export async function getWriteKey(size: RSA_Size, hashAlg: HashAlg, keyName: str
   if(maybeKey){
     return maybeKey
   }
-  const keypair = await makeReadKey(size, hashAlg)
+  const keypair = await makeWriteKey(size, hashAlg)
   await IDB.putKey(keyName, keypair)
   return keypair
 }
@@ -24,20 +24,20 @@ export async function getWriteKey(size: RSA_Size, hashAlg: HashAlg, keyName: str
 export async function makeReadKey(size: RSA_Size, hashAlg: HashAlg): Promise<RsaWriteKeyPair> {
   return crypto.subtle.generateKey(
     {
-      name: RSA_WRITE_ALG,
-      modulusLength: size,
+      name: RSA_READ_ALG,
+      modulusLength: size, 
       publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
       hash: {name: hashAlg},
     },
     false,
     ["encrypt", "decrypt"]
-  ) 
+  )
 }
 
 export async function makeWriteKey(size: RSA_Size, hashAlg: HashAlg): Promise<RsaWriteKeyPair> {
   return crypto.subtle.generateKey(
     {
-      name: RSA_READ_ALG,
+      name: RSA_WRITE_ALG,
       modulusLength: size,
       publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
       hash: {name: hashAlg},

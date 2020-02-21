@@ -20,14 +20,20 @@ export const defaultConfig = {
   writeKeyName: DEFAULT_WRITE_KEY_NAME,
 } as Config
 
-export function normalize(cfg?: PartialConfig): Config {
-  if(!cfg){
-    return defaultConfig
+export function normalize(maybeCfg?: PartialConfig, eccEnabled: boolean = true): Config {
+  let cfg
+  if(!maybeCfg){
+    cfg = defaultConfig
+  }else{
+    cfg = {
+      ...defaultConfig,
+      ...maybeCfg,
+    }
   }
-  return {
-    ...defaultConfig,
-    ...cfg,
+  if(!maybeCfg?.type){
+    cfg.type = eccEnabled ? 'ecc' : 'rsa'
   }
+  return cfg
 }
 
 // Attempt a structural clone of an ECC Key (required to store in IndexedDB)

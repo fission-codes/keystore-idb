@@ -18,7 +18,7 @@ export async function getKey(id: string): Promise<CryptoKeyPair | undefined> {
   return new Promise((resolve, reject) => {
     callOnStore((store) => {
       const getData = store.get(id)
-      getData.onsuccess = async function () {
+      getData.onsuccess = async () => {
         if(getData.result && getData.result.keypair){
           return resolve(getData.result.keypair)
         }else {
@@ -26,6 +26,16 @@ export async function getKey(id: string): Promise<CryptoKeyPair | undefined> {
         }
       }
       getData.onerror = reject
+    })
+  })
+}
+
+export async function clear(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    callOnStore((store) => {
+			const req = store.clear()
+      req.onsuccess = async () => { resolve() }
+      req.onerror = reject
     })
   })
 }
@@ -63,4 +73,5 @@ export async function callOnStore(fn_: ModifyStoreFN) {
 export default {
 	putKey,
 	getKey,
+	clear,
 }

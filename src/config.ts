@@ -19,9 +19,9 @@ export const defaultConfig = {
   writeKeyName: WRITE_KEY_NAME,
 } as Config
 
-export async function normalize(cfg?: PartialConfig): Promise<Config> {
+export function normalize(cfg?: PartialConfig): Config {
   if(!cfg){
-    return getRecommendation()
+    return defaultConfig
   }
   return {
     ...defaultConfig,
@@ -31,24 +31,18 @@ export async function normalize(cfg?: PartialConfig): Promise<Config> {
 
 // Attempt a structural clone of an ECC Key (required to store in IndexedDB)
 // If it throws an error, use RSA, otherwise use ECC
-export async function getRecommendation(): Promise<Config> {
+export async function eccEnabled(): Promise<boolean> {
   const keypair = await ecc.makeReadKey(ECC_CURVE)
   try{
     await structuralClone(keypair)
   }catch(err) {
-    return {
-      ...defaultConfig,
-      type: 'rsa'
-    }
+    return false
   }
-  return {
-    ...defaultConfig,
-    type: 'ecc'
-  }
+  return true
 }
 
 export default {
   defaultConfig,
   normalize,
-  getRecommendation,
+  eccEnabled,
 }

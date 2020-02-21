@@ -1,75 +1,50 @@
 import IDB from '../idb'
-import utils from '../utils'
-import { RSA_READ_KEY, RSA_WRITE_KEY, RSA_KEY_SIZE, DEFAULT_HASH_ALG } from '../constants'
+import { RSA_READ_ALG, RSA_WRITE_ALG } from '../constants'
 
-export async function getReadKey(): Promise<RsaReadKeyPair> {
-  let keypair = await IDB.getKey(RSA_READ_KEY)
-  if(!keypair) {
-    console.log('creating read key')
-    keypair = await makeReadKey()
-    await IDB.putKey(RSA_READ_KEY, keypair)
+export async function getReadKey(size: RSA_Size, hashAlg: HashAlg, keyName: string): Promise<RsaReadKeyPair> {
+  const maybeKey = await IDB.getKey(keyName)
+  if(maybeKey){
+    return maybeKey
   }
+  const keypair = await makeReadKey(size, hashAlg)
+  await IDB.putKey(keyName, keypair)
   return keypair
 }
 
-export async function getWriteKey(): Promise<RsaWriteKeyPair> {
-  let keypair = await IDB.getKey(RSA_WRITE_KEY)
-  if(!keypair) {
-    console.log('creating write key')
-    keypair = await makeWriteKey()
-    await IDB.putKey(RSA_WRITE_KEY, keypair)
+export async function getWriteKey(size: RSA_Size, hashAlg: HashAlg, keyName: string): Promise<RsaWriteKeyPair> {
+  const maybeKey = await IDB.getKey(keyName)
+  if(maybeKey){
+    return maybeKey
   }
+  const keypair = await makeReadKey(size, hashAlg)
+  await IDB.putKey(keyName, keypair)
   return keypair
 }
 
-export async function makeReadKey(): Promise<RsaWriteKeyPair> {
+export async function makeReadKey(size: RSA_Size, hashAlg: HashAlg): Promise<RsaWriteKeyPair> {
   return crypto.subtle.generateKey(
     {
-      name: RSA_WRITE_KEY,
-      modulusLength: RSA_KEY_SIZE,
+      name: RSA_WRITE_ALG,
+      modulusLength: size,
       publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-      hash: {name: DEFAULT_HASH_ALG},
+      hash: {name: hashAlg},
     },
     false,
     ["encrypt", "decrypt"]
   ) 
 }
 
-export async function makeWriteKey(): Promise<RsaWriteKeyPair> {
+export async function makeWriteKey(size: RSA_Size, hashAlg: HashAlg): Promise<RsaWriteKeyPair> {
   return crypto.subtle.generateKey(
     {
-      name: RSA_READ_KEY,
-      modulusLength: RSA_KEY_SIZE,
+      name: RSA_READ_ALG,
+      modulusLength: size,
       publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-      hash: {name: DEFAULT_HASH_ALG},
+      hash: {name: hashAlg},
     },
     false,
     ["sign", "verify"]
   ) 
-}
-
-export async function getPublicReadKey(): Promise<string> {
-  const pubkey = await getPublicReadKeyBytes()
-  return utils.arrBufToHex(pubkey)
-}
-
-export async function getPublicReadKeyBytes(): Promise<ArrayBuffer> {
-  const keypair = await getReadKey()
-  return keyPairToPublic(keypair)
-}
-
-export async function getPublicWriteKey(): Promise<string> {
-  const pubkey = await getPublicWriteKeyBytes()
-  return utils.arrBufToHex(pubkey)
-}
-
-export async function getPublicWriteKeyBytes(): Promise<ArrayBuffer> {
-  const keypair = await getWriteKey()
-  return keyPairToPublic(keypair)
-}
-
-async function keyPairToPublic(keypair: CryptoKeyPair): Promise<ArrayBuffer> {
-  return crypto.subtle.exportKey("raw", keypair.publicKey)
 }
 
 export default {
@@ -77,8 +52,4 @@ export default {
   getWriteKey,
   makeReadKey,
   makeWriteKey,
-  getPublicReadKey,
-  getPublicReadKeyBytes,
-  getPublicWriteKey,
-  getPublicWriteKeyBytes,
 }

@@ -1,6 +1,13 @@
 import IDB from './idb'
 
-export function arrBufToStr(buf: ArrayBuffer): string {
+export function arrBuf8ToStr(buf: ArrayBuffer): string {
+  return Array
+    .from(new Uint8Array(buf))
+    .map(b => String.fromCharCode(b))
+    .join("")
+}
+
+export function arrBuf16ToStr(buf: ArrayBuffer): string {
   return Array
     .from(new Uint16Array(buf))
     .map(b => String.fromCharCode(b))
@@ -11,10 +18,23 @@ export function arrBufToHex(buf: ArrayBuffer): string {
   return Array
     .from (new Uint8Array(buf))
     .map (b => b.toString (16).padStart (2, "0"))
-    .join ("");
+    .join("");
 }
 
-export function strToArrBuf(str: string): ArrayBuffer {
+export function arrBufToBase64(buf: ArrayBuffer): string {
+  const str = arrBuf8ToStr(buf)
+  return window.btoa(str)
+}
+
+export function strToArrBuf8(str: string): ArrayBuffer {
+  const view = new Uint8Array(str.length)
+  for(let i=0, strLen=str.length; i < strLen; i++){
+    view[i] = str.charCodeAt(i)
+  }
+  return view.buffer
+}
+
+export function strToArrBuf16(str: string): ArrayBuffer {
   const view = new Uint16Array(2 * str.length)
   for(let i=0, strLen=str.length; i < strLen; i++){
     view[i] = str.charCodeAt(i)
@@ -30,17 +50,9 @@ export function hexToArrBuf(hex: string): ArrayBuffer {
   return view.buffer
 }
 
-export function hexToBase64(hex: string): string {
-  return Buffer.from(hex, 'hex').toString('base64')
-}
-
-export function base64ToHex(base64: string): string {
-  return Buffer.from(base64, 'base64').toString('hex')
-}
-
-export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
-  const raw = await crypto.subtle.exportKey('raw', keypair.publicKey)
-  return arrBufToHex(raw)
+export function base64ToArrBuf(base64: string): ArrayBuffer {
+  const str = window.atob(base64)
+  return strToArrBuf8(str)
 }
 
 export async function structuralClone(obj: any) {
@@ -52,12 +64,13 @@ export async function structuralClone(obj: any) {
 }
 
 export default {
-  arrBufToStr,
+  arrBuf8ToStr,
+  arrBuf16ToStr,
   arrBufToHex,
-  strToArrBuf,
+  arrBufToBase64,
+  strToArrBuf8,
+  strToArrBuf16,
   hexToArrBuf,
-  hexToBase64,
-  base64ToHex,
-  getPublicKey,
+  base64ToArrBuf,
   structuralClone,
 }

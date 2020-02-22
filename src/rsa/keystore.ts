@@ -28,42 +28,42 @@ export class RSAKeyStore implements KeyStore {
 
   async sign(msg: string): Promise<string>{
     const sigBytes = await operations.signBytes(
-      utils.strToArrBuf(msg),
+      utils.strToArrBuf16(msg),
       this.writeKey.privateKey,
     )
-    return utils.arrBufToHex(sigBytes)
+    return utils.arrBufToBase64(sigBytes)
   }
 
   async verify(msg: string, sig: string, publicKey: PublicKey): Promise<boolean> {
     return operations.verifyBytes(
-      utils.strToArrBuf(msg),
-      utils.hexToArrBuf(sig),
+      utils.strToArrBuf16(msg),
+      utils.base64ToArrBuf(sig),
       publicKey,
     )
   }
 
   async encrypt(msg: string, publicKey: PublicKey): Promise<string> {
     const cipherText = await operations.encryptBytes(
-      utils.strToArrBuf(msg),
+      utils.strToArrBuf16(msg),
       publicKey,
     )
-    return utils.arrBufToHex(cipherText)
+    return utils.arrBufToBase64(cipherText)
   }
 
   async decrypt(cipherText: string): Promise<String> {
     const msgBytes = await operations.decryptBytes(
-      utils.hexToArrBuf(cipherText),
+      utils.base64ToArrBuf(cipherText),
       this.readKey.privateKey,
     )
-    return utils.arrBufToStr(msgBytes)
+    return utils.arrBuf16ToStr(msgBytes)
   }
 
   async publicReadKey(): Promise<string> {
-    return utils.getPublicKey(this.readKey)
+    return operations.getPublicKey(this.readKey)
   }
 
   async publicWriteKey(): Promise<string> {
-    return utils.getPublicKey(this.writeKey)
+    return operations.getPublicKey(this.writeKey)
   }
 }
 

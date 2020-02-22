@@ -1,3 +1,4 @@
+import utils from '../utils'
 import { ECC_READ_ALG, ECC_WRITE_ALG } from '../constants'
 
 export async function signBytes(data: ArrayBuffer, privKey: PrivateKey, hashAlg: HashAlg): Promise<ArrayBuffer> {
@@ -52,10 +53,16 @@ export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKe
   return msgBuff
 }
 
+export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
+  const raw = await crypto.subtle.exportKey('raw', keypair.publicKey)
+  return utils.arrBufToHex(raw)
+}
+
 export default {
   signBytes,
   verifyBytes,
+  getSharedKey,
   encryptBytes,
   decryptBytes,
-  getSharedKey,
+  getPublicKey
 }

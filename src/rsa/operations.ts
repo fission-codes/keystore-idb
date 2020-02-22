@@ -1,3 +1,4 @@
+import utils from '../utils'
 import { RSA_READ_ALG, RSA_WRITE_ALG, SALT_LENGTH } from '../constants'
 
 export async function signBytes(data: ArrayBuffer, privKey: PrivateKey): Promise<ArrayBuffer> {
@@ -33,9 +34,15 @@ export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKe
   )
 }
 
+export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
+  const spki = await crypto.subtle.exportKey('spki', keypair.publicKey)
+  return `-----BEGIN PUBLIC KEY-----\n${utils.arrBufToBase64(spki)}\n-----END PUBLIC KEY-----`;
+}
+
 export default {
   signBytes,
   verifyBytes,
   encryptBytes,
   decryptBytes,
+  getPublicKey,
 }

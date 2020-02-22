@@ -54,6 +54,12 @@ _Note: if you don't include a crypto "type" (`'ecc' | 'rsa'`), the library will 
   const decipher = await ks2.decrypt(cipher, readKey1.publicKey)
   console.log('cipher: ', cipher)
   console.log('decipher: ', decipher)
+
+  // read keys are write keys are separate because of the Web Crypto API
+  const readKey = await ks1.publicReadKey()
+  const writeKey = await ks1.publicWriteKey()
+  console.log('readKey: ', readKey)
+  console.log('writeKey: ', writeKey)
 ```
 
 ## Development

@@ -1,15 +1,7 @@
-import IDB from './idb'
-
-export function arrBuf8ToStr(buf: ArrayBuffer): string {
+export function arrBufToStr(buf: ArrayBuffer, charSize: CharSize): string {
+  const arr = charSize === 8 ? new Uint8Array(buf) : new Uint16Array(buf)
   return Array
-    .from(new Uint8Array(buf))
-    .map(b => String.fromCharCode(b))
-    .join("")
-}
-
-export function arrBuf16ToStr(buf: ArrayBuffer): string {
-  return Array
-    .from(new Uint16Array(buf))
+    .from(arr)
     .map(b => String.fromCharCode(b))
     .join("")
 }
@@ -22,20 +14,12 @@ export function arrBufToHex(buf: ArrayBuffer): string {
 }
 
 export function arrBufToBase64(buf: ArrayBuffer): string {
-  const str = arrBuf8ToStr(buf)
+  const str = arrBufToStr(buf, 8)
   return window.btoa(str)
 }
 
-export function strToArrBuf8(str: string): ArrayBuffer {
-  const view = new Uint8Array(str.length)
-  for(let i=0, strLen=str.length; i < strLen; i++){
-    view[i] = str.charCodeAt(i)
-  }
-  return view.buffer
-}
-
-export function strToArrBuf16(str: string): ArrayBuffer {
-  const view = new Uint16Array(2 * str.length)
+export function strToArrBuf(str: string, charSize: CharSize): ArrayBuffer {
+  const view = charSize === 8 ? new Uint8Array(str.length) : new Uint16Array(str.length)
   for(let i=0, strLen=str.length; i < strLen; i++){
     view[i] = str.charCodeAt(i)
   }
@@ -52,7 +36,7 @@ export function hexToArrBuf(hex: string): ArrayBuffer {
 
 export function base64ToArrBuf(base64: string): ArrayBuffer {
   const str = window.atob(base64)
-  return strToArrBuf8(str)
+  return strToArrBuf(str, 8)
 }
 
 export async function structuralClone(obj: any) {
@@ -64,12 +48,10 @@ export async function structuralClone(obj: any) {
 }
 
 export default {
-  arrBuf8ToStr,
-  arrBuf16ToStr,
+  arrBufToStr,
   arrBufToHex,
   arrBufToBase64,
-  strToArrBuf8,
-  strToArrBuf16,
+  strToArrBuf,
   hexToArrBuf,
   base64ToArrBuf,
   structuralClone,

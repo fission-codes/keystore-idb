@@ -1,7 +1,7 @@
 import KeyStore from './keystore'
 
 async function run() {
-  const ALG = 'rsa'
+  const ALG = 'ecc'
   await KeyStore.clear()
   const ks1 = await KeyStore.init({ type: ALG, readKeyName: 'read-key-1', writeKeyName: 'write-key-1' })
   const ks2 = await KeyStore.init({ type: ALG, readKeyName: 'read-key-2', writeKeyName: 'write-key-2' })

@@ -17,8 +17,8 @@ export async function init(maybeCfg?: PartialConfig): Promise<RSAKeyStore>{
 export class RSAKeyStore implements KeyStore {
 
   cfg: Config
-  readKey: CryptoKeyPair
-  writeKey: CryptoKeyPair
+  readKey: RsaReadKeyPair
+  writeKey: RsaWriteKeyPair
 
   constructor(readKey: CryptoKeyPair, writeKey: CryptoKeyPair, cfg: Config){
     this.cfg = cfg
@@ -26,36 +26,36 @@ export class RSAKeyStore implements KeyStore {
     this.writeKey = writeKey
   }
 
-  async sign(msg: string): Promise<string>{
+  async sign(msg: string, charSize: CharSize = 16): Promise<string>{
     const sigBytes = await operations.signBytes(
-      utils.strToArrBuf16(msg),
+      utils.strToArrBuf(msg, charSize),
       this.writeKey.privateKey,
     )
     return utils.arrBufToBase64(sigBytes)
   }
 
-  async verify(msg: string, sig: string, publicKey: PublicKey): Promise<boolean> {
+  async verify(msg: string, sig: string, publicKey: PublicKey, charSize: CharSize = 16): Promise<boolean> {
     return operations.verifyBytes(
-      utils.strToArrBuf16(msg),
+      utils.strToArrBuf(msg, charSize),
       utils.base64ToArrBuf(sig),
       publicKey,
     )
   }
 
-  async encrypt(msg: string, publicKey: PublicKey): Promise<string> {
+  async encrypt(msg: string, publicKey: PublicKey, charSize: CharSize = 16): Promise<string> {
     const cipherText = await operations.encryptBytes(
-      utils.strToArrBuf16(msg),
+      utils.strToArrBuf(msg, charSize),
       publicKey,
     )
     return utils.arrBufToBase64(cipherText)
   }
 
-  async decrypt(cipherText: string): Promise<String> {
+  async decrypt(cipherText: string, publicKey: PublicKey, charSize: CharSize = 16): Promise<String> {
     const msgBytes = await operations.decryptBytes(
       utils.base64ToArrBuf(cipherText),
       this.readKey.privateKey,
     )
-    return utils.arrBuf16ToStr(msgBytes)
+    return utils.arrBufToStr(msgBytes, charSize)
   }
 
   async publicReadKey(): Promise<string> {

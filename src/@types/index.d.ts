@@ -35,15 +35,16 @@ type ECC_Curve = 'P-256' | 'P-384' | 'P-521'
 type RSA_Size = 1024 | 2048 | 4096
 type SymmAlg = 'AES-CTR' | 'AES-GCM' | 'AES-CBC'
 type HashAlg = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
+type CharSize = 8 | 16
 
 interface KeyStore {
   cfg: Config
   readKey: CryptoKeyPair
   writeKey: CryptoKeyPair
-  sign(msg: string): Promise<string>
-  verify(msg: string, sig: string, publicKey: PublicKey): Promise<boolean>
-  encrypt(msg: string, publicKey: PublicKey): Promise<string>
-  decrypt(cipherText: string, publicKey: PublicKey): Promise<String>
+  sign(msg: string, charSize?: CharSize): Promise<string>
+  verify(msg: string, sig: string, publicKey: PublicKey, charSize?: CharSize): Promise<boolean>
+  encrypt(msg: string, publicKey: PublicKey, charSize?: CharSize): Promise<string>
+  decrypt(cipherText: string, publicKey: PublicKey, charSize?: CharSize): Promise<String>
   publicReadKey(): Promise<string>
   publicWriteKey(): Promise<string>
 }

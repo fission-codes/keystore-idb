@@ -21,7 +21,7 @@ export async function getWriteKey(size: RSA_Size, hashAlg: HashAlg, keyName: str
   return keypair
 }
 
-export async function makeReadKey(size: RSA_Size, hashAlg: HashAlg): Promise<RsaWriteKeyPair> {
+export async function makeReadKey(size: RSA_Size, hashAlg: HashAlg): Promise<RsaReadKeyPair> {
   return crypto.subtle.generateKey(
     {
       name: RSA_READ_ALG,

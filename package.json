@@ -1,6 +1,6 @@
 {
-  "name": "project-name",
-  "version": "0.0.0",
+  "name": "keystore-idb",
+  "version": "0.0.1",
   "description": "",
   "keywords": [],
   "main": "dist/index.umd.js",
@@ -9,10 +9,10 @@
   "files": [
     "dist"
   ],
-  "author": "Author <author@fission.codes>",
+  "author": "Daniel Holmgren <daniel@fission.codes>",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/fission-suite/keystore-idb"
   },
   "license": "Apache-2.0",
   "engines": {

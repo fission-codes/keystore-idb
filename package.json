@@ -1,6 +1,6 @@
 {
   "name": "keystore-idb",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "keywords": [],
   "main": "dist/index.umd.js",
@@ -90,12 +90,8 @@
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^8.0.1",
-    "typedoc": "^0.12.0",
-    "typescript": "^3.0.3"
+    "typedoc": "^0.16.10",
+    "typescript": "^3.7.0"
   },
-  "dependencies": {
-    "idb": "^5.0.1",
-    "idb-keyval": "^3.2.0",
-    "realistic-structured-clone": "^2.0.2"
-  }
+  "dependencies": {}
 }

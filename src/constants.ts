@@ -1,3 +1,5 @@
+import { ECC_Curve, RSA_Size, SymmAlg, HashAlg } from './types'
+
 export const ECC_READ_ALG = 'ECDH'
 export const ECC_WRITE_ALG = 'ECDSA'
 export const RSA_READ_ALG = 'RSA-OAEP'
@@ -5,10 +7,10 @@ export const RSA_WRITE_ALG = 'RSA-PSS'
 export const SALT_LENGTH = 128
 
 export const DEFAULT_CRYPTOSYSTEM = 'ecc'
-export const DEFAULT_ECC_CURVE = 'P-256'
-export const DEFAULT_RSA_SIZE = 2048
-export const DEFAULT_SYMM_ALG = 'AES-CTR'
-export const DEFAULT_HASH_ALG = 'SHA-256'
+export const DEFAULT_ECC_CURVE = ECC_Curve.P_256
+export const DEFAULT_RSA_SIZE = RSA_Size.B2048
+export const DEFAULT_SYMM_ALG = SymmAlg.AES_CTR
+export const DEFAULT_HASH_ALG = HashAlg.SHA_256
 export const DEFAULT_READ_KEY_NAME = 'read-key'
 export const DEFAULT_WRITE_KEY_NAME = 'write-key'
 

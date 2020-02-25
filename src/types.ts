@@ -24,15 +24,40 @@ export interface PartialConfig {
   writeKeyName?: string
 }
 
-export type ECC_Curve = 'P-256' | 'P-384' | 'P-521'
-export type RSA_Size = 1024 | 2048 | 4096
-export type SymmAlg = 'AES-CTR' | 'AES-GCM' | 'AES-CBC'
-export type HashAlg = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
-export type CharSize = 8 | 16
+export enum ECC_Curve {
+  P_256 = 'P-256',
+  P_384 = 'P-384',
+  P_521 = 'P-521',
+}
+
+export enum RSA_Size { 
+  B1024 = 1024,
+  B2048 = 2048,
+  B4096 = 4096
+}
+
+export enum SymmAlg { 
+  AES_CTR = 'AES-CTR', 
+  AES_GCM = 'AES-GCM', 
+  AES_CBC = 'AES-CBC', 
+}
+
+export enum HashAlg { 
+  SHA_1 = 'SHA-1',
+  SHA_256 = 'SHA-256',
+  SHA_384 = 'SHA-384',
+  SHA_512 = 'SHA-512',
+}
+
+export enum CharSize { 
+  B8 = 8,
+  B16 = 16,
+}
+
 
 export enum KeyUse {
   Read = 'read',
-  Write = 'write'
+  Write = 'write',
 }
 
 export interface KeyStore {

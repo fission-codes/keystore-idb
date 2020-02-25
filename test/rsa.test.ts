@@ -1,7 +1,7 @@
 import rsa from '../src/rsa'
 import errors from '../src/errors'
 import utils from '../src/utils'
-import { KeyUse } from '../src/types'
+import { KeyUse, RSA_Size, HashAlg } from '../src/types'
 import { cryptoMethod, mock } from './utils'
 
 const sinon = require('sinon')
@@ -16,7 +16,7 @@ describe('rsa', () => {
     desc: 'makeKey',
     setMock: fake => window.crypto.subtle.generateKey = fake,
     mockResp: mock.keys,
-    simpleReq: () => rsa.makeKey(2048, 'SHA-256', KeyUse.Read),
+    simpleReq: () => rsa.makeKey(RSA_Size.B2048, HashAlg.SHA_256, KeyUse.Read),
     simpleParams: [
       {
         name: 'RSA-OAEP',
@@ -30,7 +30,7 @@ describe('rsa', () => {
     paramChecks: [
       {
         desc: 'handles write keys',
-        req: () => rsa.makeKey(2048, 'SHA-256', KeyUse.Write),
+        req: () => rsa.makeKey(RSA_Size.B2048, HashAlg.SHA_256, KeyUse.Write),
         params: [
           {
             name: 'RSA-PSS',
@@ -44,19 +44,19 @@ describe('rsa', () => {
       },
       {
         desc: 'handles multiple key sizes',
-        req: () => rsa.makeKey(4096, 'SHA-256', KeyUse.Write),
+        req: () => rsa.makeKey(RSA_Size.B4096, HashAlg.SHA_256, KeyUse.Write),
         params: (params: any) => params[0]?.modulusLength === 4096
       },
       {
         desc: 'handles multiple hash algorithms',
-        req: () => rsa.makeKey(2048, 'SHA-512', KeyUse.Write),
+        req: () => rsa.makeKey(RSA_Size.B2048, HashAlg.SHA_512, KeyUse.Write),
         params: (params: any) => params[0]?.hash?.name === 'SHA-512'
       }
     ],
     shouldThrows: [
       {
         desc: 'throws an error when passing in an invalid use',
-        req: () => rsa.makeKey(2048, 'SHA-512', 'signature' as any),
+        req: () => rsa.makeKey(RSA_Size.B2048, HashAlg.SHA_256, 'signature' as any),
         error: errors.InvalidKeyUse
       }
     ]

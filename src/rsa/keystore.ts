@@ -66,7 +66,7 @@ export class RSAKeyStore implements KeyStore {
 
   async decrypt(
     cipherText: string,
-    publicKey: PublicKey,
+    publicKey?: PublicKey, //unused param to
     charSize: CharSize = 16
   ): Promise<String> {
     const msgBytes = await operations.decryptBytes(

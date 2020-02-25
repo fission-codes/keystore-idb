@@ -1,4 +1,4 @@
-import ecc from './ecc'
+import ecc from './ecc/keys'
 import {
   DEFAULT_CRYPTOSYSTEM,
   DEFAULT_ECC_CURVE,

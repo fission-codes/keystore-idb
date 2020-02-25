@@ -1,12 +1,14 @@
 import IDB from '../idb'
 import { ECC_READ_ALG, ECC_WRITE_ALG } from '../constants'
 import { ECC_Curve, KeyUse } from '../types'
+import { checkValidKeyUse } from '../errors'
 
 export async function getKey(
   curve: ECC_Curve,
   keyName: string,
   use: KeyUse
 ): Promise<CryptoKeyPair> {
+  checkValidKeyUse(use)
   const maybeKey = await IDB.getKey(keyName)
   if (maybeKey) {
     return maybeKey
@@ -20,10 +22,11 @@ export async function makeKey(
   curve: ECC_Curve,
   use: KeyUse
 ): Promise<CryptoKeyPair> {
+  checkValidKeyUse(use)
   const alg = use === KeyUse.Read ? ECC_READ_ALG : ECC_WRITE_ALG
   const uses =
     use === KeyUse.Read ? ['deriveKey', 'deriveBits'] : ['sign', 'verify']
-  return crypto.subtle.generateKey(
+  return window.crypto.subtle.generateKey(
     { name: alg, namedCurve: curve },
     false,
     uses

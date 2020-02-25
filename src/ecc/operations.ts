@@ -20,7 +20,7 @@ export async function verifyBytes(data: ArrayBuffer, sig: ArrayBuffer, publicKey
 }
 
 export async function getSharedKey(privateKey: PrivateKey, publicKey: PublicKey, symmAlg: SymmAlg): Promise<SymmKey> {
-  return crypto.subtle.deriveKey(
+  return window.crypto.subtle.deriveKey(
     { name: ECC_READ_ALG, public: publicKey },
     privateKey,
     { name: symmAlg, length: 256 },
@@ -31,7 +31,7 @@ export async function getSharedKey(privateKey: PrivateKey, publicKey: PublicKey,
 
 export async function encryptBytes(data: ArrayBuffer, privateKey: PrivateKey, publicKey: PublicKey, symmAlg: SymmAlg): Promise<CipherText> {
   const cipherKey = await getSharedKey(privateKey, publicKey, symmAlg)
-  return crypto.subtle.encrypt(
+  return window.crypto.subtle.encrypt(
     { name: symmAlg,
       counter: new Uint8Array(16),
       length: 128
@@ -43,7 +43,7 @@ export async function encryptBytes(data: ArrayBuffer, privateKey: PrivateKey, pu
 
 export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKey, publicKey: PublicKey, symmAlg: SymmAlg): Promise<ArrayBuffer> {
   const cipherKey = await getSharedKey(privateKey, publicKey, symmAlg)
-  const msgBuff = await crypto.subtle.encrypt(
+  const msgBuff = await window.crypto.subtle.decrypt(
     { name: symmAlg,
       counter: new Uint8Array(16),
       length: 128
@@ -55,7 +55,7 @@ export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKe
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
-  const raw = await crypto.subtle.exportKey('raw', keypair.publicKey)
+  const raw = await window.crypto.subtle.exportKey('raw', keypair.publicKey)
   return utils.arrBufToHex(raw)
 }
 

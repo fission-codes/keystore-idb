@@ -24,7 +24,7 @@ export async function makeKey(
 ): Promise<CryptoKeyPair> {
   const alg = use === KeyUse.Read ? RSA_READ_ALG : RSA_WRITE_ALG
   const uses = use === KeyUse.Read ? ['encrypt', 'decrypt'] : ['sign', 'verify']
-  return crypto.subtle.generateKey(
+  return window.crypto.subtle.generateKey(
     {
       name: alg,
       modulusLength: size,

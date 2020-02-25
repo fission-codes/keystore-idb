@@ -20,7 +20,7 @@ export async function verifyBytes(data: ArrayBuffer, sig: ArrayBuffer, publicKey
 }
 
 export async function encryptBytes(data: ArrayBuffer, publicKey: PublicKey): Promise<CipherText> {
-  return crypto.subtle.encrypt(
+  return window.crypto.subtle.encrypt(
     { name: RSA_READ_ALG },
     publicKey,
     data
@@ -28,7 +28,7 @@ export async function encryptBytes(data: ArrayBuffer, publicKey: PublicKey): Pro
 }
 
 export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKey): Promise<ArrayBuffer> {
-  return crypto.subtle.decrypt(
+  return window.crypto.subtle.decrypt(
     { name: RSA_READ_ALG },
     privateKey,
     cipherText
@@ -36,7 +36,7 @@ export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKe
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
-  const spki = await crypto.subtle.exportKey('spki', keypair.publicKey)
+  const spki = await window.crypto.subtle.exportKey('spki', keypair.publicKey)
   return `-----BEGIN PUBLIC KEY-----\n${utils.arrBufToBase64(spki)}\n-----END PUBLIC KEY-----`;
 }
 

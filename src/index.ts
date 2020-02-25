@@ -1,11 +1,19 @@
-import KeyStore from './keystore'
+import { init, clear } from './keystore'
 
-export default KeyStore
+import * as ecc from './ecc'
+import * as rsa from './rsa'
+import * as config from './config'
+import * as constants from './constants'
+import * as utils from './utils'
+import * as idb from './idb'
 
-export { default as keystore } from './keystore'
-export { default as ecc } from './ecc'
-export { default as rsa } from './rsa'
-export { default as config } from './config'
-export { default as constants } from './constants'
-export { default as utils } from './utils'
-export { default as idb } from './idb'
+export default {
+  init,
+  clear,
+  ecc,
+  rsa,
+  config,
+  constants,
+  utils,
+  idb,
+}

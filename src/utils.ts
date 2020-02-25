@@ -46,5 +46,5 @@ export default {
   arrBufToBase64,
   strToArrBuf,
   hexToArrBuf,
-  base64ToArrBuf
+  base64ToArrBuf,
 }

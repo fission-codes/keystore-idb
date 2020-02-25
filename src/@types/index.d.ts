@@ -37,14 +37,32 @@ type SymmAlg = 'AES-CTR' | 'AES-GCM' | 'AES-CBC'
 type HashAlg = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
 type CharSize = 8 | 16
 
+declare enum KeyUse {
+  Read = 'read',
+  Write = 'write'
+}
+
 interface KeyStore {
   cfg: Config
   readKey: CryptoKeyPair
   writeKey: CryptoKeyPair
   sign(msg: string, charSize?: CharSize): Promise<string>
-  verify(msg: string, sig: string, publicKey: PublicKey, charSize?: CharSize): Promise<boolean>
-  encrypt(msg: string, publicKey: PublicKey, charSize?: CharSize): Promise<string>
-  decrypt(cipherText: string, publicKey: PublicKey, charSize?: CharSize): Promise<String>
+  verify(
+    msg: string,
+    sig: string,
+    publicKey: PublicKey,
+    charSize?: CharSize
+  ): Promise<boolean>
+  encrypt(
+    msg: string,
+    publicKey: PublicKey,
+    charSize?: CharSize
+  ): Promise<string>
+  decrypt(
+    cipherText: string,
+    publicKey: PublicKey,
+    charSize?: CharSize
+  ): Promise<String>
   publicReadKey(): Promise<string>
   publicWriteKey(): Promise<string>
 }

@@ -3,30 +3,29 @@ import operations from './operations'
 import config from '../config'
 import utils from '../utils'
 
-export async function init(maybeCfg?: PartialConfig): Promise<ECCKeyStore>{
+export async function init(maybeCfg?: PartialConfig): Promise<ECCKeyStore> {
   const cfg = config.normalize({
     ...(maybeCfg || {}),
     type: 'ecc'
   })
   const { curve, readKeyName, writeKeyName } = cfg
-  const readKey = await keys.getReadKey(curve, readKeyName)
-  const writeKey = await keys.getWriteKey(curve, writeKeyName)
+  const readKey = await keys.getKey(curve, readKeyName, KeyUse.Read)
+  const writeKey = await keys.getKey(curve, writeKeyName, KeyUse.Write)
   return new ECCKeyStore(readKey, writeKey, cfg)
 }
 
 export class ECCKeyStore implements KeyStore {
-
   cfg: Config
   readKey: EcdhKeyPair
   writeKey: EcdsaKeyPair
 
-  constructor(readKey: CryptoKeyPair, writeKey: CryptoKeyPair, cfg: Config){
+  constructor(readKey: CryptoKeyPair, writeKey: CryptoKeyPair, cfg: Config) {
     this.cfg = cfg
     this.readKey = readKey
     this.writeKey = writeKey
   }
 
-  async sign(msg: string, charSize: CharSize = 16): Promise<string>{
+  async sign(msg: string, charSize: CharSize = 16): Promise<string> {
     const sigBytes = await operations.signBytes(
       utils.strToArrBuf(msg, charSize),
       this.writeKey.privateKey,
@@ -35,7 +34,12 @@ export class ECCKeyStore implements KeyStore {
     return utils.arrBufToBase64(sigBytes)
   }
 
-  async verify(msg: string, sig: string, publicKey: PublicKey, charSize: CharSize = 16): Promise<boolean> {
+  async verify(
+    msg: string,
+    sig: string,
+    publicKey: PublicKey,
+    charSize: CharSize = 16
+  ): Promise<boolean> {
     return operations.verifyBytes(
       utils.strToArrBuf(msg, charSize),
       utils.base64ToArrBuf(sig),
@@ -44,7 +48,11 @@ export class ECCKeyStore implements KeyStore {
     )
   }
 
-  async encrypt(msg: string, publicKey: PublicKey, charSize: CharSize = 16): Promise<string> {
+  async encrypt(
+    msg: string,
+    publicKey: PublicKey,
+    charSize: CharSize = 16
+  ): Promise<string> {
     const cipherText = await operations.encryptBytes(
       utils.strToArrBuf(msg, charSize),
       this.readKey.privateKey,
@@ -54,7 +62,11 @@ export class ECCKeyStore implements KeyStore {
     return utils.arrBufToBase64(cipherText)
   }
 
-  async decrypt(cipherText: string, publicKey: PublicKey, charSize: CharSize = 16): Promise<String> {
+  async decrypt(
+    cipherText: string,
+    publicKey: PublicKey,
+    charSize: CharSize = 16
+  ): Promise<String> {
     const msgBytes = await operations.decryptBytes(
       utils.base64ToArrBuf(cipherText),
       this.readKey.privateKey,
@@ -75,5 +87,5 @@ export class ECCKeyStore implements KeyStore {
 
 export default {
   init,
-  ECCKeyStore,
+  ECCKeyStore
 }

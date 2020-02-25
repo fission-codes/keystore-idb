@@ -1,45 +1,35 @@
 import IDB from '../idb'
 import { ECC_READ_ALG, ECC_WRITE_ALG } from '../constants'
 
-export async function getReadKey(curve: ECC_Curve, keyName: string): Promise<EcdhKeyPair> {
+export async function getKey(
+  curve: ECC_Curve,
+  keyName: string,
+  use: KeyUse
+): Promise<CryptoKeyPair> {
   const maybeKey = await IDB.getKey(keyName)
-  if(maybeKey){
+  if (maybeKey) {
     return maybeKey
   }
-  const keypair = await makeReadKey(curve)
+  const keypair = await makeKey(curve, use)
   await IDB.putKey(keyName, keypair)
   return keypair
 }
 
-export async function getWriteKey(curve: ECC_Curve, keyName: string): Promise<EcdsaKeyPair> {
-  const maybeKey = await IDB.getKey(keyName)
-  if(maybeKey){
-    return maybeKey
-  }
-  const keypair = await makeWriteKey(curve)
-  await IDB.putKey(keyName, keypair)
-  return keypair
-}
-
-export async function makeReadKey(curve: ECC_Curve): Promise<EcdhKeyPair> {
+export async function makeKey(
+  curve: ECC_Curve,
+  use: KeyUse
+): Promise<CryptoKeyPair> {
+  const alg = use === KeyUse.Read ? ECC_READ_ALG : ECC_WRITE_ALG
+  const uses =
+    use === KeyUse.Read ? ['deriveKey', 'deriveBits'] : ['sign', 'verify']
   return crypto.subtle.generateKey(
-    { name: ECC_READ_ALG, namedCurve: curve },
-    false, 
-    ['deriveKey', 'deriveBits']
-  ) 
-}
-
-export async function makeWriteKey(curve: ECC_Curve): Promise<EcdsaKeyPair> {
-  return crypto.subtle.generateKey(
-    { name: ECC_WRITE_ALG, namedCurve: curve },
-    false, 
-    ['sign', 'verify']
-  ) 
+    { name: alg, namedCurve: curve },
+    false,
+    uses
+  )
 }
 
 export default {
-  getReadKey,
-  getWriteKey,
-  makeReadKey,
-  makeWriteKey,
+  getKey,
+  makeKey
 }

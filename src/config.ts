@@ -8,6 +8,7 @@ import {
   DEFAULT_READ_KEY_NAME,
   DEFAULT_WRITE_KEY_NAME
 } from './constants'
+import { PartialConfig, Config, KeyUse } from './types'
 
 export const defaultConfig = {
   type: DEFAULT_CRYPTOSYSTEM,

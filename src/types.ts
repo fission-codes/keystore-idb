@@ -1,17 +1,10 @@
-type CipherText = ArrayBuffer
-type SymmKey = CryptoKey
+export type CipherText = ArrayBuffer
+export type SymmKey = CryptoKey
 
-type PublicKey = CryptoKey
-type PrivateKey = CryptoKey
+export type PublicKey = CryptoKey
+export type PrivateKey = CryptoKey
 
-type EcdhKeyPair = CryptoKeyPair
-type EcdsaKeyPair = CryptoKeyPair
-
-// type RsaPublicKey = CryptoKey
-type RsaReadKeyPair = CryptoKeyPair
-type RsaWriteKeyPair = CryptoKeyPair
-
-interface Config {
+export interface Config {
   type: 'ecc' | 'rsa'
   curve: ECC_Curve
   rsaSize: RSA_Size
@@ -21,7 +14,7 @@ interface Config {
   writeKeyName: string
 }
 
-interface PartialConfig {
+export interface PartialConfig {
   type?: 'ecc' | 'rsa'
   curve?: ECC_Curve
   rsaSize?: RSA_Size
@@ -31,18 +24,18 @@ interface PartialConfig {
   writeKeyName?: string
 }
 
-type ECC_Curve = 'P-256' | 'P-384' | 'P-521'
-type RSA_Size = 1024 | 2048 | 4096
-type SymmAlg = 'AES-CTR' | 'AES-GCM' | 'AES-CBC'
-type HashAlg = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
-type CharSize = 8 | 16
+export type ECC_Curve = 'P-256' | 'P-384' | 'P-521'
+export type RSA_Size = 1024 | 2048 | 4096
+export type SymmAlg = 'AES-CTR' | 'AES-GCM' | 'AES-CBC'
+export type HashAlg = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
+export type CharSize = 8 | 16
 
-declare enum KeyUse {
+export enum KeyUse {
   Read = 'read',
   Write = 'write'
 }
 
-interface KeyStore {
+export interface KeyStore {
   cfg: Config
   readKey: CryptoKeyPair
   writeKey: CryptoKeyPair

@@ -2,6 +2,7 @@ import keys from './keys'
 import operations from './operations'
 import config from '../config'
 import utils from '../utils'
+import { KeyStore, PartialConfig, Config, KeyUse, CharSize, PublicKey } from '../types'
 
 export async function init(maybeCfg?: PartialConfig): Promise<RSAKeyStore> {
   const cfg = config.normalize({
@@ -21,8 +22,8 @@ export async function init(maybeCfg?: PartialConfig): Promise<RSAKeyStore> {
 
 export class RSAKeyStore implements KeyStore {
   cfg: Config
-  readKey: RsaReadKeyPair
-  writeKey: RsaWriteKeyPair
+  readKey: CryptoKeyPair
+  writeKey: CryptoKeyPair
 
   constructor(readKey: CryptoKeyPair, writeKey: CryptoKeyPair, cfg: Config) {
     this.cfg = cfg

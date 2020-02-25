@@ -1,5 +1,6 @@
 import IDB from '../idb'
 import { ECC_READ_ALG, ECC_WRITE_ALG } from '../constants'
+import { ECC_Curve, KeyUse } from '../types'
 
 export async function getKey(
   curve: ECC_Curve,

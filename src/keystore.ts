@@ -2,6 +2,7 @@ import ECCKeyStore from './ecc/keystore'
 import RSAKeyStore from './rsa/keystore'
 import config from './config'
 import IDB from './idb'
+import { PartialConfig, KeyStore } from './types'
 
 export async function init(maybeCfg?: PartialConfig): Promise<KeyStore>{
   const eccEnabled = await config.eccEnabled()

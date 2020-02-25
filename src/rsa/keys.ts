@@ -1,5 +1,6 @@
 import IDB from '../idb'
 import { RSA_READ_ALG, RSA_WRITE_ALG } from '../constants'
+import { RSA_Size, HashAlg, KeyUse } from '../types'
 
 export async function getKey(
   size: RSA_Size,

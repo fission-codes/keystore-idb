@@ -2,6 +2,7 @@ import keys from './keys'
 import operations from './operations'
 import config from '../config'
 import utils from '../utils'
+import { KeyStore, PartialConfig, Config, KeyUse, CharSize, PublicKey } from '../types'
 
 export async function init(maybeCfg?: PartialConfig): Promise<ECCKeyStore> {
   const cfg = config.normalize({
@@ -16,8 +17,8 @@ export async function init(maybeCfg?: PartialConfig): Promise<ECCKeyStore> {
 
 export class ECCKeyStore implements KeyStore {
   cfg: Config
-  readKey: EcdhKeyPair
-  writeKey: EcdsaKeyPair
+  readKey: CryptoKeyPair
+  writeKey: CryptoKeyPair
 
   constructor(readKey: CryptoKeyPair, writeKey: CryptoKeyPair, cfg: Config) {
     this.cfg = cfg

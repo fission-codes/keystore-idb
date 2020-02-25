@@ -1,11 +1,14 @@
+import utils from '../src/utils'
+
 const sinon = require('sinon')
 
 type Req = () => Promise<any>
+type ParamCheckFn = (params: any) => boolean
 
 type ParamCheck = {
   desc: string
   req: Req
-  params: object
+  params: object | ParamCheckFn
 }
 
 type ShouldThrow = {
@@ -17,9 +20,10 @@ type ShouldThrow = {
 type WebCryptoReqOpts = {
   desc: string
   setMock: (fake: sinon.SinonSpy) => void
-  simpleReq: Req
   mockResp: any
   expectedResp?: any
+  simpleReq: Req
+  simpleParams: object
   paramChecks: ParamCheck[]
   shouldThrows: ShouldThrow[]
 }
@@ -47,10 +51,20 @@ export const cryptoMethod = (opts: WebCryptoReqOpts) => {
       }
     })
 
+    it('correctly passes params', async () => {
+      await opts.simpleReq()
+      expect(fake.args[0]).toEqual(opts.simpleParams)
+    })
+
     opts.paramChecks.forEach(test => {
       it(test.desc, async () => {
         await test.req()
-        expect(fake.args[0]).toEqual(test.params)
+        if(typeof test.params === 'function'){
+          expect(test.params(fake.args[0])).toBeTruthy()
+
+        }else {
+          expect(fake.args[0]).toEqual(test.params)
+        }
       })
     })
 
@@ -67,4 +81,17 @@ export const cryptoMethod = (opts: WebCryptoReqOpts) => {
     })
 
   })
+}
+
+export const mock = {
+  keys: {
+    publicKey: { type: 'pub' } as any,
+    privateKey: { type: 'priv' } as any
+  } as any,
+  symmKey: { type: 'symm' } as any,
+  publicKeyHex: 'abcdef1234567890',
+  publicKeyBase64: 'q83vEjRWeJA=',
+  msgBytes: utils.strToArrBuf("test msg bytes", 8),
+  signature: utils.strToArrBuf("test signature", 8),
+  cipherText: utils.strToArrBuf("test encrypted bytes", 8),
 }

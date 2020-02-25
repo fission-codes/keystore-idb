@@ -40,6 +40,10 @@ export function base64ToArrBuf(base64: string): ArrayBuffer {
   return strToArrBuf(str, 8)
 }
 
+export function publicExponent(): Uint8Array {
+  return new Uint8Array([0x01, 0x00, 0x01])
+}
+
 export default {
   arrBufToStr,
   arrBufToHex,
@@ -47,4 +51,5 @@ export default {
   strToArrBuf,
   hexToArrBuf,
   base64ToArrBuf,
+  publicExponent
 }

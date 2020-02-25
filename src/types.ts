@@ -8,7 +8,7 @@ export interface Config {
   type: 'ecc' | 'rsa'
   curve: ECC_Curve
   rsaSize: RSA_Size
-  symmAlg: 'AES-CTR' | 'AES-GCM' | 'AES-CBC'
+  symmAlg: SymmAlg
   hashAlg: HashAlg
   readKeyName: string
   writeKeyName: string
@@ -18,7 +18,7 @@ export interface PartialConfig {
   type?: 'ecc' | 'rsa'
   curve?: ECC_Curve
   rsaSize?: RSA_Size
-  symmAlg?: 'AES-CTR' | 'AES-GCM' | 'AES-CBC'
+  symmAlg?: SymmAlg
   hashAlg?: HashAlg
   readKeyName?: string
   writeKeyName?: string

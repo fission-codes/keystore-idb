@@ -1,6 +1,8 @@
 import IDB from '../idb'
 import { RSA_READ_ALG, RSA_WRITE_ALG } from '../constants'
 import { RSA_Size, HashAlg, KeyUse } from '../types'
+import { publicExponent } from '../utils'
+import { checkValidKeyUse } from '../errors'
 
 export async function getKey(
   size: RSA_Size,
@@ -8,6 +10,7 @@ export async function getKey(
   keyName: string,
   use: KeyUse
 ): Promise<CryptoKeyPair> {
+  checkValidKeyUse(use)
   const maybeKey = await IDB.getKey(keyName)
   if (maybeKey) {
     return maybeKey
@@ -22,13 +25,14 @@ export async function makeKey(
   hashAlg: HashAlg,
   use: KeyUse
 ): Promise<CryptoKeyPair> {
+  checkValidKeyUse(use)
   const alg = use === KeyUse.Read ? RSA_READ_ALG : RSA_WRITE_ALG
   const uses = use === KeyUse.Read ? ['encrypt', 'decrypt'] : ['sign', 'verify']
   return window.crypto.subtle.generateKey(
     {
       name: alg,
       modulusLength: size,
-      publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+      publicExponent: publicExponent(),
       hash: { name: hashAlg }
     },
     false,

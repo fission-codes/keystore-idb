@@ -1,4 +1,4 @@
-import IDB from '../src/idb'
+import IDB from '../../src/idb'
 
 const sinon = require('sinon')
 

@@ -2,12 +2,13 @@ import ECCKeyStore from './ecc/keystore'
 import RSAKeyStore from './rsa/keystore'
 import config from './config'
 import IDB from './idb'
+import { ECCNotEnabled, UnsupportedCrypto } from './errors'
 import { PartialConfig, KeyStore } from './types'
 
 export async function init(maybeCfg?: PartialConfig): Promise<KeyStore>{
   const eccEnabled = await config.eccEnabled()
   if(!eccEnabled && maybeCfg?.type === 'ecc'){
-    throw new Error("ECC is not enabled for this browser. Please use RSA instead.")
+    throw ECCNotEnabled
   }
   
   const cfg = config.normalize(maybeCfg, eccEnabled)
@@ -17,7 +18,7 @@ export async function init(maybeCfg?: PartialConfig): Promise<KeyStore>{
   }else if (cfg.type === 'rsa'){
     return RSAKeyStore.init(cfg)
   }else {
-    throw new Error("Cryptosystem not supported. Please use ECC or RSA")
+    throw UnsupportedCrypto
   }
 }
 

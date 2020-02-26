@@ -2,12 +2,9 @@ import rsa from '../src/rsa'
 import errors from '../src/errors'
 import utils from '../src/utils'
 import { KeyUse, RSA_Size, HashAlg } from '../src/types'
-import { cryptoMethod, mock } from './crypto-utils'
-import { idbMethod } from './idb-utils'
+import { mock, cryptoMethod, idbMethod } from './utils'
 
 const sinon = require('sinon')
-window.atob = require('atob')
-window.btoa = require('btoa')
 
 describe('rsa', () => {
 

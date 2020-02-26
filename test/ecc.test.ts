@@ -1,10 +1,8 @@
 import ecc from '../src/ecc'
 import errors from '../src/errors'
 import utils from '../src/utils'
-import IDB from '../src/idb'
 import { KeyUse, ECC_Curve, HashAlg, SymmAlg } from '../src/types'
-import { cryptoMethod, mock } from './crypto-utils'
-import { idbMethod } from './idb-utils'
+import { mock, cryptoMethod, idbMethod } from './utils'
 
 const sinon = require('sinon')
 

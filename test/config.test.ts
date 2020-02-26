@@ -1,6 +1,6 @@
 import config from '../src/config'
 import utils from '../src/utils'
-import { mock } from './crypto-utils'
+import { mock } from './utils'
 
 const sinon = require('sinon')
 

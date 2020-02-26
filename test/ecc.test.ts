@@ -1,8 +1,10 @@
 import ecc from '../src/ecc'
 import errors from '../src/errors'
 import utils from '../src/utils'
+import IDB from '../src/idb'
 import { KeyUse, ECC_Curve, HashAlg, SymmAlg } from '../src/types'
-import { cryptoMethod, mock } from './utils'
+import { cryptoMethod, mock } from './crypto-utils'
+import { idbMethod } from './idb-utils'
 
 const sinon = require('sinon')
 
@@ -43,6 +45,44 @@ describe('ecc', () => {
         error: errors.InvalidKeyUse
       }
     ]
+  })
+
+
+  describe('getKey', () => {
+    idbMethod({
+      desc: 'key does not exist',
+      req: () => ecc.getKey(ECC_Curve.P_256, 'read-key', KeyUse.Read),
+      expectedResponse: mock.keys,
+      fakeMakeResp: mock.keys,
+      putParams: [
+        'read-key',
+        mock.keys
+      ],
+      getParams: [
+        'read-key'
+      ],
+      makeParams: [
+        { name: 'ECDH', namedCurve: 'P-256' },
+        false,
+        ['deriveKey', 'deriveBits']
+      ],
+      putCount: 1,
+      getCount: 1,
+      makeCount: 1,
+    })
+
+    idbMethod({
+      desc: 'key does exist',
+      req: () => ecc.getKey(ECC_Curve.P_256, 'read-key', KeyUse.Read),
+      expectedResponse: mock.keys,
+      fakeGetResp: mock.keys,
+      getParams: [
+        'read-key'
+      ],
+      putCount: 0,
+      getCount: 1,
+      makeCount: 0,
+    })
   })
 
 

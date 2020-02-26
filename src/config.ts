@@ -9,6 +9,7 @@ import {
   DEFAULT_WRITE_KEY_NAME
 } from './constants'
 import { PartialConfig, Config, KeyUse } from './types'
+import utils from './utils'
 
 export const defaultConfig = {
   type: DEFAULT_CRYPTOSYSTEM,
@@ -44,23 +45,15 @@ export function normalize(
 export async function eccEnabled(): Promise<boolean> {
   const keypair = await ecc.makeKey(DEFAULT_ECC_CURVE, KeyUse.Read)
   try {
-    await structuralClone(keypair)
+    await utils.structuralClone(keypair)
   } catch (err) {
     return false
   }
   return true
 }
 
-async function structuralClone(obj: any) {
-  return new Promise(resolve => {
-    const { port1, port2 } = new MessageChannel()
-    port2.onmessage = ev => resolve(ev.data)
-    port1.postMessage(obj)
-  })
-}
-
 export default {
   defaultConfig,
   normalize,
-  eccEnabled
+  eccEnabled,
 }

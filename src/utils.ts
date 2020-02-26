@@ -44,6 +44,15 @@ export function publicExponent(): Uint8Array {
   return new Uint8Array([0x01, 0x00, 0x01])
 }
 
+/* istanbul ignore next */
+export async function structuralClone(obj: any) {
+  return new Promise(resolve => {
+    const { port1, port2 } = new MessageChannel()
+    port2.onmessage = ev => resolve(ev.data)
+    port1.postMessage(obj)
+  })
+}
+
 export default {
   arrBufToStr,
   arrBufToHex,
@@ -51,5 +60,6 @@ export default {
   strToArrBuf,
   hexToArrBuf,
   base64ToArrBuf,
-  publicExponent
+  publicExponent,
+  structuralClone
 }

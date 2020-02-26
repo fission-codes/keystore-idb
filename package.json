@@ -48,7 +48,8 @@
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "/test/"
+      "/test/",
+      "/src/idb"
     ],
     "coverageThreshold": {
       "global": {
@@ -66,7 +67,8 @@
         "crypto": {
           "subtle": {}
         }
-      }
+      },
+      "localForage": {}
     }
   },
   "prettier": {
@@ -103,5 +105,7 @@
     "typedoc": "^0.16.10",
     "typescript": "^3.8.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "localforage": "^1.7.3"
+  }
 }

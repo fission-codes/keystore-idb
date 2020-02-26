@@ -38,26 +38,28 @@ export class ECCKeyStore implements KeyStore {
   async verify(
     msg: string,
     sig: string,
-    publicKey: PublicKey,
+    publicKey: string,
     charSize: CharSize = 16
   ): Promise<boolean> {
+    const pubkey = await operations.importPublicReadKey(publicKey, this.cfg.curve)
     return operations.verifyBytes(
       utils.strToArrBuf(msg, charSize),
       utils.base64ToArrBuf(sig),
-      publicKey,
+      pubkey,
       this.cfg.hashAlg
     )
   }
 
   async encrypt(
     msg: string,
-    publicKey: PublicKey,
+    publicKey: string,
     charSize: CharSize = 16
   ): Promise<string> {
+    const pubkey = await operations.importPublicReadKey(publicKey, this.cfg.curve)
     const cipherText = await operations.encryptBytes(
       utils.strToArrBuf(msg, charSize),
       this.readKey.privateKey,
-      publicKey,
+      pubkey,
       this.cfg.symmAlg
     )
     return utils.arrBufToBase64(cipherText)
@@ -65,13 +67,14 @@ export class ECCKeyStore implements KeyStore {
 
   async decrypt(
     cipherText: string,
-    publicKey: PublicKey,
+    publicKey: string,
     charSize: CharSize = 16
   ): Promise<String> {
+    const pubkey = await operations.importPublicReadKey(publicKey, this.cfg.curve)
     const msgBytes = await operations.decryptBytes(
       utils.base64ToArrBuf(cipherText),
       this.readKey.privateKey,
-      publicKey,
+      pubkey,
       this.cfg.symmAlg
     )
     return utils.arrBufToStr(msgBytes, charSize)

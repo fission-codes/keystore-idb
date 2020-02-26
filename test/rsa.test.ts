@@ -179,4 +179,28 @@ describe('rsa', () => {
     shouldThrows: []
   })
 
+
+  cryptoMethod({
+    desc: 'importPublicReadKey',
+    setMock: fake => window.crypto.subtle.importKey = fake,
+    mockResp: mock.keys.publicKey,
+    expectedResp: mock.keys.publicKey,
+    simpleReq: () => rsa.importPublicReadKey(mock.publicKeyBase64, HashAlg.SHA_256),
+    simpleParams: [
+      'spki',
+      utils.base64ToArrBuf(mock.publicKeyBase64),
+      { name: 'RSA-OAEP', hash: {name: 'SHA-256'}},
+      true,
+      ['encrypt', 'decrytpt']
+    ],
+    paramChecks: [
+      {
+        desc: 'handles multiple hash algs',
+        req: () => rsa.importPublicReadKey(mock.publicKeyBase64, HashAlg.SHA_512),
+        params: (params: any) => params[2]?.hash?.name === 'SHA-512'
+      }
+    ],
+    shouldThrows: []
+  })
+
 })

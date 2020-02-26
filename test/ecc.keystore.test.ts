@@ -50,95 +50,146 @@ describe("ECCKeyStore", () => {
   keystoreMethod({
     desc: 'sign',
     type: 'ecc',
-    mockModule: operations,
-    mockMethod: 'signBytes', 
-    mockResp: mock.signature,
+    mocks: [
+      {
+        mod: operations,
+        meth: 'signBytes', 
+        resp: mock.signature,
+        params: [
+          mock.msgBytes,
+          mock.writeKeys.privateKey,
+          config.defaultConfig.hashAlg
+        ]
+      }
+    ],
     reqFn: (ks) => ks.sign(mock.msgStr),
     expectedResp: mock.signatureStr,
-    expectedParams: [
-      mock.msgBytes,
-      mock.writeKeys.privateKey,
-      config.defaultConfig.hashAlg
-    ]
   })
 
 
   keystoreMethod({
     desc: 'verify',
     type: 'ecc',
-    mockModule: operations,
-    mockMethod: 'verifyBytes', 
-    mockResp: true,
-    reqFn: (ks) => ks.verify(mock.msgStr, mock.signatureStr, mock.writeKeys.publicKey),
+    mocks: [
+      {
+        mod: operations,
+        meth: 'verifyBytes', 
+        resp: true,
+        params: [
+          mock.msgBytes,
+          mock.signature,
+          mock.writeKeys.publicKey,
+          config.defaultConfig.hashAlg
+        ]
+      },
+      {
+        mod: operations,
+        meth: 'importPublicReadKey',
+        resp: mock.writeKeys.publicKey,
+        params: [
+          mock.publicKeyHex,
+          config.defaultConfig.curve
+        ]
+      }
+    ],
+    reqFn: (ks) => ks.verify(mock.msgStr, mock.signatureStr, mock.publicKeyHex),
     expectedResp: true,
-    expectedParams: [
-      mock.msgBytes,
-      mock.signature,
-      mock.writeKeys.publicKey,
-      config.defaultConfig.hashAlg
-    ]
   })
 
 
   keystoreMethod({
     desc: 'encrypt',
     type: 'ecc',
-    mockModule: operations,
-    mockMethod: 'encryptBytes', 
-    mockResp: mock.cipherText,
-    reqFn: (ks) => ks.encrypt(mock.msgStr, mock.encryptForKey.publicKey),
+    mocks: [
+      {
+        mod: operations,
+        meth: 'encryptBytes', 
+        resp: mock.cipherText,
+        params: [
+          mock.msgBytes,
+          mock.keys.privateKey,
+          mock.encryptForKey.publicKey,
+          config.defaultConfig.symmAlg
+        ]
+      },
+      {
+        mod: operations,
+        meth: 'importPublicReadKey',
+        resp: mock.encryptForKey.publicKey,
+        params: [
+          mock.publicKeyHex,
+          config.defaultConfig.curve
+        ]
+      }
+    ],
+    reqFn: (ks) => ks.encrypt(mock.msgStr, mock.publicKeyHex),
     expectedResp: mock.cipherTextStr,
-    expectedParams: [
-      mock.msgBytes,
-      mock.keys.privateKey,
-      mock.encryptForKey.publicKey,
-      config.defaultConfig.symmAlg
-    ]
   })
 
 
   keystoreMethod({
     desc: 'decrypt',
     type: 'ecc',
-    mockModule: operations,
-    mockMethod: 'decryptBytes', 
-    mockResp: mock.msgBytes,
-    reqFn: (ks) => ks.decrypt(mock.cipherTextStr, mock.encryptForKey.publicKey),
+    mocks: [
+      {
+        mod: operations,
+        meth: 'decryptBytes', 
+        resp: mock.msgBytes,
+        params: [
+          mock.cipherText,
+          mock.keys.privateKey,
+          mock.encryptForKey.publicKey,
+          config.defaultConfig.symmAlg
+        ]
+      },
+      {
+        mod: operations,
+        meth: 'importPublicReadKey',
+        resp: mock.encryptForKey.publicKey,
+        params: [
+          mock.publicKeyHex,
+          config.defaultConfig.curve
+        ]
+      }
+    ],
+    reqFn: (ks) => ks.decrypt(mock.cipherTextStr, mock.publicKeyHex),
     expectedResp: mock.msgStr,
-    expectedParams: [
-      mock.cipherText,
-      mock.keys.privateKey,
-      mock.encryptForKey.publicKey,
-      config.defaultConfig.symmAlg
-    ]
   })
 
 
   keystoreMethod({
     desc: 'publicReadKey',
     type: 'ecc',
-    mockModule: operations,
-    mockMethod: 'getPublicKey', 
-    mockResp: mock.publicKeyHex,
+    mocks: [
+      {
+        mod: operations,
+        meth: 'getPublicKey', 
+        resp: mock.publicKeyHex,
+        params: [
+          mock.keys
+        ]
+      }
+    ],
     reqFn: (ks) => ks.publicReadKey(),
     expectedResp: mock.publicKeyHex,
-    expectedParams: [
-      mock.keys
-    ]
   })
 
 
   keystoreMethod({
     desc: 'publicWriteKey',
     type: 'ecc',
-    mockModule: operations,
-    mockMethod: 'getPublicKey', 
-    mockResp: mock.publicKeyHex,
+    mocks: [
+      {
+        mod: operations,
+        meth: 'getPublicKey', 
+        resp: mock.publicKeyHex,
+        params: [
+          mock.writeKeys
+        ]
+      }
+    ],
     reqFn: (ks) => ks.publicWriteKey(),
     expectedResp: mock.publicKeyHex,
-    expectedParams: [
-      mock.writeKeys
-    ]
   })
 
 })

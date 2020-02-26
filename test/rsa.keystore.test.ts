@@ -52,89 +52,131 @@ describe("RSAKeyStore", () => {
   keystoreMethod({
     desc: 'sign',
     type: 'rsa',
-    mockModule: operations,
-    mockMethod: 'signBytes', 
-    mockResp: mock.signature,
+    mocks: [
+      {
+        mod: operations,
+        meth: 'signBytes', 
+        resp: mock.signature,
+        params: [
+          mock.msgBytes,
+          mock.writeKeys.privateKey,
+        ]
+      }
+    ],
     reqFn: (ks) => ks.sign(mock.msgStr),
     expectedResp: mock.signatureStr,
-    expectedParams: [
-      mock.msgBytes,
-      mock.writeKeys.privateKey,
-    ]
   })
 
 
   keystoreMethod({
     desc: 'verify',
     type: 'rsa',
-    mockModule: operations,
-    mockMethod: 'verifyBytes', 
-    mockResp: true,
-    reqFn: (ks) => ks.verify(mock.msgStr, mock.signatureStr, mock.writeKeys.publicKey),
+    mocks: [
+      {
+        mod: operations,
+        meth: 'verifyBytes', 
+        resp: true,
+        params: [
+          mock.msgBytes,
+          mock.signature,
+          mock.writeKeys.publicKey,
+        ]
+      },
+      {
+        mod: operations,
+        meth: 'importPublicReadKey',
+        resp: mock.writeKeys.publicKey,
+        params: [
+          mock.publicKeyHex,
+          config.defaultConfig.hashAlg
+        ]
+      }
+    ],
+    reqFn: (ks) => ks.verify(mock.msgStr, mock.signatureStr, mock.publicKeyHex),
     expectedResp: true,
-    expectedParams: [
-      mock.msgBytes,
-      mock.signature,
-      mock.writeKeys.publicKey,
-    ]
   })
 
 
   keystoreMethod({
     desc: 'encrypt',
     type: 'rsa',
-    mockModule: operations,
-    mockMethod: 'encryptBytes', 
-    mockResp: mock.cipherText,
-    reqFn: (ks) => ks.encrypt(mock.msgStr, mock.encryptForKey.publicKey),
+    mocks: [
+      {
+        mod: operations,
+        meth: 'encryptBytes', 
+        resp: mock.cipherText,
+        params: [
+          mock.msgBytes,
+          mock.encryptForKey.publicKey,
+        ]
+      },
+      {
+        mod: operations,
+        meth: 'importPublicReadKey',
+        resp: mock.encryptForKey.publicKey,
+        params: [
+          mock.publicKeyHex,
+          config.defaultConfig.hashAlg
+        ]
+      }
+    ],
+    reqFn: (ks) => ks.encrypt(mock.msgStr, mock.publicKeyHex),
     expectedResp: mock.cipherTextStr,
-    expectedParams: [
-      mock.msgBytes,
-      mock.encryptForKey.publicKey,
-    ]
   })
 
 
   keystoreMethod({
     desc: 'decrypt',
     type: 'rsa',
-    mockModule: operations,
-    mockMethod: 'decryptBytes', 
-    mockResp: mock.msgBytes,
-    reqFn: (ks) => ks.decrypt(mock.cipherTextStr, mock.encryptForKey.publicKey),
+    mocks: [
+      {
+        mod: operations,
+        meth: 'decryptBytes', 
+        resp: mock.msgBytes,
+        params: [
+          mock.cipherText,
+          mock.keys.privateKey,
+        ]
+      },
+    ],
+    reqFn: (ks) => ks.decrypt(mock.cipherTextStr, mock.publicKeyHex),
     expectedResp: mock.msgStr,
-    expectedParams: [
-      mock.cipherText,
-      mock.keys.privateKey,
-    ]
   })
 
 
   keystoreMethod({
     desc: 'publicReadKey',
     type: 'rsa',
-    mockModule: operations,
-    mockMethod: 'getPublicKey', 
-    mockResp: mock.publicKeyHex,
+    mocks: [
+      {
+        mod: operations,
+        meth: 'getPublicKey', 
+        resp: mock.publicKeyHex,
+        params: [
+          mock.keys
+        ]
+      }
+    ],
     reqFn: (ks) => ks.publicReadKey(),
     expectedResp: mock.publicKeyHex,
-    expectedParams: [
-      mock.keys
-    ]
   })
 
 
   keystoreMethod({
     desc: 'publicWriteKey',
     type: 'rsa',
-    mockModule: operations,
-    mockMethod: 'getPublicKey', 
-    mockResp: mock.publicKeyHex,
+    mocks: [
+      {
+        mod: operations,
+        meth: 'getPublicKey', 
+        resp: mock.publicKeyHex,
+        params: [
+          mock.writeKeys
+        ]
+      }
+    ],
     reqFn: (ks) => ks.publicWriteKey(),
     expectedResp: mock.publicKeyHex,
-    expectedParams: [
-      mock.writeKeys
-    ]
   })
 
 })

@@ -42,31 +42,33 @@ export class RSAKeyStore implements KeyStore {
   async verify(
     msg: string,
     sig: string,
-    publicKey: PublicKey,
+    publicKey: string,
     charSize: CharSize = 16
   ): Promise<boolean> {
+    const pubkey = await operations.importPublicReadKey(publicKey, this.cfg.hashAlg)
     return operations.verifyBytes(
       utils.strToArrBuf(msg, charSize),
       utils.base64ToArrBuf(sig),
-      publicKey
+      pubkey
     )
   }
 
   async encrypt(
     msg: string,
-    publicKey: PublicKey,
+    publicKey: string,
     charSize: CharSize = 16
   ): Promise<string> {
+    const pubkey = await operations.importPublicReadKey(publicKey, this.cfg.hashAlg)
     const cipherText = await operations.encryptBytes(
       utils.strToArrBuf(msg, charSize),
-      publicKey
+      pubkey
     )
     return utils.arrBufToBase64(cipherText)
   }
 
   async decrypt(
     cipherText: string,
-    publicKey?: PublicKey, //unused param to
+    publicKey?: string, //unused param so that keystore interfaces match
     charSize: CharSize = 16
   ): Promise<String> {
     const msgBytes = await operations.decryptBytes(

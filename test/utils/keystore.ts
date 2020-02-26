@@ -6,38 +6,50 @@ import { mock } from './mock'
 
 const sinon = require('sinon')
 
+type Mock = {
+  mod: object
+  meth: string
+  resp: any
+  params: any
+}
+
 type KeystoreMethodOpts = {
   desc: string
   type: 'ecc' | 'rsa'
-  mockModule: object
-  mockMethod: string
-  mockResp: any
+  mocks: Mock[]
   reqFn: (ks: KeyStore) => Promise<any>
   expectedResp: any
-  expectedParams: any
+  // expectedParams: any
 }
 
 export const keystoreMethod = (opts: KeystoreMethodOpts) => {
   describe(opts.desc, () => {
-    let fake: sinon.SinonSpy
+    let fakes = [] as sinon.SinonSpy[]
     let response: any
 
     beforeAll(async () => {
       sinon.restore()
-      fake = sinon.fake.returns(new Promise(r => r(opts.mockResp)))
-      sinon.stub(opts.mockModule, opts.mockMethod).callsFake(fake)
+      opts.mocks.forEach(mock => {
+        const fake = sinon.fake.returns(new Promise(r => r(mock.resp)))
+        sinon.stub(mock.mod, mock.meth).callsFake(fake)
+        fakes.push(fake)
+      })
+      // fake = sinon.fake.returns(new Promise(r => r(opts.mockResp)))
+      // sinon.stub(opts.mockModule, opts.mockMethod).callsFake(fake)
       const ks = opts.type === 'ecc' ?
         new ECCKeyStore(mock.keys, mock.writeKeys, config.defaultConfig) :
         new RSAKeyStore(mock.keys, mock.writeKeys, config.defaultConfig)
       response = await opts.reqFn(ks)
     })
 
-    it('should call the library function once', () => {
-      expect(fake.callCount).toEqual(1)
-    })
+    opts.mocks.forEach((mock, i) => {
+      it(`should call ${mock.meth} once`, () => {
+        expect(fakes[i].callCount).toEqual(1)
+      })
 
-    it('should call the library function with the expected params', () => {
-      expect(fake.args[0]).toEqual(opts.expectedParams)
+      it(`should call the library function with the expected params`, () => {
+        expect(fakes[i].args[0]).toEqual(mock.params)
+      })
     })
 
     it('should return the expectedResp', () => {

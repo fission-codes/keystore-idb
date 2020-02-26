@@ -68,17 +68,17 @@ export interface KeyStore {
   verify(
     msg: string,
     sig: string,
-    publicKey: PublicKey,
+    publicKey: string,
     charSize?: CharSize
   ): Promise<boolean>
   encrypt(
     msg: string,
-    publicKey: PublicKey,
+    publicKey: string,
     charSize?: CharSize
   ): Promise<string>
   decrypt(
     cipherText: string,
-    publicKey: PublicKey,
+    publicKey: string,
     charSize?: CharSize
   ): Promise<String>
   publicReadKey(): Promise<string>

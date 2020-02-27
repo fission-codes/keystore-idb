@@ -207,8 +207,8 @@ describe('ecc', () => {
   cryptoMethod({
     desc: 'getPublicKey',
     setMock: fake => window.crypto.subtle.exportKey = fake,
-    mockResp: utils.hexToArrBuf(mock.publicKeyHex),
-    expectedResp: mock.publicKeyHex,
+    mockResp: utils.base64ToArrBuf(mock.publicKeyBase64),
+    expectedResp: mock.publicKeyBase64,
     simpleReq: () => ecc.getPublicKey(mock.keys),
     simpleParams: [
       'raw',
@@ -224,10 +224,10 @@ describe('ecc', () => {
     setMock: fake => window.crypto.subtle.importKey = fake,
     mockResp: mock.keys.publicKey,
     expectedResp: mock.keys.publicKey,
-    simpleReq: () => ecc.importPublicKey(mock.publicKeyHex, ECC_Curve.P_256, KeyUse.Read),
+    simpleReq: () => ecc.importPublicKey(mock.publicKeyBase64, ECC_Curve.P_256, KeyUse.Read),
     simpleParams: [
       'raw',
-      utils.hexToArrBuf(mock.publicKeyHex),
+      utils.base64ToArrBuf(mock.publicKeyBase64),
       { name: 'ECDH', namedCurve: 'P-256' },
       true,
       []
@@ -235,15 +235,15 @@ describe('ecc', () => {
     paramChecks: [
       {
         desc: 'handles multiple curves',
-        req: () => ecc.importPublicKey(mock.publicKeyHex, ECC_Curve.P_521, KeyUse.Read),
+        req: () => ecc.importPublicKey(mock.publicKeyBase64, ECC_Curve.P_521, KeyUse.Read),
         params: (params: any) => params[2]?.namedCurve === 'P-521'
       },
       {
         desc: 'handles write keys',
-        req: () => ecc.importPublicKey(mock.publicKeyHex, ECC_Curve.P_256, KeyUse.Write),
+        req: () => ecc.importPublicKey(mock.publicKeyBase64, ECC_Curve.P_256, KeyUse.Write),
         params: [
           'raw',
-          utils.hexToArrBuf(mock.publicKeyHex),
+          utils.base64ToArrBuf(mock.publicKeyBase64),
           { name: 'ECDSA', namedCurve: 'P-256' },
           true,
           ['verify']

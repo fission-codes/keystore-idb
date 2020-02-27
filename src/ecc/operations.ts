@@ -56,7 +56,7 @@ export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKe
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
   const raw = await window.crypto.subtle.exportKey('raw', keypair.publicKey)
-  return utils.arrBufToHex(raw)
+  return utils.arrBufToBase64(raw)
 }
 
 export default {

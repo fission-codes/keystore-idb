@@ -39,7 +39,7 @@ export async function importPublicKey(hexKey: string, curve: ECC_Curve, use: Key
   const alg = use === KeyUse.Read ? ECC_READ_ALG : ECC_WRITE_ALG
   const uses =
     use === KeyUse.Read ? [] : ['verify']
-  const buf = utils.hexToArrBuf(hexKey)
+  const buf = utils.base64ToArrBuf(hexKey)
   return window.crypto.subtle.importKey(
     'raw',
     buf,

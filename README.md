@@ -1,5 +1,6 @@
 # IndexedDB KeyStore
-
+  
+[![NPM](https://img.shields.io/npm/v/keystore-idb)](https://www.npmjs.com/package/keystore-idb)
 [![Build Status](https://travis-ci.org/fission-suite/keystore-idb.svg?branch=master)](https://travis-ci.org/fission-suite/PROJECTNAME)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/fission-suite/blob/master/LICENSE)
 [![Maintainability](https://api.codeclimate.com/v1/badges/44fb6a8a0cfd88bc41ef/maintainability)](https://codeclimate.com/github/fission-suite/PROJECTNAME/maintainability)

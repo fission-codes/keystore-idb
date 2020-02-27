@@ -1,6 +1,7 @@
 import IDB from '../idb'
+import utils from '../utils'
 import { ECC_READ_ALG, ECC_WRITE_ALG } from '../constants'
-import { ECC_Curve, KeyUse } from '../types'
+import { ECC_Curve, KeyUse, PublicKey } from '../types'
 import { checkValidKeyUse } from '../errors'
 
 export async function getKey(
@@ -33,7 +34,23 @@ export async function makeKey(
   )
 }
 
+export async function importPublicKey(hexKey: string, curve: ECC_Curve, use: KeyUse): Promise<PublicKey> {
+  checkValidKeyUse(use)
+  const alg = use === KeyUse.Read ? ECC_READ_ALG : ECC_WRITE_ALG
+  const uses =
+    use === KeyUse.Read ? [] : ['verify']
+  const buf = utils.hexToArrBuf(hexKey)
+  return window.crypto.subtle.importKey(
+    'raw',
+    buf,
+    { name: alg, namedCurve: curve },
+    true,
+    uses
+  )
+}
+
 export default {
   getKey,
-  makeKey
+  makeKey,
+  importPublicKey
 }

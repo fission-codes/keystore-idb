@@ -1,6 +1,6 @@
 import utils from '../utils'
 import { ECC_READ_ALG, ECC_WRITE_ALG } from '../constants'
-import { PrivateKey, PublicKey, HashAlg, SymmAlg, SymmKey, CipherText, ECC_Curve } from '../types'
+import { PrivateKey, PublicKey, HashAlg, SymmAlg, SymmKey, CipherText, ECC_Curve, KeyUse } from '../types'
 
 export async function signBytes(data: ArrayBuffer, privKey: PrivateKey, hashAlg: HashAlg): Promise<ArrayBuffer> {
   return window.crypto.subtle.sign(
@@ -59,23 +59,11 @@ export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
   return utils.arrBufToHex(raw)
 }
 
-export async function importPublicReadKey(hexKey: string, curve: ECC_Curve): Promise<PublicKey> {
-  const buf = utils.hexToArrBuf(hexKey)
-  return window.crypto.subtle.importKey(
-    'raw',
-    buf,
-    { name: ECC_READ_ALG, namedCurve: curve },
-    true,
-    ['deriveKey', 'deriveBits']
-  )
-}
-
 export default {
   signBytes,
   verifyBytes,
   getSharedKey,
   encryptBytes,
   decryptBytes,
-  getPublicKey,
-  importPublicReadKey
+  getPublicKey
 }

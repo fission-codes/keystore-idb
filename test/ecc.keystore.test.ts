@@ -83,12 +83,13 @@ describe("ECCKeyStore", () => {
         ]
       },
       {
-        mod: operations,
-        meth: 'importPublicReadKey',
+        mod: keys,
+        meth: 'importPublicKey',
         resp: mock.writeKeys.publicKey,
         params: [
           mock.publicKeyHex,
-          config.defaultConfig.curve
+          config.defaultConfig.curve,
+          KeyUse.Write
         ]
       }
     ],
@@ -113,12 +114,13 @@ describe("ECCKeyStore", () => {
         ]
       },
       {
-        mod: operations,
-        meth: 'importPublicReadKey',
+        mod: keys,
+        meth: 'importPublicKey',
         resp: mock.encryptForKey.publicKey,
         params: [
           mock.publicKeyHex,
-          config.defaultConfig.curve
+          config.defaultConfig.curve,
+          KeyUse.Read
         ]
       }
     ],
@@ -143,12 +145,13 @@ describe("ECCKeyStore", () => {
         ]
       },
       {
-        mod: operations,
-        meth: 'importPublicReadKey',
+        mod: keys,
+        meth: 'importPublicKey',
         resp: mock.encryptForKey.publicKey,
         params: [
           mock.publicKeyHex,
-          config.defaultConfig.curve
+          config.defaultConfig.curve,
+          KeyUse.Read
         ]
       }
     ],

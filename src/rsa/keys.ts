@@ -1,7 +1,7 @@
 import IDB from '../idb'
 import { RSA_READ_ALG, RSA_WRITE_ALG } from '../constants'
-import { RSA_Size, HashAlg, KeyUse } from '../types'
-import { publicExponent } from '../utils'
+import { RSA_Size, HashAlg, KeyUse, PublicKey } from '../types'
+import utils from '../utils'
 import { checkValidKeyUse } from '../errors'
 
 export async function getKey(
@@ -32,7 +32,7 @@ export async function makeKey(
     {
       name: alg,
       modulusLength: size,
-      publicExponent: publicExponent(),
+      publicExponent: utils.publicExponent(),
       hash: { name: hashAlg }
     },
     false,
@@ -40,7 +40,28 @@ export async function makeKey(
   )
 }
 
+export async function importPublicKey(hexKey: string, hashAlg: HashAlg, use: KeyUse): Promise<PublicKey> {
+  checkValidKeyUse(use)
+  const alg = use === KeyUse.Read ? RSA_READ_ALG : RSA_WRITE_ALG
+  const uses = use === KeyUse.Read ? ['encrypt'] : ['verify']
+  const buf = utils.base64ToArrBuf(stripKeyHeader(hexKey))
+  return window.crypto.subtle.importKey(
+    'spki',
+    buf,
+    { name: alg, hash: {name: hashAlg}},
+    true,
+    uses
+  )
+}
+
+function stripKeyHeader(hexKey: string): string{
+  return hexKey
+    .replace('-----BEGIN PUBLIC KEY-----\n', '')
+    .replace('\n-----END PUBLIC KEY-----', '')
+}
+
 export default {
   getKey,
-  makeKey
+  makeKey,
+  importPublicKey
 }

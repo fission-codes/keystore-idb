@@ -40,22 +40,10 @@ export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
   return `-----BEGIN PUBLIC KEY-----\n${utils.arrBufToBase64(spki)}\n-----END PUBLIC KEY-----`
 }
 
-export async function importPublicReadKey(hexKey: string, hashAlg: HashAlg): Promise<PublicKey> {
-  const buf = utils.base64ToArrBuf(hexKey)
-  return window.crypto.subtle.importKey(
-    'spki',
-    buf,
-    { name: RSA_READ_ALG, hash: {name: hashAlg}},
-    true,
-    ['encrypt', 'decrytpt']
-  )
-}
-
 export default {
   signBytes,
   verifyBytes,
   encryptBytes,
   decryptBytes,
   getPublicKey,
-  importPublicReadKey
 }

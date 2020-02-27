@@ -40,6 +40,17 @@ _Note: if you don't include a crypto "type" (`'ecc' | 'rsa'`), the library will 
   const ks1 = await KeyStore.init({ type: ALG, readKeyName: 'read-key-1', writeKeyName: 'write-key-1' })
   const ks2 = await KeyStore.init({ type: ALG, readKeyName: 'read-key-2', writeKeyName: 'write-key-2' })
 
+
+  const msg = "Incididunt id ullamco et do."
+  // read keys are write keys are separate because of the Web Crypto API
+  const readKey1 = await ks1.publicReadKey()
+  const writeKey1 = await ks1.publicWriteKey()
+  const readKey2 = await ks2.publicReadKey()
+  // these keys get exported as strings
+  console.log('readKey1: ', readKey1)
+  console.log('writeKey1: ', writeKey1)
+  console.log('readKey2: ', readKey2)
+
   const msg = "Incididunt id ullamco et do."
   const readKey1 = ks1.readKey
   const readKey2 = ks2.readKey
@@ -54,12 +65,6 @@ _Note: if you don't include a crypto "type" (`'ecc' | 'rsa'`), the library will 
   const decipher = await ks2.decrypt(cipher, readKey1.publicKey)
   console.log('cipher: ', cipher)
   console.log('decipher: ', decipher)
-
-  // read keys are write keys are separate because of the Web Crypto API
-  const readKey = await ks1.publicReadKey()
-  const writeKey = await ks1.publicWriteKey()
-  console.log('readKey: ', readKey)
-  console.log('writeKey: ', writeKey)
 ```
 
 ## Development

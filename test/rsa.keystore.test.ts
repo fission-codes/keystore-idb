@@ -83,12 +83,13 @@ describe("RSAKeyStore", () => {
         ]
       },
       {
-        mod: operations,
-        meth: 'importPublicReadKey',
+        mod: keys,
+        meth: 'importPublicKey',
         resp: mock.writeKeys.publicKey,
         params: [
           mock.publicKeyHex,
-          config.defaultConfig.hashAlg
+          config.defaultConfig.hashAlg,
+          KeyUse.Write
         ]
       }
     ],
@@ -111,12 +112,13 @@ describe("RSAKeyStore", () => {
         ]
       },
       {
-        mod: operations,
-        meth: 'importPublicReadKey',
+        mod: keys,
+        meth: 'importPublicKey',
         resp: mock.encryptForKey.publicKey,
         params: [
           mock.publicKeyHex,
-          config.defaultConfig.hashAlg
+          config.defaultConfig.hashAlg,
+          KeyUse.Read
         ]
       }
     ],

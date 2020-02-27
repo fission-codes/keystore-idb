@@ -224,22 +224,31 @@ describe('ecc', () => {
     setMock: fake => window.crypto.subtle.importKey = fake,
     mockResp: mock.keys.publicKey,
     expectedResp: mock.keys.publicKey,
-    simpleReq: () => ecc.importPublicReadKey(mock.publicKeyHex, ECC_Curve.P_256),
+    simpleReq: () => ecc.importPublicKey(mock.publicKeyHex, ECC_Curve.P_256, KeyUse.Read),
     simpleParams: [
       'raw',
       utils.hexToArrBuf(mock.publicKeyHex),
       { name: 'ECDH', namedCurve: 'P-256' },
       true,
-      ['deriveKey', 'deriveBits']
+      []
     ],
     paramChecks: [
       {
         desc: 'handles multiple curves',
-        req: () => ecc.importPublicReadKey(mock.publicKeyHex, ECC_Curve.P_521),
+        req: () => ecc.importPublicKey(mock.publicKeyHex, ECC_Curve.P_521, KeyUse.Read),
         params: (params: any) => params[2]?.namedCurve === 'P-521'
+      },
+      {
+        desc: 'handles write keys',
+        req: () => ecc.importPublicKey(mock.publicKeyHex, ECC_Curve.P_256, KeyUse.Write),
+        params: [
+          'raw',
+          utils.hexToArrBuf(mock.publicKeyHex),
+          { name: 'ECDSA', namedCurve: 'P-256' },
+          true,
+          ['verify']
+        ]
       }
-
-
     ],
     shouldThrows: []
   })

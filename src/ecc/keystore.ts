@@ -2,12 +2,12 @@ import keys from './keys'
 import operations from './operations'
 import config from '../config'
 import utils from '../utils'
-import { KeyStore, PartialConfig, Config, KeyUse, CharSize } from '../types'
+import { KeyStore, PartialConfig, Config, KeyUse, CharSize, CryptoSystem } from '../types'
 
 export async function init(maybeCfg?: PartialConfig): Promise<ECCKeyStore> {
   const cfg = config.normalize({
     ...(maybeCfg || {}),
-    type: 'ecc'
+    type: CryptoSystem.ECC
   })
   const { curve, readKeyName, writeKeyName } = cfg
   const readKey = await keys.getKey(curve, readKeyName, KeyUse.Read)

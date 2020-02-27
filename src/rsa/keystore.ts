@@ -2,12 +2,12 @@ import keys from './keys'
 import operations from './operations'
 import config from '../config'
 import utils from '../utils'
-import { KeyStore, PartialConfig, Config, KeyUse, CharSize } from '../types'
+import { KeyStore, PartialConfig, Config, KeyUse, CharSize, CryptoSystem } from '../types'
 
 export async function init(maybeCfg?: PartialConfig): Promise<RSAKeyStore> {
   const cfg = config.normalize({
     ...(maybeCfg || {}),
-    type: 'rsa'
+    type: CryptoSystem.RSA
   })
   const { rsaSize, hashAlg, readKeyName, writeKeyName } = cfg
   const readKey = await keys.getKey(rsaSize, hashAlg, readKeyName, KeyUse.Read)

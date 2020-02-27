@@ -19,7 +19,6 @@ type KeystoreMethodOpts = {
   mocks: Mock[]
   reqFn: (ks: KeyStore) => Promise<any>
   expectedResp: any
-  // expectedParams: any
 }
 
 export const keystoreMethod = (opts: KeystoreMethodOpts) => {
@@ -34,8 +33,6 @@ export const keystoreMethod = (opts: KeystoreMethodOpts) => {
         sinon.stub(mock.mod, mock.meth).callsFake(fake)
         fakes.push(fake)
       })
-      // fake = sinon.fake.returns(new Promise(r => r(opts.mockResp)))
-      // sinon.stub(opts.mockModule, opts.mockMethod).callsFake(fake)
       const ks = opts.type === 'ecc' ?
         new ECCKeyStore(mock.keys, mock.writeKeys, config.defaultConfig) :
         new RSAKeyStore(mock.keys, mock.writeKeys, config.defaultConfig)

@@ -2,7 +2,7 @@ import ECCKeyStore from './ecc/keystore'
 import RSAKeyStore from './rsa/keystore'
 import config from './config'
 import IDB from './idb'
-import { ECCNotEnabled, UnsupportedCrypto } from './errors'
+import { ECCNotEnabled, checkValidCryptoSystem } from './errors'
 import { PartialConfig, KeyStore } from './types'
 
 export async function init(maybeCfg?: PartialConfig): Promise<KeyStore>{
@@ -13,12 +13,12 @@ export async function init(maybeCfg?: PartialConfig): Promise<KeyStore>{
   
   const cfg = config.normalize(maybeCfg, eccEnabled)
 
+  checkValidCryptoSystem(cfg.type)
+
   if(cfg.type === 'ecc'){
     return ECCKeyStore.init(cfg)
-  }else if (cfg.type === 'rsa'){
-    return RSAKeyStore.init(cfg)
   }else {
-    throw UnsupportedCrypto
+    return RSAKeyStore.init(cfg)
   }
 }
 

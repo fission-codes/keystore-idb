@@ -2,7 +2,7 @@ import keystore, { ECCKeyStore } from '../src/ecc/keystore'
 import keys from '../src/ecc/keys'
 import operations from '../src/ecc/operations'
 import config from '../src/config'
-import { ECC_Curve, KeyUse } from '../src/types'
+import { ECC_Curve, KeyUse, CryptoSystem } from '../src/types'
 import { mock, keystoreMethod } from './utils'
 
 const sinon = require('sinon')
@@ -21,7 +21,7 @@ describe("ECCKeyStore", () => {
 
     it('should initialize a keystore with expected params', () => {
       let cfg = config.normalize({
-        type: 'ecc',
+        type: CryptoSystem.ECC,
         readKeyName: 'test-read',
         writeKeyName: 'test-write'
       })

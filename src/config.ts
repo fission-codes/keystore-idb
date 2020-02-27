@@ -8,7 +8,7 @@ import {
   DEFAULT_READ_KEY_NAME,
   DEFAULT_WRITE_KEY_NAME
 } from './constants'
-import { PartialConfig, Config, KeyUse } from './types'
+import { PartialConfig, Config, KeyUse, CryptoSystem } from './types'
 import utils from './utils'
 
 export const defaultConfig = {
@@ -35,7 +35,7 @@ export function normalize(
     }
   }
   if (!maybeCfg?.type) {
-    cfg.type = eccEnabled ? 'ecc' : 'rsa'
+    cfg.type = eccEnabled ? CryptoSystem.ECC : CryptoSystem.RSA
   }
   return cfg
 }

@@ -2,7 +2,7 @@ import keystore, { RSAKeyStore } from '../src/rsa/keystore'
 import keys from '../src/rsa/keys'
 import operations from '../src/rsa/operations'
 import config from '../src/config'
-import { KeyUse, RSA_Size, HashAlg } from '../src/types'
+import { KeyUse, RSA_Size, HashAlg, CryptoSystem } from '../src/types'
 import { mock, keystoreMethod } from './utils'
 
 const sinon = require('sinon')
@@ -21,7 +21,7 @@ describe("RSAKeyStore", () => {
 
     it('should initialize a keystore with expected params', () => {
       let cfg = config.normalize({
-        type: 'rsa',
+        type: CryptoSystem.RSA,
         readKeyName: 'test-read',
         writeKeyName: 'test-write'
       })

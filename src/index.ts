@@ -11,11 +11,11 @@ import * as types from './types'
 export default {
   init,
   clear,
+  ...types,
+  ...constants,
+  ...config,
+  ...utils,
   ecc,
   rsa,
-  config,
-  constants,
-  utils,
   idb,
-  types,
 }

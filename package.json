@@ -1,6 +1,6 @@
 {
   "name": "keystore-idb",
-  "version": "0.2.3",
+  "version": "0.2.6",
   "description": "",
   "keywords": [],
   "main": "dist/index.umd.js",

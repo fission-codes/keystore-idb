@@ -85,7 +85,7 @@ export interface KeyStore {
     cipherText: string,
     publicKey: string,
     charSize?: CharSize
-  ): Promise<String>
+  ): Promise<string>
   publicReadKey(): Promise<string>
   publicWriteKey(): Promise<string>
 }

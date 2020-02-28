@@ -70,7 +70,7 @@ export class RSAKeyStore implements KeyStore {
     cipherText: string,
     publicKey?: string, //unused param so that keystore interfaces match
     charSize: CharSize = 16
-  ): Promise<String> {
+  ): Promise<string> {
     const msgBytes = await operations.decryptBytes(
       utils.base64ToArrBuf(cipherText),
       this.readKey.privateKey

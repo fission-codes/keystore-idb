@@ -69,7 +69,7 @@ export class ECCKeyStore implements KeyStore {
     cipherText: string,
     publicKey: string,
     charSize: CharSize = 16
-  ): Promise<String> {
+  ): Promise<string> {
     const pubkey = await keys.importPublicKey(publicKey, this.cfg.curve, KeyUse.Read)
     const msgBytes = await operations.decryptBytes(
       utils.base64ToArrBuf(cipherText),

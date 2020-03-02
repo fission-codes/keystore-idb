@@ -2,18 +2,10 @@ import keys from './keys'
 import operations from './operations'
 import config from '../config'
 import utils from '../utils'
-import { KeyStore, PartialConfig, Config, KeyUse, CharSize, CryptoSystem } from '../types'
+import KeyStoreBase from '../keystore/base'
+import { KeyStore, Config, KeyUse, CharSize, CryptoSystem } from '../types'
 
-export class ECCKeyStore implements KeyStore {
-  cfg: Config
-  readKey: CryptoKeyPair
-  writeKey: CryptoKeyPair
-
-  constructor(readKey: CryptoKeyPair, writeKey: CryptoKeyPair, cfg: Config) {
-    this.cfg = cfg
-    this.readKey = readKey
-    this.writeKey = writeKey
-  }
+export class ECCKeyStore extends KeyStoreBase implements KeyStore {
 
   async sign(msg: string, charSize: CharSize = 16): Promise<string> {
     const sigBytes = await operations.signBytes(
@@ -78,7 +70,7 @@ export class ECCKeyStore implements KeyStore {
   }
 }
 
-export async function init(maybeCfg?: PartialConfig): Promise<ECCKeyStore> {
+export async function init(maybeCfg?: Partial<Config>): Promise<ECCKeyStore> {
   const cfg = config.normalize({
     ...(maybeCfg || {}),
     type: CryptoSystem.ECC

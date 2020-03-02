@@ -8,7 +8,7 @@ import {
   DEFAULT_READ_KEY_NAME,
   DEFAULT_WRITE_KEY_NAME
 } from './constants'
-import { PartialConfig, Config, KeyUse, CryptoSystem } from './types'
+import { Config, KeyUse, CryptoSystem } from './types'
 import utils from './utils'
 
 export const defaultConfig = {
@@ -22,7 +22,7 @@ export const defaultConfig = {
 } as Config
 
 export function normalize(
-  maybeCfg?: PartialConfig,
+  maybeCfg?: Partial<Config>,
   eccEnabled: boolean = true
 ): Config {
   let cfg

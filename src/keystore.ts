@@ -3,9 +3,9 @@ import RSAKeyStore from './rsa/keystore'
 import config from './config'
 import IDB from './idb'
 import { ECCNotEnabled, checkValidCryptoSystem } from './errors'
-import { PartialConfig, KeyStore } from './types'
+import { Config, KeyStore } from './types'
 
-export async function init(maybeCfg?: PartialConfig): Promise<KeyStore>{
+export async function init(maybeCfg?: Partial<Config>): Promise<KeyStore>{
   const eccEnabled = await config.eccEnabled()
   if(!eccEnabled && maybeCfg?.type === 'ecc'){
     throw ECCNotEnabled

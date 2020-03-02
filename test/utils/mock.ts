@@ -18,7 +18,6 @@ export const mock = {
     privateKey: { type: 'encrypt-priv' } as any 
   } as any,
   symmKey: { type: 'symm' } as any,
-  publicKeyHex: 'abcdef1234567890',
   publicKeyBase64: 'q83vEjRWeJA=',
   msgBytes: utils.strToArrBuf("test msg bytes", 16),
   msgStr: "test msg bytes",

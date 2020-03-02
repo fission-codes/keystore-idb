@@ -14,16 +14,6 @@ export interface Config {
   writeKeyName: string
 }
 
-export interface PartialConfig {
-  type?: CryptoSystem
-  curve?: EccCurve
-  rsaSize?: RsaSize
-  symmAlg?: SymmAlg
-  hashAlg?: HashAlg
-  readKeyName?: string
-  writeKeyName?: string
-}
-
 export enum CryptoSystem {
   ECC = 'ecc',
   RSA = 'rsa',

@@ -7,12 +7,6 @@ export function arrBufToStr(buf: ArrayBuffer, charSize: CharSize): string {
     .join('')
 }
 
-export function arrBufToHex(buf: ArrayBuffer): string {
-  return Array.from(new Uint8Array(buf))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('')
-}
-
 export function arrBufToBase64(buf: ArrayBuffer): string {
   const str = arrBufToStr(buf, 8)
   return window.btoa(str)
@@ -23,14 +17,6 @@ export function strToArrBuf(str: string, charSize: CharSize): ArrayBuffer {
     charSize === 8 ? new Uint8Array(str.length) : new Uint16Array(str.length)
   for (let i = 0, strLen = str.length; i < strLen; i++) {
     view[i] = str.charCodeAt(i)
-  }
-  return view.buffer
-}
-
-export function hexToArrBuf(hex: string): ArrayBuffer {
-  const view = new Uint8Array(hex.length / 2)
-  for (let i = 0, hexLen = hex.length; i < hexLen; i += 2) {
-    view[i / 2] = parseInt(hex.substring(i, i + 2), 16)
   }
   return view.buffer
 }
@@ -55,10 +41,8 @@ export async function structuralClone(obj: any) {
 
 export default {
   arrBufToStr,
-  arrBufToHex,
   arrBufToBase64,
   strToArrBuf,
-  hexToArrBuf,
   base64ToArrBuf,
   publicExponent,
   structuralClone

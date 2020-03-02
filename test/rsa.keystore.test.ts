@@ -2,7 +2,7 @@ import keystore, { RSAKeyStore } from '../src/rsa/keystore'
 import keys from '../src/rsa/keys'
 import operations from '../src/rsa/operations'
 import config from '../src/config'
-import { KeyUse, RSA_Size, HashAlg, CryptoSystem } from '../src/types'
+import { KeyUse, RsaSize, HashAlg, CryptoSystem } from '../src/types'
 import { mock, keystoreMethod } from './utils'
 
 const sinon = require('sinon')
@@ -31,7 +31,7 @@ describe("RSAKeyStore", () => {
 
     it('should call getKey with correct params (read key)', () => {
       expect(fakeGet.args[0]).toEqual([
-        RSA_Size.B2048,
+        RsaSize.B2048,
         HashAlg.SHA_256,
         'test-read',
         KeyUse.Read
@@ -40,7 +40,7 @@ describe("RSAKeyStore", () => {
 
     it('should call getKey with correct params (write key)', () => {
       expect(fakeGet.args[1]).toEqual([
-        RSA_Size.B2048,
+        RsaSize.B2048,
         HashAlg.SHA_256,
         'test-write',
         KeyUse.Write

@@ -4,22 +4,6 @@ import config from '../config'
 import utils from '../utils'
 import { KeyStore, PartialConfig, Config, KeyUse, CharSize, CryptoSystem } from '../types'
 
-export async function init(maybeCfg?: PartialConfig): Promise<RSAKeyStore> {
-  const cfg = config.normalize({
-    ...(maybeCfg || {}),
-    type: CryptoSystem.RSA
-  })
-  const { rsaSize, hashAlg, readKeyName, writeKeyName } = cfg
-  const readKey = await keys.getKey(rsaSize, hashAlg, readKeyName, KeyUse.Read)
-  const writeKey = await keys.getKey(
-    rsaSize,
-    hashAlg,
-    writeKeyName,
-    KeyUse.Write
-  )
-  return new RSAKeyStore(readKey, writeKey, cfg)
-}
-
 export class RSAKeyStore implements KeyStore {
   cfg: Config
   readKey: CryptoKeyPair
@@ -87,7 +71,23 @@ export class RSAKeyStore implements KeyStore {
   }
 }
 
+export async function init(maybeCfg?: PartialConfig): Promise<RSAKeyStore> {
+  const cfg = config.normalize({
+    ...(maybeCfg || {}),
+    type: CryptoSystem.RSA
+  })
+  const { rsaSize, hashAlg, readKeyName, writeKeyName } = cfg
+  const readKey = await keys.getKey(rsaSize, hashAlg, readKeyName, KeyUse.Read)
+  const writeKey = await keys.getKey(
+    rsaSize,
+    hashAlg,
+    writeKeyName,
+    KeyUse.Write
+  )
+  return new RSAKeyStore(readKey, writeKey, cfg)
+}
+
 export default {
+  RSAKeyStore,
   init,
-  RSAKeyStore
 }

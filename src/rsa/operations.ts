@@ -1,6 +1,6 @@
 import utils from '../utils'
 import { RSA_READ_ALG, RSA_WRITE_ALG, SALT_LENGTH } from '../constants'
-import { PrivateKey, PublicKey, CipherText, HashAlg } from '../types'
+import { PrivateKey, PublicKey, CipherText } from '../types'
 
 export async function signBytes(data: ArrayBuffer, privKey: PrivateKey): Promise<ArrayBuffer> {
   return window.crypto.subtle.sign(

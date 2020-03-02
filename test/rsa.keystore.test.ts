@@ -87,13 +87,13 @@ describe("RSAKeyStore", () => {
         meth: 'importPublicKey',
         resp: mock.writeKeys.publicKey,
         params: [
-          mock.publicKeyHex,
+          mock.publicKeyBase64,
           config.defaultConfig.hashAlg,
           KeyUse.Write
         ]
       }
     ],
-    reqFn: (ks) => ks.verify(mock.msgStr, mock.signatureStr, mock.publicKeyHex),
+    reqFn: (ks) => ks.verify(mock.msgStr, mock.signatureStr, mock.publicKeyBase64),
     expectedResp: true,
   })
 
@@ -116,13 +116,13 @@ describe("RSAKeyStore", () => {
         meth: 'importPublicKey',
         resp: mock.encryptForKey.publicKey,
         params: [
-          mock.publicKeyHex,
+          mock.publicKeyBase64,
           config.defaultConfig.hashAlg,
           KeyUse.Read
         ]
       }
     ],
-    reqFn: (ks) => ks.encrypt(mock.msgStr, mock.publicKeyHex),
+    reqFn: (ks) => ks.encrypt(mock.msgStr, mock.publicKeyBase64),
     expectedResp: mock.cipherTextStr,
   })
 
@@ -141,7 +141,7 @@ describe("RSAKeyStore", () => {
         ]
       },
     ],
-    reqFn: (ks) => ks.decrypt(mock.cipherTextStr, mock.publicKeyHex),
+    reqFn: (ks) => ks.decrypt(mock.cipherTextStr, mock.publicKeyBase64),
     expectedResp: mock.msgStr,
   })
 
@@ -153,14 +153,14 @@ describe("RSAKeyStore", () => {
       {
         mod: operations,
         meth: 'getPublicKey', 
-        resp: mock.publicKeyHex,
+        resp: mock.publicKeyBase64,
         params: [
           mock.keys
         ]
       }
     ],
     reqFn: (ks) => ks.publicReadKey(),
-    expectedResp: mock.publicKeyHex,
+    expectedResp: mock.publicKeyBase64,
   })
 
 
@@ -171,14 +171,14 @@ describe("RSAKeyStore", () => {
       {
         mod: operations,
         meth: 'getPublicKey', 
-        resp: mock.publicKeyHex,
+        resp: mock.publicKeyBase64,
         params: [
           mock.writeKeys
         ]
       }
     ],
     reqFn: (ks) => ks.publicWriteKey(),
-    expectedResp: mock.publicKeyHex,
+    expectedResp: mock.publicKeyBase64,
   })
 
 })

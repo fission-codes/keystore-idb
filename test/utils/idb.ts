@@ -1,32 +1,33 @@
 import IDB from '../../src/idb'
+import sinon from './sinon'
 
-const sinon = require('sinon')
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type IdbReqOpts = {
-  desc: string
-  req: () => Promise<any>
-  expectedResponse: any
-  fakePutResp?: sinon.SinonSpy
-  fakeGetResp?: sinon.SinonSpy
-  fakeMakeResp?: sinon.SinonSpy
-  putParams?: any
-  getParams?: any
-  makeParams?: any
-  putCount: number
-  getCount: number
-  makeCount: number
+  desc: string;
+  req: () => Promise<any>;
+  expectedResponse: any;
+  fakePutResp?: sinon.SinonSpy;
+  fakeGetResp?: sinon.SinonSpy;
+  fakeMakeResp?: sinon.SinonSpy;
+  putParams?: any;
+  getParams?: any;
+  makeParams?: any;
+  putCount: number;
+  getCount: number;
+  makeCount: number;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
-const pluralTimes = (times: number) => {
+const pluralTimes = (times: number): string => {
   return `${times} ${times === 1 ? 'time' : 'times'}`
 }
 
-export const idbMethod = (opts: IdbReqOpts) => {
+export const idbMethod = (opts: IdbReqOpts): void => {
   return describe(opts.desc, () => {
     let fakeMake: sinon.SinonSpy
     let fakePut: sinon.SinonSpy
     let fakeGet: sinon.SinonSpy
-    let response: any
+    let response: any // eslint-disable-line @typescript-eslint/no-explicit-any 
 
     beforeEach(async () => {
       fakePut = sinon.fake.returns(new Promise(r => r(opts.fakePutResp)))

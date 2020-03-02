@@ -6,8 +6,8 @@ export type PrivateKey = CryptoKey
 
 export interface Config {
   type: CryptoSystem
-  curve: ECC_Curve
-  rsaSize: RSA_Size
+  curve: EccCurve
+  rsaSize: RsaSize
   symmAlg: SymmAlg
   hashAlg: HashAlg
   readKeyName: string
@@ -16,8 +16,8 @@ export interface Config {
 
 export interface PartialConfig {
   type?: CryptoSystem
-  curve?: ECC_Curve
-  rsaSize?: RSA_Size
+  curve?: EccCurve
+  rsaSize?: RsaSize
   symmAlg?: SymmAlg
   hashAlg?: HashAlg
   readKeyName?: string
@@ -29,13 +29,13 @@ export enum CryptoSystem {
   RSA = 'rsa',
 }
 
-export enum ECC_Curve {
+export enum EccCurve {
   P_256 = 'P-256',
   P_384 = 'P-384',
   P_521 = 'P-521',
 }
 
-export enum RSA_Size { 
+export enum RsaSize { 
   B1024 = 1024,
   B2048 = 2048,
   B4096 = 4096

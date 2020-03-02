@@ -1,6 +1,6 @@
 import utils from '../utils'
 import { ECC_READ_ALG, ECC_WRITE_ALG } from '../constants'
-import { PrivateKey, PublicKey, HashAlg, SymmAlg, SymmKey, CipherText, ECC_Curve, KeyUse } from '../types'
+import { PrivateKey, PublicKey, HashAlg, SymmAlg, SymmKey, CipherText } from '../types'
 
 export async function signBytes(data: ArrayBuffer, privKey: PrivateKey, hashAlg: HashAlg): Promise<ArrayBuffer> {
   return window.crypto.subtle.sign(

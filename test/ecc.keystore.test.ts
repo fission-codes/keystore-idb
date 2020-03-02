@@ -2,7 +2,7 @@ import keystore, { ECCKeyStore } from '../src/ecc/keystore'
 import keys from '../src/ecc/keys'
 import operations from '../src/ecc/operations'
 import config from '../src/config'
-import { ECC_Curve, KeyUse, CryptoSystem } from '../src/types'
+import { EccCurve, KeyUse, CryptoSystem } from '../src/types'
 import { mock, keystoreMethod } from './utils'
 
 const sinon = require('sinon')
@@ -31,7 +31,7 @@ describe("ECCKeyStore", () => {
 
     it('should call getKey with correct params (read key)', () => {
       expect(fakeGet.args[0]).toEqual([
-        ECC_Curve.P_256,
+        EccCurve.P_256,
         'test-read',
         KeyUse.Read
       ])
@@ -39,7 +39,7 @@ describe("ECCKeyStore", () => {
 
     it('should call getKey with correct params (write key)', () => {
       expect(fakeGet.args[1]).toEqual([
-        ECC_Curve.P_256,
+        EccCurve.P_256,
         'test-write',
         KeyUse.Write
       ])

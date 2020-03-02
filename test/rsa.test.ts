@@ -1,7 +1,7 @@
 import rsa from '../src/rsa'
 import errors from '../src/errors'
 import utils from '../src/utils'
-import { KeyUse, RSA_Size, HashAlg } from '../src/types'
+import { KeyUse, RsaSize, HashAlg } from '../src/types'
 import { mock, cryptoMethod, idbMethod } from './utils'
 
 const sinon = require('sinon')
@@ -14,7 +14,7 @@ describe('rsa', () => {
     desc: 'makeKey',
     setMock: fake => window.crypto.subtle.generateKey = fake,
     mockResp: mock.keys,
-    simpleReq: () => rsa.makeKey(RSA_Size.B2048, HashAlg.SHA_256, KeyUse.Read),
+    simpleReq: () => rsa.makeKey(RsaSize.B2048, HashAlg.SHA_256, KeyUse.Read),
     simpleParams: [
       {
         name: 'RSA-OAEP',
@@ -28,7 +28,7 @@ describe('rsa', () => {
     paramChecks: [
       {
         desc: 'handles write keys',
-        req: () => rsa.makeKey(RSA_Size.B2048, HashAlg.SHA_256, KeyUse.Write),
+        req: () => rsa.makeKey(RsaSize.B2048, HashAlg.SHA_256, KeyUse.Write),
         params: [
           {
             name: 'RSA-PSS',
@@ -42,19 +42,19 @@ describe('rsa', () => {
       },
       {
         desc: 'handles multiple key sizes',
-        req: () => rsa.makeKey(RSA_Size.B4096, HashAlg.SHA_256, KeyUse.Write),
+        req: () => rsa.makeKey(RsaSize.B4096, HashAlg.SHA_256, KeyUse.Write),
         params: (params: any) => params[0]?.modulusLength === 4096
       },
       {
         desc: 'handles multiple hash algorithms',
-        req: () => rsa.makeKey(RSA_Size.B2048, HashAlg.SHA_512, KeyUse.Write),
+        req: () => rsa.makeKey(RsaSize.B2048, HashAlg.SHA_512, KeyUse.Write),
         params: (params: any) => params[0]?.hash?.name === 'SHA-512'
       }
     ],
     shouldThrows: [
       {
         desc: 'throws an error when passing in an invalid use',
-        req: () => rsa.makeKey(RSA_Size.B2048, HashAlg.SHA_256, 'signature' as any),
+        req: () => rsa.makeKey(RsaSize.B2048, HashAlg.SHA_256, 'signature' as any),
         error: errors.InvalidKeyUse
       }
     ]
@@ -64,7 +64,7 @@ describe('rsa', () => {
   describe('getKey', () => {
     idbMethod({
       desc: 'key does not exist',
-      req: () => rsa.getKey(RSA_Size.B2048, HashAlg.SHA_256, 'read-key', KeyUse.Read),
+      req: () => rsa.getKey(RsaSize.B2048, HashAlg.SHA_256, 'read-key', KeyUse.Read),
       expectedResponse: mock.keys,
       fakeMakeResp: mock.keys,
       putParams: [
@@ -91,7 +91,7 @@ describe('rsa', () => {
 
     idbMethod({
       desc: 'key does exist',
-      req: () => rsa.getKey(RSA_Size.B2048, HashAlg.SHA_256, 'read-key', KeyUse.Read),
+      req: () => rsa.getKey(RsaSize.B2048, HashAlg.SHA_256, 'read-key', KeyUse.Read),
       expectedResponse: mock.keys,
       fakeGetResp: mock.keys,
       getParams: [

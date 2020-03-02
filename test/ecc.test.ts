@@ -1,7 +1,7 @@
 import ecc from '../src/ecc'
 import errors from '../src/errors'
 import utils from '../src/utils'
-import { KeyUse, ECC_Curve, HashAlg, SymmAlg } from '../src/types'
+import { KeyUse, EccCurve, HashAlg, SymmAlg } from '../src/types'
 import { mock, cryptoMethod, idbMethod } from './utils'
 
 const sinon = require('sinon')
@@ -14,7 +14,7 @@ describe('ecc', () => {
     desc: 'makeKey',
     setMock: fake => window.crypto.subtle.generateKey = fake,
     mockResp: mock.keys,
-    simpleReq: () => ecc.makeKey(ECC_Curve.P_256, KeyUse.Read),
+    simpleReq: () => ecc.makeKey(EccCurve.P_256, KeyUse.Read),
     simpleParams: [
       { name: 'ECDH', namedCurve: 'P-256' },
       false,
@@ -23,12 +23,12 @@ describe('ecc', () => {
     paramChecks: [
       {
         desc: 'handles multiple key algorithms',
-        req: () => ecc.makeKey(ECC_Curve.P_521, KeyUse.Read),
+        req: () => ecc.makeKey(EccCurve.P_521, KeyUse.Read),
         params: (params: any) => params[0]?.namedCurve === 'P-521'
       },
       {
         desc: 'handles write keys',
-        req: () => ecc.makeKey(ECC_Curve.P_256, KeyUse.Write),
+        req: () => ecc.makeKey(EccCurve.P_256, KeyUse.Write),
         params: [
           { name: 'ECDSA', namedCurve: 'P-256' },
           false,
@@ -39,7 +39,7 @@ describe('ecc', () => {
     shouldThrows: [
       {
         desc: 'throws an error when passing in an invalid use',
-        req: () => ecc.makeKey(ECC_Curve.P_256, 'signature' as any),
+        req: () => ecc.makeKey(EccCurve.P_256, 'signature' as any),
         error: errors.InvalidKeyUse
       }
     ]
@@ -49,7 +49,7 @@ describe('ecc', () => {
   describe('getKey', () => {
     idbMethod({
       desc: 'key does not exist',
-      req: () => ecc.getKey(ECC_Curve.P_256, 'read-key', KeyUse.Read),
+      req: () => ecc.getKey(EccCurve.P_256, 'read-key', KeyUse.Read),
       expectedResponse: mock.keys,
       fakeMakeResp: mock.keys,
       putParams: [
@@ -71,7 +71,7 @@ describe('ecc', () => {
 
     idbMethod({
       desc: 'key does exist',
-      req: () => ecc.getKey(ECC_Curve.P_256, 'read-key', KeyUse.Read),
+      req: () => ecc.getKey(EccCurve.P_256, 'read-key', KeyUse.Read),
       expectedResponse: mock.keys,
       fakeGetResp: mock.keys,
       getParams: [
@@ -224,7 +224,7 @@ describe('ecc', () => {
     setMock: fake => window.crypto.subtle.importKey = fake,
     mockResp: mock.keys.publicKey,
     expectedResp: mock.keys.publicKey,
-    simpleReq: () => ecc.importPublicKey(mock.publicKeyBase64, ECC_Curve.P_256, KeyUse.Read),
+    simpleReq: () => ecc.importPublicKey(mock.publicKeyBase64, EccCurve.P_256, KeyUse.Read),
     simpleParams: [
       'raw',
       utils.base64ToArrBuf(mock.publicKeyBase64),
@@ -235,12 +235,12 @@ describe('ecc', () => {
     paramChecks: [
       {
         desc: 'handles multiple curves',
-        req: () => ecc.importPublicKey(mock.publicKeyBase64, ECC_Curve.P_521, KeyUse.Read),
+        req: () => ecc.importPublicKey(mock.publicKeyBase64, EccCurve.P_521, KeyUse.Read),
         params: (params: any) => params[2]?.namedCurve === 'P-521'
       },
       {
         desc: 'handles write keys',
-        req: () => ecc.importPublicKey(mock.publicKeyBase64, ECC_Curve.P_256, KeyUse.Write),
+        req: () => ecc.importPublicKey(mock.publicKeyBase64, EccCurve.P_256, KeyUse.Write),
         params: [
           'raw',
           utils.base64ToArrBuf(mock.publicKeyBase64),

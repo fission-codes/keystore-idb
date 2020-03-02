@@ -3,6 +3,7 @@ import utils from '../../src/utils'
 window.atob = require('atob')
 window.btoa = require('btoa')
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const mock = {
   keys: {
     publicKey: { type: 'pub' } as any,
@@ -14,7 +15,7 @@ export const mock = {
   } as any,
   encryptForKey: {
     publicKey: { type: 'encrypt-pub' } as any,
-    privateKey: { type: 'encrypt-priv' } as any
+    privateKey: { type: 'encrypt-priv' } as any 
   } as any,
   symmKey: { type: 'symm' } as any,
   publicKeyHex: 'abcdef1234567890',
@@ -26,3 +27,4 @@ export const mock = {
   cipherText: utils.base64ToArrBuf("dGVzdCBlbmNyeXB0ZWQgYnl0ZXM="),
   cipherTextStr: "dGVzdCBlbmNyeXB0ZWQgYnl0ZXM="
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */

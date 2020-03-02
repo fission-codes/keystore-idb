@@ -1,4 +1,5 @@
 import config from '../src/config'
+import { CryptoSystem } from '../src/types'
 import utils from '../src/utils'
 import { mock } from './utils'
 
@@ -98,7 +99,7 @@ describe('config', () => {
 
 
     it('does not overwrite type if user defined', () => {
-      const cfg = config.normalize({type: 'rsa'}, true)
+      const cfg = config.normalize({type: CryptoSystem.RSA}, true)
       const modifiedDef = {
         ...config.defaultConfig,
         type: 'rsa'

@@ -3,6 +3,7 @@ import ecc from '../src/ecc'
 import rsa from '../src/rsa'
 import config from '../src/config'
 import errors from '../src/errors'
+import { CryptoSystem } from '../src/types'
 import IDB from '../src/idb'
 
 import { mock } from './utils'
@@ -31,7 +32,7 @@ describe('keystore', () => {
       })
 
       it('should instantiate an rsa keystore if specificed', async () => {
-        const resp = await KeyStore.init({ type: 'rsa' })
+        const resp = await KeyStore.init({ type: CryptoSystem.RSA })
         const rsaKeystore = await rsa.init()
         expect(resp).toStrictEqual(rsaKeystore)
       })
@@ -59,7 +60,7 @@ describe('keystore', () => {
       it('should throw an error if ecc is specified', async () => {
         let error
         try{
-          await KeyStore.init({ type: 'ecc' })
+          await KeyStore.init({ type: CryptoSystem.ECC })
         }catch(err){
           error = err
         }

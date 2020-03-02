@@ -3,28 +3,29 @@ import { RSAKeyStore } from '../../src/rsa/keystore'
 import config from '../../src/config'
 import { KeyStore } from '../../src/types'
 import { mock } from './mock'
+import sinon from './sinon'
 
-const sinon = require('sinon')
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type Mock = {
-  mod: object
-  meth: string
-  resp: any
-  params: any
+  mod: object;
+  meth: string;
+  resp: any;
+  params: any;
 }
 
 type KeystoreMethodOpts = {
-  desc: string
-  type: 'ecc' | 'rsa'
-  mocks: Mock[]
-  reqFn: (ks: KeyStore) => Promise<any>
-  expectedResp: any
+  desc: string;
+  type: 'ecc' | 'rsa';
+  mocks: Mock[];
+  reqFn: (ks: KeyStore) => Promise<any>;
+  expectedResp: any;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
-export const keystoreMethod = (opts: KeystoreMethodOpts) => {
+export const keystoreMethod = (opts: KeystoreMethodOpts): void => {
   describe(opts.desc, () => {
-    let fakes = [] as sinon.SinonSpy[]
-    let response: any
+    const fakes = [] as sinon.SinonSpy[]
+    let response: any // eslint-disable-line @typescript-eslint/no-explicit-any 
 
     beforeAll(async () => {
       sinon.restore()

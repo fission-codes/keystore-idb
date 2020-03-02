@@ -1,32 +1,34 @@
-const sinon = require('sinon')
+import sinon from './sinon'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type Req = () => Promise<any>
 type ParamCheckFn = (params: any) => boolean
 
 type ParamCheck = {
-  desc: string
-  req: Req
-  params: object | ParamCheckFn
+  desc: string;
+  req: Req;
+  params: object | ParamCheckFn;
 }
 
 type ShouldThrow = {
-  desc: string
-  req: Req
-  error: Error
+  desc: string;
+  req: Req;
+  error: Error;
 }
 
 type WebCryptoReqOpts = {
-  desc: string
-  setMock: (fake: sinon.SinonSpy) => void
-  mockResp: any
-  expectedResp?: any
-  simpleReq: Req
-  simpleParams: object
-  paramChecks: ParamCheck[]
-  shouldThrows: ShouldThrow[]
+  desc: string;
+  setMock: (fake: sinon.SinonSpy) => void;
+  mockResp: any;
+  expectedResp?: any;
+  simpleReq: Req;
+  simpleParams: object;
+  paramChecks: ParamCheck[];
+  shouldThrows: ShouldThrow[];
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
-export const cryptoMethod = (opts: WebCryptoReqOpts) => {
+export const cryptoMethod = (opts: WebCryptoReqOpts): void => {
   return describe(opts.desc, () => {
     let fake: sinon.SinonSpy
    

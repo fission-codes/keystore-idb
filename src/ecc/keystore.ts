@@ -3,7 +3,7 @@ import operations from './operations'
 import config from '../config'
 import utils from '../utils'
 import KeyStoreBase from '../keystore/base'
-import { KeyStore, PartialConfig, KeyUse, CharSize, CryptoSystem } from '../types'
+import { KeyStore, Config, KeyUse, CharSize, CryptoSystem } from '../types'
 
 export class ECCKeyStore extends KeyStoreBase implements KeyStore {
 
@@ -70,7 +70,7 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
   }
 }
 
-export async function init(maybeCfg?: PartialConfig): Promise<ECCKeyStore> {
+export async function init(maybeCfg?: Partial<Config>): Promise<ECCKeyStore> {
   const cfg = config.normalize({
     ...(maybeCfg || {}),
     type: CryptoSystem.ECC

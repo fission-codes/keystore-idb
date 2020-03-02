@@ -3,7 +3,7 @@ import operations from './operations'
 import config from '../config'
 import utils from '../utils'
 import KeyStoreBase from '../keystore/base'
-import { KeyStore, PartialConfig, KeyUse, CharSize, CryptoSystem } from '../types'
+import { KeyStore, Config, KeyUse, CharSize, CryptoSystem } from '../types'
 
 export class RSAKeyStore extends KeyStoreBase implements KeyStore {
 
@@ -63,7 +63,7 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
   }
 }
 
-export async function init(maybeCfg?: PartialConfig): Promise<RSAKeyStore> {
+export async function init(maybeCfg?: Partial<Config>): Promise<RSAKeyStore> {
   const cfg = config.normalize({
     ...(maybeCfg || {}),
     type: CryptoSystem.RSA

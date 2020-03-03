@@ -37,7 +37,7 @@ export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKe
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
   const spki = await window.crypto.subtle.exportKey('spki', keypair.publicKey)
-  return `-----BEGIN PUBLIC KEY-----\n${utils.arrBufToBase64(spki)}\n-----END PUBLIC KEY-----`
+  return utils.arrBufToBase64(spki)
 }
 
 export default {

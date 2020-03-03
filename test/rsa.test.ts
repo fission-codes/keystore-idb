@@ -169,7 +169,7 @@ describe('rsa', () => {
     desc: 'getPublicKey',
     setMock: fake => window.crypto.subtle.exportKey = fake,
     mockResp: utils.base64ToArrBuf(mock.publicKeyBase64),
-    expectedResp: `-----BEGIN PUBLIC KEY-----\n${mock.publicKeyBase64}\n-----END PUBLIC KEY-----`,
+    expectedResp: mock.publicKeyBase64,
     simpleReq: () => rsa.getPublicKey(mock.keys),
     simpleParams: [
       'spki',

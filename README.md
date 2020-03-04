@@ -85,4 +85,7 @@ yarn test
 
 # test w/ reloading
 yarn test:watch
+
+# publish (run this script instead of npm publish!)
+./publish.sh
 ```

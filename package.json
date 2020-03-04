@@ -1,6 +1,6 @@
 {
   "name": "keystore-idb",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "In-browser key management with IndexedDB and the Web Crypto API",
   "keywords": [],
   "main": "index.umd.js",
@@ -18,7 +18,7 @@
   "scripts": {
     "lint": "yarn eslint src/**/*.ts test/**/*.ts",
     "prebuild": "rimraf dist",
-    "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
+    "build": "tsc && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
     "start": "rollup -c rollup.config.ts -w",
     "test": "jest --coverage",
     "test:watch": "jest --coverage --watch",

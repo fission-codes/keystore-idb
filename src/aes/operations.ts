@@ -45,10 +45,10 @@ export async function encrypt(msg: string, key: string, opts?: Partial<SymmKeyOp
 }
 
 export async function decrypt(cipherText: string, key: string, opts?: Partial<SymmKeyOpts>): Promise<string> {
-  const buf = utils.strToArrBuf(cipherText, 16)
+  const buf = utils.base64ToArrBuf(cipherText)
   const cipherKey = await keys.importKey(key, opts)
   const msgBytes = await decryptBytes(buf, cipherKey, opts)
-  return utils.arrBufToBase64(msgBytes)
+  return utils.arrBufToStr(msgBytes, 16)
 }
 
 export async function exportKey(key: SymmKey): Promise<string> {

@@ -39,7 +39,7 @@ describe('ecc', () => {
     shouldThrows: [
       {
         desc: 'throws an error when passing in an invalid use',
-        req: () => ecc.makeKey(EccCurve.P_256, 'signature' as any),
+        req: () => ecc.makeKey(EccCurve.P_256, 'sigBytes' as any),
         error: errors.InvalidKeyUse
       }
     ]
@@ -85,9 +85,44 @@ describe('ecc', () => {
 
 
   cryptoMethod({
+    desc: 'importPublicReadKey',
+    setMock: fake => window.crypto.subtle.importKey = fake,
+    mockResp: mock.keys.publicKey,
+    expectedResp: mock.keys.publicKey,
+    simpleReq: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_256, KeyUse.Read),
+    simpleParams: [
+      'raw',
+      utils.base64ToArrBuf(mock.keyBase64),
+      { name: 'ECDH', namedCurve: 'P-256' },
+      true,
+      []
+    ],
+    paramChecks: [
+      {
+        desc: 'handles multiple curves',
+        req: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_521, KeyUse.Read),
+        params: (params: any) => params[2]?.namedCurve === 'P-521'
+      },
+      {
+        desc: 'handles write keys',
+        req: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_256, KeyUse.Write),
+        params: [
+          'raw',
+          utils.base64ToArrBuf(mock.keyBase64),
+          { name: 'ECDSA', namedCurve: 'P-256' },
+          true,
+          ['verify']
+        ]
+      }
+    ],
+    shouldThrows: []
+  })
+
+
+  cryptoMethod({
     desc: 'signBytes',
     setMock: fake => window.crypto.subtle.sign = fake,
-    mockResp: mock.signature,
+    mockResp: mock.sigBytes,
     simpleReq: () => ecc.signBytes(mock.msgBytes, mock.keys.privateKey, HashAlg.SHA_256),
     simpleParams: [
       { name: 'ECDSA', hash: {name: 'SHA-256' }},
@@ -109,17 +144,17 @@ describe('ecc', () => {
     desc: 'verifyBytes',
     setMock: fake => window.crypto.subtle.verify = fake,
     mockResp: true,
-    simpleReq: () => ecc.verifyBytes(mock.msgBytes, mock.signature, mock.keys.publicKey, HashAlg.SHA_256),
+    simpleReq: () => ecc.verifyBytes(mock.msgBytes, mock.sigBytes, mock.keys.publicKey, HashAlg.SHA_256),
     simpleParams: [
       { name: 'ECDSA', hash: {name: 'SHA-256' }},
       mock.keys.publicKey,
-      mock.signature,
+      mock.sigBytes,
       mock.msgBytes
     ],
     paramChecks: [
       {
         desc: 'handles multiple hash algorithms',
-        req: () => ecc.verifyBytes(mock.msgBytes, mock.signature, mock.keys.publicKey, HashAlg.SHA_512),
+        req: () => ecc.verifyBytes(mock.msgBytes, mock.sigBytes, mock.keys.publicKey, HashAlg.SHA_512),
         params: (params: any) => params[0]?.hash?.name === 'SHA-512'
       }
     ],
@@ -162,7 +197,7 @@ describe('ecc', () => {
       window.crypto.subtle.deriveKey = sinon.fake.returns(new Promise(r => r(mock.symmKey)))
       window.crypto.getRandomValues = sinon.fake.returns(new Promise(r => r()))
     },
-    mockResp: mock.cipherText,
+    mockResp: mock.cipherBytes,
     simpleReq: () => ecc.encryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey),
     simpleParams: [
       { name: 'AES-CTR',
@@ -179,14 +214,14 @@ describe('ecc', () => {
         params: (params: any) => params[0]?.name === 'AES-CBC'
       },
       {
-        desc: 'handles multiple symm key lengthy',
+        desc: 'handles multiple symm key lengths',
         req: () => ecc.encryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey, { length: SymmKeyLength.B256 }),
         params: (params: any) => params[0]?.length === 256
       },
       {
         desc: 'handles an IV with AES-CTR',
         req: () => ecc.encryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey, { iv: mock.iv }),
-        params: (params: any) => arrBufEq(params[0]?.counter, new Uint8Array(mock.iv))
+        params: (params: any) => arrBufEq(params[0]?.counter, mock.iv)
       },
       {
         desc: 'handles an IV with AES-CBC',
@@ -205,31 +240,31 @@ describe('ecc', () => {
       window.crypto.subtle.deriveKey = sinon.fake.returns(new Promise(r => r(mock.symmKey)))
     },
     mockResp: mock.msgBytes,
-    simpleReq: () => ecc.decryptBytes(mock.cipherTextWithIV, mock.keys.privateKey, mock.keys.publicKey),
+    simpleReq: () => ecc.decryptBytes(mock.cipherWithIVBytes, mock.keys.privateKey, mock.keys.publicKey),
     paramChecks: [
       {
         desc: 'correctly passes params with AES-CTR',
-        req: () => ecc.decryptBytes(mock.cipherTextWithIV, mock.keys.privateKey, mock.keys.publicKey),
+        req: () => ecc.decryptBytes(mock.cipherWithIVBytes, mock.keys.privateKey, mock.keys.publicKey),
         params: (params: any) => (
           params[0].name === 'AES-CTR'
           && params[0].length === 128 
           && arrBufEq(params[0].counter.buffer, mock.iv)
           && params[1] === mock.symmKey 
-          && arrBufEq(params[2], mock.cipherText)
+          && arrBufEq(params[2], mock.cipherBytes)
         )
       },
       {
         desc: 'correctly passes params with AES-CBC',
-        req: () => ecc.decryptBytes(mock.cipherTextWithIV, mock.keys.privateKey, mock.keys.publicKey, { alg: SymmAlg.AES_CBC }),
+        req: () => ecc.decryptBytes(mock.cipherWithIVBytes, mock.keys.privateKey, mock.keys.publicKey, { alg: SymmAlg.AES_CBC }),
         params: (params: any) => (
           params[0]?.name === 'AES-CBC'
           && arrBufEq(params[0].iv, mock.iv)
-          && arrBufEq(params[2], mock.cipherText)
+          && arrBufEq(params[2], mock.cipherBytes)
         )
       },
       {
         desc: 'handles multiple symm key lengths',
-        req: () => ecc.decryptBytes(mock.cipherTextWithIV, mock.keys.privateKey, mock.keys.publicKey, { length: SymmKeyLength.B256 }),
+        req: () => ecc.decryptBytes(mock.cipherWithIVBytes, mock.keys.privateKey, mock.keys.publicKey, { length: SymmKeyLength.B256 }),
         params: (params: any) => params[0]?.length === 256
       },
     ],
@@ -240,49 +275,14 @@ describe('ecc', () => {
   cryptoMethod({
     desc: 'getPublicKey',
     setMock: fake => window.crypto.subtle.exportKey = fake,
-    mockResp: utils.base64ToArrBuf(mock.publicKeyBase64),
-    expectedResp: mock.publicKeyBase64,
+    mockResp: utils.base64ToArrBuf(mock.keyBase64),
+    expectedResp: mock.keyBase64,
     simpleReq: () => ecc.getPublicKey(mock.keys),
     simpleParams: [
       'raw',
       mock.keys.publicKey
     ],
     paramChecks: [],
-    shouldThrows: []
-  })
-
-
-  cryptoMethod({
-    desc: 'importPublicReadKey',
-    setMock: fake => window.crypto.subtle.importKey = fake,
-    mockResp: mock.keys.publicKey,
-    expectedResp: mock.keys.publicKey,
-    simpleReq: () => ecc.importPublicKey(mock.publicKeyBase64, EccCurve.P_256, KeyUse.Read),
-    simpleParams: [
-      'raw',
-      utils.base64ToArrBuf(mock.publicKeyBase64),
-      { name: 'ECDH', namedCurve: 'P-256' },
-      true,
-      []
-    ],
-    paramChecks: [
-      {
-        desc: 'handles multiple curves',
-        req: () => ecc.importPublicKey(mock.publicKeyBase64, EccCurve.P_521, KeyUse.Read),
-        params: (params: any) => params[2]?.namedCurve === 'P-521'
-      },
-      {
-        desc: 'handles write keys',
-        req: () => ecc.importPublicKey(mock.publicKeyBase64, EccCurve.P_256, KeyUse.Write),
-        params: [
-          'raw',
-          utils.base64ToArrBuf(mock.publicKeyBase64),
-          { name: 'ECDSA', namedCurve: 'P-256' },
-          true,
-          ['verify']
-        ]
-      }
-    ],
     shouldThrows: []
   })
 

@@ -1,8 +1,8 @@
 import ecc from '../src/ecc'
 import errors from '../src/errors'
 import utils from '../src/utils'
-import { KeyUse, EccCurve, HashAlg, SymmAlg } from '../src/types'
-import { mock, cryptoMethod, idbMethod } from './utils'
+import { KeyUse, EccCurve, HashAlg, SymmAlg, SymmKeyLength } from '../src/types'
+import { mock, cryptoMethod, idbMethod, arrBufEq } from './utils'
 
 const sinon = require('sinon')
 
@@ -131,20 +131,25 @@ describe('ecc', () => {
     desc: 'getSharedKey',
     setMock: fake => window.crypto.subtle.deriveKey = fake,
     mockResp: mock.symmKey,
-    simpleReq: () => ecc.getSharedKey(mock.keys.privateKey, mock.keys.publicKey, SymmAlg.AES_CTR),
+    simpleReq: () => ecc.getSharedKey(mock.keys.privateKey, mock.keys.publicKey),
     simpleParams: [
       { name: 'ECDH', public: mock.keys.publicKey },
       mock.keys.privateKey,
-      { name: 'AES-CTR', length: 256 },
+      { name: 'AES-CTR', length: 128 },
       false,
       ['encrypt', 'decrypt']
     ],
     paramChecks: [
       {
         desc: 'handles multiple symm key algorithms',
-        req: () => ecc.getSharedKey(mock.keys.privateKey, mock.keys.publicKey, SymmAlg.AES_GCM),
-        params: (params: any) => params[2]?.name === 'AES-GCM'
+        req: () => ecc.getSharedKey(mock.keys.privateKey, mock.keys.publicKey, { alg: SymmAlg.AES_CBC }),
+        params: (params: any) => params[2]?.name === 'AES-CBC'
       },
+      {
+        desc: 'handles multiple symm key lengths',
+        req: () => ecc.getSharedKey(mock.keys.privateKey, mock.keys.publicKey, { length: SymmKeyLength.B256 }),
+        params: (params: any) => params[2]?.length === 256
+      }
     ],
     shouldThrows: []
   })
@@ -155,9 +160,10 @@ describe('ecc', () => {
     setMock: fake => {
       window.crypto.subtle.encrypt = fake
       window.crypto.subtle.deriveKey = sinon.fake.returns(new Promise(r => r(mock.symmKey)))
+      window.crypto.getRandomValues = sinon.fake.returns(new Promise(r => r()))
     },
     mockResp: mock.cipherText,
-    simpleReq: () => ecc.encryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey, SymmAlg.AES_CTR),
+    simpleReq: () => ecc.encryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey),
     simpleParams: [
       { name: 'AES-CTR',
         counter: new Uint8Array(16),
@@ -169,8 +175,23 @@ describe('ecc', () => {
     paramChecks: [
       {
         desc: 'handles multiple symm key algorithms',
-        req: () => ecc.encryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey, SymmAlg.AES_GCM),
-        params: (params: any) => params[0]?.name === 'AES-GCM'
+        req: () => ecc.encryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey, { alg: SymmAlg.AES_CBC }),
+        params: (params: any) => params[0]?.name === 'AES-CBC'
+      },
+      {
+        desc: 'handles multiple symm key lengthy',
+        req: () => ecc.encryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey, { length: SymmKeyLength.B256 }),
+        params: (params: any) => params[0]?.length === 256
+      },
+      {
+        desc: 'handles an IV with AES-CTR',
+        req: () => ecc.encryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey, { iv: mock.iv }),
+        params: (params: any) => arrBufEq(params[0]?.counter, new Uint8Array(mock.iv))
+      },
+      {
+        desc: 'handles an IV with AES-CBC',
+        req: () => ecc.encryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey, { alg: SymmAlg.AES_CBC, iv: mock.iv }),
+        params: (params: any) => params[0]?.iv === mock.iv
       }
     ],
     shouldThrows: []
@@ -184,21 +205,33 @@ describe('ecc', () => {
       window.crypto.subtle.deriveKey = sinon.fake.returns(new Promise(r => r(mock.symmKey)))
     },
     mockResp: mock.msgBytes,
-    simpleReq: () => ecc.decryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey, SymmAlg.AES_CTR),
-    simpleParams: [
-      { name: 'AES-CTR',
-        counter: new Uint8Array(16),
-        length: 128
-      },
-      mock.symmKey,
-      mock.cipherText
-    ],
+    simpleReq: () => ecc.decryptBytes(mock.cipherTextWithIV, mock.keys.privateKey, mock.keys.publicKey),
     paramChecks: [
       {
-        desc: 'handles multiple symm key algorithms',
-        req: () => ecc.decryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey, SymmAlg.AES_GCM),
-        params: (params: any) => params[0]?.name === 'AES-GCM'
-      }
+        desc: 'correctly passes params with AES-CTR',
+        req: () => ecc.decryptBytes(mock.cipherTextWithIV, mock.keys.privateKey, mock.keys.publicKey),
+        params: (params: any) => (
+          params[0].name === 'AES-CTR'
+          && params[0].length === 128 
+          && arrBufEq(params[0].counter.buffer, mock.iv)
+          && params[1] === mock.symmKey 
+          && arrBufEq(params[2], mock.cipherText)
+        )
+      },
+      {
+        desc: 'correctly passes params with AES-CBC',
+        req: () => ecc.decryptBytes(mock.cipherTextWithIV, mock.keys.privateKey, mock.keys.publicKey, { alg: SymmAlg.AES_CBC }),
+        params: (params: any) => (
+          params[0]?.name === 'AES-CBC'
+          && arrBufEq(params[0].iv, mock.iv)
+          && arrBufEq(params[2], mock.cipherText)
+        )
+      },
+      {
+        desc: 'handles multiple symm key lengths',
+        req: () => ecc.decryptBytes(mock.cipherTextWithIV, mock.keys.privateKey, mock.keys.publicKey, { length: SymmKeyLength.B256 }),
+        params: (params: any) => params[0]?.length === 256
+      },
     ],
     shouldThrows: []
   })

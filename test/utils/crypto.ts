@@ -22,7 +22,7 @@ type WebCryptoReqOpts = {
   mockResp: any;
   expectedResp?: any;
   simpleReq: Req;
-  simpleParams: object;
+  simpleParams?: object;
   paramChecks: ParamCheck[];
   shouldThrows: ShouldThrow[];
 }
@@ -51,10 +51,12 @@ export const cryptoMethod = (opts: WebCryptoReqOpts): void => {
       }
     })
 
-    it('correctly passes params', async () => {
-      await opts.simpleReq()
-      expect(fake.args[0]).toEqual(opts.simpleParams)
-    })
+    if(opts.simpleParams !== undefined){
+      it('correctly passes params', async () => {
+        await opts.simpleReq()
+        expect(fake.args[0]).toEqual(opts.simpleParams)
+      })
+    }
 
     opts.paramChecks.forEach(test => {
       it(test.desc, async () => {
@@ -81,4 +83,18 @@ export const cryptoMethod = (opts: WebCryptoReqOpts): void => {
     })
 
   })
+}
+
+export function arrBufEq(fstBuf: ArrayBuffer, sndBuf: ArrayBuffer): boolean {
+  const fst = new Uint8Array(fstBuf)
+  const snd = new Uint8Array(sndBuf)
+  if (fst.length !== snd.length) {
+    return false
+  }
+  for(let i=0; i<fst.length; i++) {
+    if(fst[i] !== snd[i]) {
+      return false
+    }
+  }
+  return true
 }

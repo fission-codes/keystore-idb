@@ -32,8 +32,7 @@ export async function getSharedKey(privateKey: PrivateKey, publicKey: PublicKey,
   )
 }
 
-export async function encryptBytes(data: ArrayBuffer, privateKey: PrivateKey, publicKey: PublicKey, opts?: Partial<SymmKeyOpts>): Promise<CipherText> {
-  const cipherKey = await getSharedKey(privateKey, publicKey, opts)
+export async function symmEncrypt(data: ArrayBuffer, key: SymmKey, opts?: Partial<SymmKeyOpts>): Promise<CipherText> {
   const alg = opts?.alg || DEFAULT_SYMM_ALG
   const iv = opts?.iv || utils.randomBuf(16)
   const cipherBuf = await window.crypto.subtle.encrypt(
@@ -44,14 +43,13 @@ export async function encryptBytes(data: ArrayBuffer, privateKey: PrivateKey, pu
       iv: alg === SymmAlg.AES_CTR ? undefined : iv,
       counter: alg === SymmAlg.AES_CTR ? new Uint8Array(iv) : undefined,
     },
-    cipherKey,
+    key,
     data
   )
   return utils.joinBufs(iv, cipherBuf)
 }
 
-export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKey, publicKey: PublicKey, opts?: Partial<SymmKeyOpts>): Promise<ArrayBuffer> {
-  const cipherKey = await getSharedKey(privateKey, publicKey, opts)
+export async function symmDecrypt(cipherText: CipherText, key: SymmKey, opts?: Partial<SymmKeyOpts>): Promise<ArrayBuffer> {
   const alg = opts?.alg || DEFAULT_SYMM_ALG
   const iv = cipherText.slice(0, 16)
   const cipherBytes = cipherText.slice(16)
@@ -62,10 +60,20 @@ export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKe
       iv: alg === SymmAlg.AES_CTR ? undefined : iv,
       counter: alg === SymmAlg.AES_CTR ? new Uint8Array(iv) : undefined,
     },
-    cipherKey,
+    key,
     cipherBytes
   )
   return msgBuff
+}
+
+export async function encryptBytes(data: ArrayBuffer, privateKey: PrivateKey, publicKey: PublicKey, opts?: Partial<SymmKeyOpts>): Promise<CipherText> {
+  const cipherKey = await getSharedKey(privateKey, publicKey, opts)
+  return symmEncrypt(data, cipherKey, opts)
+}
+
+export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKey, publicKey: PublicKey, opts?: Partial<SymmKeyOpts>): Promise<ArrayBuffer> {
+  const cipherKey = await getSharedKey(privateKey, publicKey, opts)
+  return symmDecrypt(cipherText, cipherKey, opts)
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
@@ -77,6 +85,8 @@ export default {
   signBytes,
   verifyBytes,
   getSharedKey,
+  symmDecrypt,
+  symmEncrypt,
   encryptBytes,
   decryptBytes,
   getPublicKey

@@ -4,7 +4,7 @@ export type SymmKey = CryptoKey
 export type PublicKey = CryptoKey
 export type PrivateKey = CryptoKey
 
-export interface Config {
+export type Config = {
   type: CryptoSystem
   curve: EccCurve
   rsaSize: RsaSize
@@ -12,6 +12,12 @@ export interface Config {
   hashAlg: HashAlg
   readKeyName: string
   writeKeyName: string
+}
+
+export type SymmKeyOpts = {
+  alg: SymmAlg
+  length: SymmKeyLength
+  iv: ArrayBuffer
 }
 
 export enum CryptoSystem {
@@ -37,6 +43,12 @@ export enum SymmAlg {
   AES_CBC = 'AES-CBC', 
 }
 
+export enum SymmKeyLength { 
+  B128 = 128,
+  B192 = 192,
+  B256 = 256,
+}
+
 export enum HashAlg { 
   SHA_1 = 'SHA-1',
   SHA_256 = 'SHA-256',
@@ -48,7 +60,6 @@ export enum CharSize {
   B8 = 8,
   B16 = 16,
 }
-
 
 export enum KeyUse {
   Read = 'read',

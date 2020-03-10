@@ -1,6 +1,6 @@
 {
   "name": "keystore-idb",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "In-browser key management with IndexedDB and the Web Crypto API",
   "keywords": [],
   "main": "index.umd.js",
@@ -57,7 +57,7 @@
       }
     },
     "collectCoverageFrom": [
-      "src/*.{js,ts}"
+      "src/**/*.{js,ts}"
     ],
     "globals": {
       "window": {

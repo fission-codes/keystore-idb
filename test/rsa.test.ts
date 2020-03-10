@@ -54,7 +54,7 @@ describe('rsa', () => {
     shouldThrows: [
       {
         desc: 'throws an error when passing in an invalid use',
-        req: () => rsa.makeKey(RsaSize.B2048, HashAlg.SHA_256, 'signature' as any),
+        req: () => rsa.makeKey(RsaSize.B2048, HashAlg.SHA_256, 'sigBytes' as any),
         error: errors.InvalidKeyUse
       }
     ]
@@ -105,9 +105,44 @@ describe('rsa', () => {
 
 
   cryptoMethod({
+    desc: 'importPublicReadKey',
+    setMock: fake => window.crypto.subtle.importKey = fake,
+    mockResp: mock.keys.publicKey,
+    expectedResp: mock.keys.publicKey,
+    simpleReq: () => rsa.importPublicKey(mock.keyBase64, HashAlg.SHA_256, KeyUse.Read),
+    simpleParams: [
+      'spki',
+      utils.base64ToArrBuf(mock.keyBase64),
+      { name: 'RSA-OAEP', hash: {name: 'SHA-256'}},
+      true,
+      ['encrypt']
+    ],
+    paramChecks: [
+      {
+        desc: 'handles multiple hash algs',
+        req: () => rsa.importPublicKey(mock.keyBase64, HashAlg.SHA_512, KeyUse.Read),
+        params: (params: any) => params[2]?.hash?.name === 'SHA-512'
+      },
+      {
+        desc: 'handles write keys',
+        req: () => rsa.importPublicKey(mock.keyBase64, HashAlg.SHA_256, KeyUse.Write),
+        params: [
+          'spki',
+          utils.base64ToArrBuf(mock.keyBase64),
+          { name: 'RSA-PSS', hash: {name: 'SHA-256'}},
+          true,
+          ['verify']
+        ]
+      }
+    ],
+    shouldThrows: []
+  })
+
+
+  cryptoMethod({
     desc: 'signBytes',
     setMock: fake => window.crypto.subtle.sign = fake,
-    mockResp: mock.signature,
+    mockResp: mock.sigBytes,
     simpleReq: () => rsa.signBytes(mock.msgBytes, mock.keys.privateKey),
     simpleParams: [
       { name: 'RSA-PSS', saltLength: 128},
@@ -123,11 +158,11 @@ describe('rsa', () => {
     desc: 'verifyBytes',
     setMock: fake => window.crypto.subtle.verify = fake,
     mockResp: true,
-    simpleReq: () => rsa.verifyBytes(mock.msgBytes, mock.signature, mock.keys.publicKey),
+    simpleReq: () => rsa.verifyBytes(mock.msgBytes, mock.sigBytes, mock.keys.publicKey),
     simpleParams: [
       { name: 'RSA-PSS', saltLength: 128},
       mock.keys.publicKey,
-      mock.signature,
+      mock.sigBytes,
       mock.msgBytes
     ],
     paramChecks: [],
@@ -138,7 +173,7 @@ describe('rsa', () => {
   cryptoMethod({
     desc: 'encryptBytes',
     setMock: fake => window.crypto.subtle.encrypt = fake,
-    mockResp: mock.cipherText,
+    mockResp: mock.cipherBytes,
     simpleReq: () => rsa.encryptBytes(mock.msgBytes, mock.keys.publicKey),
     simpleParams: [
       { name: 'RSA-OAEP' },
@@ -154,11 +189,11 @@ describe('rsa', () => {
     desc: 'decryptBytes',
     setMock: fake => window.crypto.subtle.decrypt = fake,
     mockResp: mock.msgBytes,
-    simpleReq: () => rsa.decryptBytes(mock.cipherText, mock.keys.privateKey),
+    simpleReq: () => rsa.decryptBytes(mock.cipherBytes, mock.keys.privateKey),
     simpleParams: [
       { name: 'RSA-OAEP' },
       mock.keys.privateKey,
-      mock.cipherText
+      mock.cipherBytes
     ],
     paramChecks: [],
     shouldThrows: []
@@ -168,49 +203,14 @@ describe('rsa', () => {
   cryptoMethod({
     desc: 'getPublicKey',
     setMock: fake => window.crypto.subtle.exportKey = fake,
-    mockResp: utils.base64ToArrBuf(mock.publicKeyBase64),
-    expectedResp: mock.publicKeyBase64,
+    mockResp: utils.base64ToArrBuf(mock.keyBase64),
+    expectedResp: mock.keyBase64,
     simpleReq: () => rsa.getPublicKey(mock.keys),
     simpleParams: [
       'spki',
       mock.keys.publicKey
     ],
     paramChecks: [],
-    shouldThrows: []
-  })
-
-
-  cryptoMethod({
-    desc: 'importPublicReadKey',
-    setMock: fake => window.crypto.subtle.importKey = fake,
-    mockResp: mock.keys.publicKey,
-    expectedResp: mock.keys.publicKey,
-    simpleReq: () => rsa.importPublicKey(mock.publicKeyBase64, HashAlg.SHA_256, KeyUse.Read),
-    simpleParams: [
-      'spki',
-      utils.base64ToArrBuf(mock.publicKeyBase64),
-      { name: 'RSA-OAEP', hash: {name: 'SHA-256'}},
-      true,
-      ['encrypt']
-    ],
-    paramChecks: [
-      {
-        desc: 'handles multiple hash algs',
-        req: () => rsa.importPublicKey(mock.publicKeyBase64, HashAlg.SHA_512, KeyUse.Read),
-        params: (params: any) => params[2]?.hash?.name === 'SHA-512'
-      },
-      {
-        desc: 'handles write keys',
-        req: () => rsa.importPublicKey(mock.publicKeyBase64, HashAlg.SHA_256, KeyUse.Write),
-        params: [
-          'spki',
-          utils.base64ToArrBuf(mock.publicKeyBase64),
-          { name: 'RSA-PSS', hash: {name: 'SHA-256'}},
-          true,
-          ['verify']
-        ]
-      }
-    ],
     shouldThrows: []
   })
 

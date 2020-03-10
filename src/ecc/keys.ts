@@ -34,12 +34,12 @@ export async function getKey(
   return keypair
 }
 
-export async function importPublicKey(hexKey: string, curve: EccCurve, use: KeyUse): Promise<PublicKey> {
+export async function importPublicKey(base64Key: string, curve: EccCurve, use: KeyUse): Promise<PublicKey> {
   checkValidKeyUse(use)
   const alg = use === KeyUse.Read ? ECC_READ_ALG : ECC_WRITE_ALG
   const uses =
     use === KeyUse.Read ? [] : ['verify']
-  const buf = utils.base64ToArrBuf(hexKey)
+  const buf = utils.base64ToArrBuf(base64Key)
   return window.crypto.subtle.importKey(
     'raw',
     buf,

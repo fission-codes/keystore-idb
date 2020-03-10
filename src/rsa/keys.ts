@@ -40,17 +40,17 @@ export async function getKey(
   return keypair
 }
 
-function stripKeyHeader(hexKey: string): string{
-  return hexKey
+function stripKeyHeader(base64Key: string): string{
+  return base64Key
     .replace('-----BEGIN PUBLIC KEY-----\n', '')
     .replace('\n-----END PUBLIC KEY-----', '')
 }
 
-export async function importPublicKey(hexKey: string, hashAlg: HashAlg, use: KeyUse): Promise<PublicKey> {
+export async function importPublicKey(base64Key: string, hashAlg: HashAlg, use: KeyUse): Promise<PublicKey> {
   checkValidKeyUse(use)
   const alg = use === KeyUse.Read ? RSA_READ_ALG : RSA_WRITE_ALG
   const uses = use === KeyUse.Read ? ['encrypt'] : ['verify']
-  const buf = utils.base64ToArrBuf(stripKeyHeader(hexKey))
+  const buf = utils.base64ToArrBuf(stripKeyHeader(base64Key))
   return window.crypto.subtle.importKey(
     'spki',
     buf,

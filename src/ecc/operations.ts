@@ -35,12 +35,12 @@ export async function getSharedKey(privateKey: PrivateKey, publicKey: PublicKey,
 
 export async function encryptBytes(data: ArrayBuffer, privateKey: PrivateKey, publicKey: PublicKey, opts?: Partial<SymmKeyOpts>): Promise<CipherText> {
   const cipherKey = await getSharedKey(privateKey, publicKey, opts)
-  return aes.encrypt(data, cipherKey, opts)
+  return aes.encryptBytes(data, cipherKey, opts)
 }
 
 export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKey, publicKey: PublicKey, opts?: Partial<SymmKeyOpts>): Promise<ArrayBuffer> {
   const cipherKey = await getSharedKey(privateKey, publicKey, opts)
-  return aes.decrypt(cipherText, cipherKey, opts)
+  return aes.decryptBytes(cipherText, cipherKey, opts)
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {

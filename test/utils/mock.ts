@@ -3,7 +3,16 @@ import utils from '../../src/utils'
 window.atob = require('atob')
 window.btoa = require('btoa')
 
-const arr = new Uint8Array([1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4]) 
+const iv = (new Uint8Array([1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4])).buffer
+const msgStr = "test msg bytes"
+const msgBytes = utils.strToArrBuf(msgStr, 16)
+const sigStr = "dGVzdCBzaWduYXR1cmU="
+const sigBytes = utils.base64ToArrBuf(sigStr)
+const cipherStr = "dGVzdCBlbmNyeXB0ZWQgYnl0ZXM="
+const cipherBytes = utils.base64ToArrBuf(cipherStr)
+const cipherWithIVBytes = utils.joinBufs(iv, cipherBytes)
+const cipherWithIVStr = utils.arrBufToBase64(cipherWithIVBytes)
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const mock = {
   keys: {
@@ -19,14 +28,15 @@ export const mock = {
     privateKey: { type: 'encrypt-priv' } as any 
   } as any,
   symmKey: { type: 'symm' } as any,
-  iv: arr.buffer,
-  publicKeyBase64: 'q83vEjRWeJA=',
-  msgStr: "test msg bytes",
-  msgBytes: utils.strToArrBuf("test msg bytes", 16),
-  signatureStr: "dGVzdCBzaWduYXR1cmU=",
-  signature: utils.base64ToArrBuf("dGVzdCBzaWduYXR1cmU="),
-  cipherTextStr: "dGVzdCBlbmNyeXB0ZWQgYnl0ZXM=",
-  cipherText: utils.base64ToArrBuf("dGVzdCBlbmNyeXB0ZWQgYnl0ZXM="),
-  cipherTextWithIV: utils.joinBufs(arr.buffer, utils.base64ToArrBuf("dGVzdCBlbmNyeXB0ZWQgYnl0ZXM=")),
+  keyBase64: 'q83vEjRWeJA=',
+  iv,
+  msgStr,
+  msgBytes,
+  sigStr,
+  sigBytes,
+  cipherStr,
+  cipherBytes,
+  cipherWithIVStr,
+  cipherWithIVBytes,
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */

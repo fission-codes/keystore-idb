@@ -1,6 +1,7 @@
+import aes from '../aes'
 import utils from '../utils'
 import { ECC_READ_ALG, ECC_WRITE_ALG, DEFAULT_SYMM_ALG, DEFAULT_SYMM_LEN } from '../constants'
-import { PrivateKey, PublicKey, HashAlg, SymmKey, SymmKeyOpts, SymmAlg, CipherText } from '../types'
+import { PrivateKey, PublicKey, HashAlg, SymmKey, SymmKeyOpts, CipherText } from '../types'
 
 export async function signBytes(data: ArrayBuffer, privKey: PrivateKey, hashAlg: HashAlg): Promise<ArrayBuffer> {
   return window.crypto.subtle.sign(
@@ -34,38 +35,12 @@ export async function getSharedKey(privateKey: PrivateKey, publicKey: PublicKey,
 
 export async function encryptBytes(data: ArrayBuffer, privateKey: PrivateKey, publicKey: PublicKey, opts?: Partial<SymmKeyOpts>): Promise<CipherText> {
   const cipherKey = await getSharedKey(privateKey, publicKey, opts)
-  const alg = opts?.alg || DEFAULT_SYMM_ALG
-  const iv = opts?.iv || utils.randomBuf(16)
-  const cipherBuf = await window.crypto.subtle.encrypt(
-    { 
-      name: alg,
-      length: opts?.length || DEFAULT_SYMM_LEN,
-      // AES-CTR uses a counter, AES-GCM/AES-CBC use an initialization vector
-      iv: alg === SymmAlg.AES_CTR ? undefined : iv,
-      counter: alg === SymmAlg.AES_CTR ? new Uint8Array(iv) : undefined,
-    },
-    cipherKey,
-    data
-  )
-  return utils.joinBufs(iv, cipherBuf)
+  return aes.encrypt(data, cipherKey, opts)
 }
 
 export async function decryptBytes(cipherText: CipherText, privateKey: PrivateKey, publicKey: PublicKey, opts?: Partial<SymmKeyOpts>): Promise<ArrayBuffer> {
   const cipherKey = await getSharedKey(privateKey, publicKey, opts)
-  const alg = opts?.alg || DEFAULT_SYMM_ALG
-  const iv = cipherText.slice(0, 16)
-  const cipherBytes = cipherText.slice(16)
-  const msgBuff = await window.crypto.subtle.decrypt(
-    { name: alg,
-      length: opts?.length || DEFAULT_SYMM_LEN,
-      // AES-CTR uses a counter, AES-GCM/AES-CBC use an initialization vector
-      iv: alg === SymmAlg.AES_CTR ? undefined : iv,
-      counter: alg === SymmAlg.AES_CTR ? new Uint8Array(iv) : undefined,
-    },
-    cipherKey,
-    cipherBytes
-  )
-  return msgBuff
+  return aes.decrypt(cipherText, cipherKey, opts)
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {

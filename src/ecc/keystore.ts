@@ -37,11 +37,12 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     charSize: CharSize = 16
   ): Promise<string> {
     const pubkey = await keys.importPublicKey(publicKey, this.cfg.curve, KeyUse.Read)
+    const opts  = { alg: this.cfg.symmAlg, length: this.cfg.symmLen }
     const cipherText = await operations.encryptBytes(
       utils.strToArrBuf(msg, charSize),
       this.readKey.privateKey,
       pubkey,
-      this.cfg.symmAlg
+      opts
     )
     return utils.arrBufToBase64(cipherText)
   }
@@ -52,11 +53,12 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     charSize: CharSize = 16
   ): Promise<string> {
     const pubkey = await keys.importPublicKey(publicKey, this.cfg.curve, KeyUse.Read)
+    const opts  = { alg: this.cfg.symmAlg, length: this.cfg.symmLen }
     const msgBytes = await operations.decryptBytes(
       utils.base64ToArrBuf(cipherText),
       this.readKey.privateKey,
       pubkey,
-      this.cfg.symmAlg
+      opts
     )
     return utils.arrBufToStr(msgBytes, charSize)
   }

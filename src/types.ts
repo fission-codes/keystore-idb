@@ -9,6 +9,7 @@ export type Config = {
   curve: EccCurve
   rsaSize: RsaSize
   symmAlg: SymmAlg
+  symmLen: SymmKeyLength
   hashAlg: HashAlg
   readKeyName: string
   writeKeyName: string

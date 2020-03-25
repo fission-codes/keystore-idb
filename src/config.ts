@@ -6,7 +6,8 @@ import {
   DEFAULT_SYMM_ALG,
   DEFAULT_HASH_ALG,
   DEFAULT_READ_KEY_NAME,
-  DEFAULT_WRITE_KEY_NAME
+  DEFAULT_WRITE_KEY_NAME,
+  DEFAULT_SYMM_LEN
 } from './constants'
 import { Config, KeyUse, CryptoSystem } from './types'
 import utils from './utils'
@@ -16,6 +17,7 @@ export const defaultConfig = {
   curve: DEFAULT_EccCurve,
   rsaSize: DEFAULT_RsaSize,
   symmAlg: DEFAULT_SYMM_ALG,
+  symmLen: DEFAULT_SYMM_LEN,
   hashAlg: DEFAULT_HASH_ALG,
   readKeyName: DEFAULT_READ_KEY_NAME,
   writeKeyName: DEFAULT_WRITE_KEY_NAME

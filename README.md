@@ -27,6 +27,7 @@ const defaultConfig = {
   curve: 'P-256', // 'P-256' | 'P-384' | 'P-521'
   rsaSize: 2048, // 1024 | 2048 | 4096
   symmAlg: 'AES-CTR', // 'AES-CTR' | 'AES-GCM' | 'AES-CBC'
+  symmLen: 128, // 128 | 192 | 256
   hashAlg: 'SHA-256', // 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
   readKeyName: 'read-key', // any string
   writeKeyName: 'write-key', // any string

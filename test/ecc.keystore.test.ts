@@ -110,7 +110,10 @@ describe("ECCKeyStore", () => {
           mock.msgBytes,
           mock.keys.privateKey,
           mock.encryptForKey.publicKey,
-          config.defaultConfig.symmAlg
+          {
+            alg: config.defaultConfig.symmAlg,
+            length: config.defaultConfig.symmLen
+          }
         ]
       },
       {
@@ -141,7 +144,10 @@ describe("ECCKeyStore", () => {
           mock.cipherBytes,
           mock.keys.privateKey,
           mock.encryptForKey.publicKey,
-          config.defaultConfig.symmAlg
+          {
+            alg: config.defaultConfig.symmAlg,
+            length: config.defaultConfig.symmLen
+          }
         ]
       },
       {

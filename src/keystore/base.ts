@@ -42,14 +42,14 @@ export default class KeyStoreBase {
     return utils.arrBufToBase64(cipherText)
   }
 
-  async decryptWithSymmKey(msg: string, keyName: string): Promise<string> {
+  async decryptWithSymmKey(cipherBytes: string, keyName: string): Promise<string> {
     const key = await aes.getKey(keyName, this.symmKeyOpts())
-    const cipherText = await aes.decryptBytes(
-      utils.base64ToArrBuf(msg),
+    const msgBytes = await aes.decryptBytes(
+      utils.base64ToArrBuf(cipherBytes),
       key,
       this.symmKeyOpts()
     )
-    return utils.arrBufToStr(cipherText, this.cfg.charSize)
+    return utils.arrBufToStr(msgBytes, this.cfg.charSize)
   }
 
 }

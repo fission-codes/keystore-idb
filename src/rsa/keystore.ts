@@ -3,7 +3,7 @@ import operations from './operations'
 import config from '../config'
 import utils from '../utils'
 import KeyStoreBase from '../keystore/base'
-import { KeyStore, Config, KeyUse, CharSize, CryptoSystem } from '../types'
+import { KeyStore, Config, KeyUse, CryptoSystem } from '../types'
 
 export class RSAKeyStore extends KeyStoreBase implements KeyStore {
 

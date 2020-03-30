@@ -11,6 +11,7 @@ export type Config = {
   symmAlg: SymmAlg
   symmLen: SymmKeyLength
   hashAlg: HashAlg
+  charSize: CharSize
   readKeyName: string
   writeKeyName: string
 }

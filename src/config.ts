@@ -5,6 +5,7 @@ import {
   DEFAULT_RsaSize,
   DEFAULT_SYMM_ALG,
   DEFAULT_HASH_ALG,
+  DEFAULT_CHAR_SIZE,
   DEFAULT_READ_KEY_NAME,
   DEFAULT_WRITE_KEY_NAME,
   DEFAULT_SYMM_LEN
@@ -19,6 +20,7 @@ export const defaultConfig = {
   symmAlg: DEFAULT_SYMM_ALG,
   symmLen: DEFAULT_SYMM_LEN,
   hashAlg: DEFAULT_HASH_ALG,
+  charSize: DEFAULT_CHAR_SIZE,
   readKeyName: DEFAULT_READ_KEY_NAME,
   writeKeyName: DEFAULT_WRITE_KEY_NAME
 } as Config

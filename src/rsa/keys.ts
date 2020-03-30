@@ -2,7 +2,7 @@ import IDB from '../idb'
 import { RSA_READ_ALG, RSA_WRITE_ALG } from '../constants'
 import { RsaSize, HashAlg, KeyUse, PublicKey } from '../types'
 import utils from '../utils'
-import { checkValidKeyUse } from '../errors'
+import { checkValidKeyUse, checkIsKeyPair } from '../errors'
 
 export async function makeKey(
   size: RsaSize,
@@ -33,7 +33,7 @@ export async function getKey(
   checkValidKeyUse(use)
   const maybeKey = await IDB.getKey(keyName)
   if (maybeKey) {
-    return maybeKey
+    return checkIsKeyPair(maybeKey)
   }
   const keypair = await makeKey(size, hashAlg, use)
   await IDB.putKey(keyName, keypair)

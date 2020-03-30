@@ -4,6 +4,20 @@ export const ECCNotEnabled = new Error("ECC is not enabled for this browser. Ple
 export const UnsupportedCrypto = new Error("Cryptosystem not supported. Please use ECC or RSA")
 export const InvalidKeyUse = new Error("Invalid key use. Please use 'read' or 'write")
 
+export function checkIsKeyPair(keypair: any): CryptoKeyPair {
+  if(keypair.privateKey === undefined){
+    throw new Error("asdf")
+  }
+  return keypair as CryptoKeyPair
+}
+
+export function checkIsKey(key: any): CryptoKey {
+  if(key.privatdeKey !== undefined){
+    throw new Error("asdf")
+  }
+  return key
+}
+
 export function checkValidCryptoSystem(type: CryptoSystem): void {
   checkValid(type, [CryptoSystem.ECC, CryptoSystem.RSA], UnsupportedCrypto)
 }

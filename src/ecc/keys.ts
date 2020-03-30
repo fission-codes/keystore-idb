@@ -2,7 +2,7 @@ import IDB from '../idb'
 import utils from '../utils'
 import { ECC_READ_ALG, ECC_WRITE_ALG } from '../constants'
 import { EccCurve, KeyUse, PublicKey } from '../types'
-import { checkValidKeyUse } from '../errors'
+import { checkValidKeyUse, checkIsKeyPair } from '../errors'
 
 export async function makeKey(
   curve: EccCurve,
@@ -27,7 +27,7 @@ export async function getKey(
   checkValidKeyUse(use)
   const maybeKey = await IDB.getKey(keyName)
   if (maybeKey) {
-    return maybeKey
+    return checkIsKeyPair(maybeKey) 
   }
   const keypair = await makeKey(curve, use)
   await IDB.putKey(keyName, keypair)

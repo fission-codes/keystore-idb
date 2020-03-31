@@ -27,7 +27,8 @@ export const mock = {
     publicKey: { type: 'encrypt-pub' } as any,
     privateKey: { type: 'encrypt-priv' } as any 
   } as any,
-  symmKey: { type: 'symm' } as any,
+  symmKey: { type: 'symm', algorithm: 'AES-CTR' } as any,
+  symmKeyName: 'symm-key',
   keyBase64: 'q83vEjRWeJA=',
   iv,
   msgStr,

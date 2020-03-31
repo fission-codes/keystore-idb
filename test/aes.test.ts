@@ -1,7 +1,6 @@
 import aes from '../src/aes'
-import errors from '../src/errors'
 import utils from '../src/utils'
-import { KeyUse, EccCurve, HashAlg, SymmAlg, SymmKeyLength } from '../src/types'
+import { SymmAlg, SymmKeyLength } from '../src/types'
 import { mock, cryptoMethod, idbMethod, arrBufEq } from './utils'
 
 const sinon = require('sinon')
@@ -34,6 +33,48 @@ describe('aes', () => {
     ],
     shouldThrows: [ ]
   })
+
+
+  describe('getKey', () => {
+    idbMethod({
+      desc: 'key does not exist',
+      req: () => aes.getKey(mock.symmKeyName),
+      expectedResponse: mock.symmKey,
+      fakeMakeResp: mock.symmKey,
+      putParams: [
+        mock.symmKeyName,
+        mock.symmKey
+      ],
+      getParams: [
+        mock.symmKeyName
+      ],
+      makeParams: [
+        {
+          name: 'AES-CTR',
+          length: 128
+        },
+        true,
+        ['encrypt', 'decrypt']
+      ],
+      putCount: 1,
+      getCount: 1,
+      makeCount: 1,
+    })
+
+    idbMethod({
+      desc: 'key does exist',
+      req: () => aes.getKey(mock.symmKeyName),
+      expectedResponse: mock.symmKey,
+      fakeGetResp: mock.symmKey,
+      getParams: [
+        mock.symmKeyName
+      ],
+      putCount: 0,
+      getCount: 1,
+      makeCount: 0,
+    })
+  })
+
 
   cryptoMethod({
     desc: 'importKey',

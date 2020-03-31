@@ -10,7 +10,7 @@ import {
   DEFAULT_WRITE_KEY_NAME,
   DEFAULT_SYMM_LEN
 } from './constants'
-import { Config, KeyUse, CryptoSystem } from './types'
+import { Config, KeyUse, CryptoSystem, SymmKeyOpts } from './types'
 import utils from './utils'
 
 export const defaultConfig = {
@@ -56,8 +56,13 @@ export async function eccEnabled(): Promise<boolean> {
   return true
 }
 
+export function symmKeyOpts(cfg: Config): Partial<SymmKeyOpts> {
+  return { alg: cfg.symmAlg, length: cfg.symmLen }
+}
+
 export default {
   defaultConfig,
   normalize,
   eccEnabled,
+  symmKeyOpts
 }

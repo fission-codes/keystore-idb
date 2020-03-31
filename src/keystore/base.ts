@@ -1,6 +1,7 @@
 import aes from '../aes'
 import idb from '../idb'
 import utils from '../utils'
+import { symmKeyOpts } from '../config'
 import { Config, SymmKeyOpts } from '../types'
 
 export default class KeyStoreBase {
@@ -18,36 +19,32 @@ export default class KeyStoreBase {
     return idb.exists(keyName)
   }
 
-  symmKeyOpts(): Partial<SymmKeyOpts> {
-    return { alg: this.cfg.symmAlg, length: this.cfg.symmLen }
-  }
-
   async importSymmKey(keyStr: string, keyName: string): Promise<void> {
-    const key = await aes.importKey(keyStr, this.symmKeyOpts())
+    const key = await aes.importKey(keyStr, symmKeyOpts(this.cfg))
     await idb.putKey(keyName, key)
   }
 
   async exportSymmKey(keyName: string): Promise<string> {
-    const key = await aes.getKey(keyName, this.symmKeyOpts())
+    const key = await aes.getKey(keyName, symmKeyOpts(this.cfg))
     return aes.exportKey(key)
   }
 
   async encryptWithSymmKey(msg: string, keyName: string): Promise<string> {
-    const key = await aes.getKey(keyName, this.symmKeyOpts())
+    const key = await aes.getKey(keyName, symmKeyOpts(this.cfg))
     const cipherText = await aes.encryptBytes(
       utils.strToArrBuf(msg, this.cfg.charSize),
       key,
-      this.symmKeyOpts()
+      symmKeyOpts(this.cfg)
     )
     return utils.arrBufToBase64(cipherText)
   }
 
-  async decryptWithSymmKey(cipherBytes: string, keyName: string): Promise<string> {
-    const key = await aes.getKey(keyName, this.symmKeyOpts())
+  async decryptWithSymmKey(cipherText: string, keyName: string): Promise<string> {
+    const key = await aes.getKey(keyName, symmKeyOpts(this.cfg))
     const msgBytes = await aes.decryptBytes(
-      utils.base64ToArrBuf(cipherBytes),
+      utils.base64ToArrBuf(cipherText),
       key,
-      this.symmKeyOpts()
+      symmKeyOpts(this.cfg)
     )
     return utils.arrBufToStr(msgBytes, this.cfg.charSize)
   }

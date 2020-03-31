@@ -71,7 +71,7 @@ export interface KeyStore {
   cfg: Config
   readKey: CryptoKeyPair
   writeKey: CryptoKeyPair
-  symmKeyOpts(): Partial<SymmKeyOpts>
+  keyExists(keyName: string): Promise<boolean>
   importSymmKey(keyStr: string, keyName: string): Promise<void>
   exportSymmKey(keyName: string): Promise<string>
   encryptWithSymmKey(msg: string, keyName: string): Promise<string>

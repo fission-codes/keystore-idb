@@ -11,6 +11,7 @@ export type Config = {
   symmAlg: SymmAlg
   symmLen: SymmKeyLength
   hashAlg: HashAlg
+  charSize: CharSize
   readKeyName: string
   writeKeyName: string
 }
@@ -70,22 +71,24 @@ export interface KeyStore {
   cfg: Config
   readKey: CryptoKeyPair
   writeKey: CryptoKeyPair
-  sign(msg: string, charSize?: CharSize): Promise<string>
+  keyExists(keyName: string): Promise<boolean>
+  importSymmKey(keyStr: string, keyName: string): Promise<void>
+  exportSymmKey(keyName: string): Promise<string>
+  encryptWithSymmKey(msg: string, keyName: string): Promise<string>
+  decryptWithSymmKey(cipherBytes: string, keyName: string): Promise<string>
+  sign(msg: string): Promise<string>
   verify(
     msg: string,
     sig: string,
-    publicKey: string,
-    charSize?: CharSize
+    publicKey: string
   ): Promise<boolean>
   encrypt(
     msg: string,
-    publicKey: string,
-    charSize?: CharSize
+    publicKey: string
   ): Promise<string>
   decrypt(
     cipherText: string,
-    publicKey: string,
-    charSize?: CharSize
+    publicKey: string
   ): Promise<string>
   publicReadKey(): Promise<string>
   publicWriteKey(): Promise<string>

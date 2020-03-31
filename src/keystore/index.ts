@@ -1,9 +1,9 @@
-import ECCKeyStore from './ecc/keystore'
-import RSAKeyStore from './rsa/keystore'
-import config from './config'
-import IDB from './idb'
-import { ECCNotEnabled, checkValidCryptoSystem } from './errors'
-import { Config, KeyStore } from './types'
+import ECCKeyStore from '../ecc/keystore'
+import RSAKeyStore from '../rsa/keystore'
+import config from '../config'
+import IDB from '../idb'
+import { ECCNotEnabled, checkValidCryptoSystem } from '../errors'
+import { Config, KeyStore } from '../types'
 
 export async function init(maybeCfg?: Partial<Config>): Promise<KeyStore>{
   const eccEnabled = await config.eccEnabled()

@@ -3,13 +3,13 @@ import operations from './operations'
 import config from '../config'
 import utils from '../utils'
 import KeyStoreBase from '../keystore/base'
-import { KeyStore, Config, KeyUse, CharSize, CryptoSystem } from '../types'
+import { KeyStore, Config, KeyUse, CryptoSystem } from '../types'
 
 export class ECCKeyStore extends KeyStoreBase implements KeyStore {
 
-  async sign(msg: string, charSize: CharSize = 16): Promise<string> {
+  async sign(msg: string): Promise<string> {
     const sigBytes = await operations.signBytes(
-      utils.strToArrBuf(msg, charSize),
+      utils.strToArrBuf(msg, this.cfg.charSize),
       this.writeKey.privateKey,
       this.cfg.hashAlg
     )
@@ -19,12 +19,11 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
   async verify(
     msg: string,
     sig: string,
-    publicKey: string,
-    charSize: CharSize = 16
+    publicKey: string
   ): Promise<boolean> {
     const pubkey = await keys.importPublicKey(publicKey, this.cfg.curve, KeyUse.Write)
     return operations.verifyBytes(
-      utils.strToArrBuf(msg, charSize),
+      utils.strToArrBuf(msg, this.cfg.charSize),
       utils.base64ToArrBuf(sig),
       pubkey,
       this.cfg.hashAlg
@@ -33,13 +32,12 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
 
   async encrypt(
     msg: string,
-    publicKey: string,
-    charSize: CharSize = 16
+    publicKey: string
   ): Promise<string> {
     const pubkey = await keys.importPublicKey(publicKey, this.cfg.curve, KeyUse.Read)
     const opts  = { alg: this.cfg.symmAlg, length: this.cfg.symmLen }
     const cipherText = await operations.encryptBytes(
-      utils.strToArrBuf(msg, charSize),
+      utils.strToArrBuf(msg, this.cfg.charSize),
       this.readKey.privateKey,
       pubkey,
       opts
@@ -49,8 +47,7 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
 
   async decrypt(
     cipherText: string,
-    publicKey: string,
-    charSize: CharSize = 16
+    publicKey: string
   ): Promise<string> {
     const pubkey = await keys.importPublicKey(publicKey, this.cfg.curve, KeyUse.Read)
     const opts  = { alg: this.cfg.symmAlg, length: this.cfg.symmLen }
@@ -60,7 +57,7 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
       pubkey,
       opts
     )
-    return utils.arrBufToStr(msgBytes, charSize)
+    return utils.arrBufToStr(msgBytes, this.cfg.charSize)
   }
 
   async publicReadKey(): Promise<string> {

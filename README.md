@@ -29,6 +29,7 @@ const defaultConfig = {
   symmAlg: 'AES-CTR', // 'AES-CTR' | 'AES-GCM' | 'AES-CBC'
   symmLen: 128, // 128 | 192 | 256
   hashAlg: 'SHA-256', // 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
+  charSize: 16, // 8 | 16
   readKeyName: 'read-key', // any string
   writeKeyName: 'write-key', // any string
 }

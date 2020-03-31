@@ -3,13 +3,13 @@ import operations from './operations'
 import config from '../config'
 import utils from '../utils'
 import KeyStoreBase from '../keystore/base'
-import { KeyStore, Config, KeyUse, CharSize, CryptoSystem } from '../types'
+import { KeyStore, Config, KeyUse, CryptoSystem } from '../types'
 
 export class RSAKeyStore extends KeyStoreBase implements KeyStore {
 
-  async sign(msg: string, charSize: CharSize = 16): Promise<string> {
+  async sign(msg: string): Promise<string> {
     const sigBytes = await operations.signBytes(
-      utils.strToArrBuf(msg, charSize),
+      utils.strToArrBuf(msg, this.cfg.charSize),
       this.writeKey.privateKey
     )
     return utils.arrBufToBase64(sigBytes)
@@ -18,12 +18,11 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
   async verify(
     msg: string,
     sig: string,
-    publicKey: string,
-    charSize: CharSize = 16
+    publicKey: string
   ): Promise<boolean> {
     const pubkey = await keys.importPublicKey(publicKey, this.cfg.hashAlg, KeyUse.Write)
     return operations.verifyBytes(
-      utils.strToArrBuf(msg, charSize),
+      utils.strToArrBuf(msg, this.cfg.charSize),
       utils.base64ToArrBuf(sig),
       pubkey
     )
@@ -31,12 +30,11 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
 
   async encrypt(
     msg: string,
-    publicKey: string,
-    charSize: CharSize = 16
+    publicKey: string
   ): Promise<string> {
     const pubkey = await keys.importPublicKey(publicKey, this.cfg.hashAlg, KeyUse.Read)
     const cipherText = await operations.encryptBytes(
-      utils.strToArrBuf(msg, charSize),
+      utils.strToArrBuf(msg, this.cfg.charSize),
       pubkey
     )
     return utils.arrBufToBase64(cipherText)
@@ -44,14 +42,13 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
 
   async decrypt(
     cipherText: string,
-    publicKey?: string, //unused param so that keystore interfaces match
-    charSize: CharSize = 16
+    publicKey?: string //unused param so that keystore interfaces match
   ): Promise<string> {
     const msgBytes = await operations.decryptBytes(
       utils.base64ToArrBuf(cipherText),
       this.readKey.privateKey
     )
-    return utils.arrBufToStr(msgBytes, charSize)
+    return utils.arrBufToStr(msgBytes, this.cfg.charSize)
   }
 
   async publicReadKey(): Promise<string> {

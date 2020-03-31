@@ -18,7 +18,7 @@ type KeystoreMethodOpts = {
   type: 'ecc' | 'rsa';
   mocks: Mock[];
   reqFn: (ks: KeyStore) => Promise<any>;
-  expectedResp: any;
+  expectedResp?: any;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -50,9 +50,12 @@ export const keystoreMethod = (opts: KeystoreMethodOpts): void => {
       })
     })
 
-    it('should return the expectedResp', () => {
-      expect(response).toEqual(opts.expectedResp)
-    })
+    if(opts.expectedResp) {
+      it('should return the expectedResp', () => {
+        expect(response).toEqual(opts.expectedResp)
+      })
+    }
+    
   })
 }
 

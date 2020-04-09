@@ -1,5 +1,5 @@
 # IndexedDB KeyStore
-  
+
 [![NPM](https://img.shields.io/npm/v/keystore-idb)](https://www.npmjs.com/package/keystore-idb)
 [![Build Status](https://travis-ci.org/fission-suite/keystore-idb.svg?branch=master)](https://travis-ci.org/fission-suite/keystore-idb)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/fission-suite/blob/master/LICENSE)
@@ -10,9 +10,9 @@
 
 In-browser key management with IndexedDB and the Web Crypto API.
 
-Securely store and use keys for encryption, decryption, and signatures.  IndexedDB and Web Crypto keep keys safe from malicious javascript.
+Securely store and use keys for encryption, decryption, and signatures. IndexedDB and Web Crypto keep keys safe from malicious javascript.
 
-Supports both RSA (RSA-PSS & RSA-OAEP) and Elliptic Curves (P-256, P-381 & P-521).
+Supports both RSA (RSASSA-PKCS1-v1_5 & RSA-OAEP) and Elliptic Curves (P-256, P-381 & P-521).
 
 ECC (Elliptic Curve Cryptography) is only available on Chrome. Firefox and Safari do not support ECC and must use RSA.
 _Specifically, this is an issue with storing ECC keys in IndexedDB_

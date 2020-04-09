@@ -3,7 +3,7 @@ import { EccCurve, RsaSize, SymmAlg, SymmKeyLength, HashAlg, CharSize } from './
 export const ECC_READ_ALG = 'ECDH'
 export const ECC_WRITE_ALG = 'ECDSA'
 export const RSA_READ_ALG = 'RSA-OAEP'
-export const RSA_WRITE_ALG = 'RSA-PSS'
+export const RSA_WRITE_ALG = 'RSASSA-PKCS1-v1_5'
 export const SALT_LENGTH = 128
 
 export const DEFAULT_CRYPTOSYSTEM = 'ecc'

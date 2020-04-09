@@ -31,7 +31,7 @@ describe('rsa', () => {
         req: () => rsa.makeKey(RsaSize.B2048, HashAlg.SHA_256, KeyUse.Write),
         params: [
           {
-            name: 'RSA-PSS',
+            name: 'RSASSA-PKCS1-v1_5',
             modulusLength: 2048,
             publicExponent: utils.publicExponent(),
             hash: { name: 'SHA-256' }
@@ -129,7 +129,7 @@ describe('rsa', () => {
         params: [
           'spki',
           utils.base64ToArrBuf(mock.keyBase64),
-          { name: 'RSA-PSS', hash: {name: 'SHA-256'}},
+          { name: 'RSASSA-PKCS1-v1_5', hash: {name: 'SHA-256'}},
           true,
           ['verify']
         ]
@@ -145,7 +145,7 @@ describe('rsa', () => {
     mockResp: mock.sigBytes,
     simpleReq: () => rsa.signBytes(mock.msgBytes, mock.keys.privateKey),
     simpleParams: [
-      { name: 'RSA-PSS', saltLength: 128},
+      { name: 'RSASSA-PKCS1-v1_5', saltLength: 128},
       mock.keys.privateKey,
       mock.msgBytes
     ],
@@ -160,7 +160,7 @@ describe('rsa', () => {
     mockResp: true,
     simpleReq: () => rsa.verifyBytes(mock.msgBytes, mock.sigBytes, mock.keys.publicKey),
     simpleParams: [
-      { name: 'RSA-PSS', saltLength: 128},
+      { name: 'RSASSA-PKCS1-v1_5', saltLength: 128},
       mock.keys.publicKey,
       mock.sigBytes,
       mock.msgBytes

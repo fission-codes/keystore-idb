@@ -1,5 +1,5 @@
 import config from '../src/config'
-import { CryptoSystem } from '../src/types'
+import { CryptoSystem, SymmAlg, SymmKeyLength } from '../src/types'
 import utils from '../src/utils'
 import { mock } from './utils'
 
@@ -107,4 +107,21 @@ describe('config', () => {
       expect(cfg).toEqual(modifiedDef)
     })
   })
+
+  describe('merge', () => {
+    it('it correctly merges configs', () => {
+      const merged = config.merge(config.defaultConfig, { symmAlg: SymmAlg.AES_CBC, symmLen: SymmKeyLength.B192 })
+      expect(merged).toEqual({
+        ...config.defaultConfig,
+        symmAlg: SymmAlg.AES_CBC,
+        symmLen: SymmKeyLength.B192
+      })
+    })
+
+    it('it works when an empty overwrite is passed', () => {
+      const merged = config.merge(config.defaultConfig)
+      expect(merged).toEqual(config.defaultConfig)
+    })
+  })
+
 })

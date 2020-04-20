@@ -33,31 +33,31 @@ export enum EccCurve {
   P_521 = 'P-521',
 }
 
-export enum RsaSize { 
+export enum RsaSize {
   B1024 = 1024,
   B2048 = 2048,
   B4096 = 4096
 }
 
-export enum SymmAlg { 
-  AES_CTR = 'AES-CTR', 
-  AES_CBC = 'AES-CBC', 
+export enum SymmAlg {
+  AES_CTR = 'AES-CTR',
+  AES_CBC = 'AES-CBC',
 }
 
-export enum SymmKeyLength { 
+export enum SymmKeyLength {
   B128 = 128,
   B192 = 192,
   B256 = 256,
 }
 
-export enum HashAlg { 
+export enum HashAlg {
   SHA_1 = 'SHA-1',
   SHA_256 = 'SHA-256',
   SHA_384 = 'SHA-384',
   SHA_512 = 'SHA-512',
 }
 
-export enum CharSize { 
+export enum CharSize {
   B8 = 8,
   B16 = 16,
 }
@@ -71,25 +71,60 @@ export interface KeyStore {
   cfg: Config
   readKey: CryptoKeyPair
   writeKey: CryptoKeyPair
+
   keyExists(keyName: string): Promise<boolean>
-  importSymmKey(keyStr: string, keyName: string): Promise<void>
-  exportSymmKey(keyName: string): Promise<string>
-  encryptWithSymmKey(msg: string, keyName: string): Promise<string>
-  decryptWithSymmKey(cipherBytes: string, keyName: string): Promise<string>
-  sign(msg: string): Promise<string>
+
+  // Symmetric
+
+  importSymmKey(
+    keyStr: string,
+    keyName: string,
+    cfg?: Partial<Config>
+  ): Promise<void>
+
+  exportSymmKey(
+    keyName: string,
+    cfg?: Partial<Config>
+  ): Promise<string>
+
+  encryptWithSymmKey(
+    msg: string,
+    keyName: string,
+    cfg?: Partial<Config>
+  ): Promise<string>
+
+  decryptWithSymmKey(
+    cipherBytes: string,
+    keyName: string,
+    cfg?: Partial<Config>
+  ): Promise<string>
+
+  // Asymmetric
+
+  sign(
+    msg: string,
+    cfg?: Partial<Config>
+  ): Promise<string>
+
   verify(
     msg: string,
     sig: string,
-    publicKey: string
+    publicKey: string,
+    cfg?: Partial<Config>
   ): Promise<boolean>
+
   encrypt(
     msg: string,
-    publicKey: string
+    publicKey: string,
+    cfg?: Partial<Config>
   ): Promise<string>
+
   decrypt(
     cipherText: string,
-    publicKey: string
+    publicKey: string,
+    cfg?: Partial<Config>
   ): Promise<string>
+
   publicReadKey(): Promise<string>
   publicWriteKey(): Promise<string>
 }

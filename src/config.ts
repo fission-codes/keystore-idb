@@ -56,6 +56,13 @@ export async function eccEnabled(): Promise<boolean> {
   return true
 }
 
+export function merge(cfg: Config, overwrites: Partial<Config> = {}): Config {
+  return {
+    ...cfg,
+    ...overwrites
+  }
+}
+
 export function symmKeyOpts(cfg: Config): Partial<SymmKeyOpts> {
   return { alg: cfg.symmAlg, length: cfg.symmLen }
 }
@@ -64,5 +71,6 @@ export default {
   defaultConfig,
   normalize,
   eccEnabled,
+  merge,
   symmKeyOpts
 }

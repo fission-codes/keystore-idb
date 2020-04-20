@@ -1,8 +1,8 @@
 import aes from '../aes'
 import idb from '../idb'
 import utils from '../utils'
-import { symmKeyOpts } from '../config'
-import { Config, SymmKeyOpts } from '../types'
+import config from '../config'
+import { Config } from '../types'
 
 export default class KeyStoreBase {
   cfg: Config
@@ -19,34 +19,38 @@ export default class KeyStoreBase {
     return idb.exists(keyName)
   }
 
-  async importSymmKey(keyStr: string, keyName: string): Promise<void> {
-    const key = await aes.importKey(keyStr, symmKeyOpts(this.cfg))
+  async importSymmKey(keyStr: string, keyName: string, cfg?: Partial<Config>): Promise<void> {
+    const mergedCfg = config.merge(this.cfg, cfg)
+    const key = await aes.importKey(keyStr, config.symmKeyOpts(mergedCfg))
     await idb.putKey(keyName, key)
   }
 
-  async exportSymmKey(keyName: string): Promise<string> {
-    const key = await aes.getKey(keyName, symmKeyOpts(this.cfg))
+  async exportSymmKey(keyName: string, cfg?: Partial<Config>): Promise<string> {
+    const mergedCfg = config.merge(this.cfg, cfg)
+    const key = await aes.getKey(keyName, config.symmKeyOpts(mergedCfg))
     return aes.exportKey(key)
   }
 
-  async encryptWithSymmKey(msg: string, keyName: string): Promise<string> {
-    const key = await aes.getKey(keyName, symmKeyOpts(this.cfg))
+  async encryptWithSymmKey(msg: string, keyName: string, cfg?: Partial<Config>): Promise<string> {
+    const mergedCfg = config.merge(this.cfg, cfg)
+    const key = await aes.getKey(keyName, config.symmKeyOpts(mergedCfg))
     const cipherText = await aes.encryptBytes(
-      utils.strToArrBuf(msg, this.cfg.charSize),
+      utils.strToArrBuf(msg, mergedCfg.charSize),
       key,
-      symmKeyOpts(this.cfg)
+      config.symmKeyOpts(mergedCfg)
     )
     return utils.arrBufToBase64(cipherText)
   }
 
-  async decryptWithSymmKey(cipherText: string, keyName: string): Promise<string> {
-    const key = await aes.getKey(keyName, symmKeyOpts(this.cfg))
+  async decryptWithSymmKey(cipherText: string, keyName: string, cfg?: Partial<Config>): Promise<string> {
+    const mergedCfg = config.merge(this.cfg, cfg)
+    const key = await aes.getKey(keyName, config.symmKeyOpts(mergedCfg))
     const msgBytes = await aes.decryptBytes(
       utils.base64ToArrBuf(cipherText),
       key,
-      symmKeyOpts(this.cfg)
+      config.symmKeyOpts(mergedCfg)
     )
-    return utils.arrBufToStr(msgBytes, this.cfg.charSize)
+    return utils.arrBufToStr(msgBytes, mergedCfg.charSize)
   }
 
 }

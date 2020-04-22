@@ -1,3 +1,4 @@
+import IDB from '../idb'
 import keys from './keys'
 import operations from './operations'
 import config from '../config'
@@ -7,11 +8,32 @@ import { KeyStore, Config, KeyUse, CryptoSystem } from '../types'
 
 export class ECCKeyStore extends KeyStoreBase implements KeyStore {
 
+  static async init(maybeCfg?: Partial<Config>): Promise<ECCKeyStore> {
+    const cfg = config.normalize({
+      ...(maybeCfg || {}),
+      type: CryptoSystem.ECC
+    })
+    const { curve, storeName, readKeyName, writeKeyName } = cfg
+
+    const store = IDB.createStore(storeName)
+    await IDB.createIfDoesNotExist(readKeyName, () => (
+      keys.makeKeypair(curve, KeyUse.Read)
+    ), store)
+    await IDB.createIfDoesNotExist(writeKeyName, () => (
+      keys.makeKeypair(curve, KeyUse.Write)
+    ), store)
+
+    return new ECCKeyStore(cfg, store)
+  }
+
+
   async sign(msg: string, cfg?: Partial<Config>): Promise<string> {
     const mergedCfg = config.merge(this.cfg, cfg)
+    const writeKey = await this.writeKey()
+
     const sigBytes = await operations.signBytes(
       utils.strToArrBuf(msg, mergedCfg.charSize),
-      this.writeKey.privateKey,
+      writeKey.privateKey,
       mergedCfg.hashAlg
     )
     return utils.arrBufToBase64(sigBytes)
@@ -25,6 +47,7 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
   ): Promise<boolean> {
     const mergedCfg = config.merge(this.cfg, cfg)
     const pubkey = await keys.importPublicKey(publicKey, mergedCfg.curve, KeyUse.Write)
+
     return operations.verifyBytes(
       utils.strToArrBuf(msg, mergedCfg.charSize),
       utils.base64ToArrBuf(sig),
@@ -39,10 +62,12 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     cfg?: Partial<Config>
   ): Promise<string> {
     const mergedCfg = config.merge(this.cfg, cfg)
+    const readKey = await this.readKey()
     const pubkey = await keys.importPublicKey(publicKey, mergedCfg.curve, KeyUse.Read)
+
     const cipherText = await operations.encryptBytes(
       utils.strToArrBuf(msg, mergedCfg.charSize),
-      this.readKey.privateKey,
+      readKey.privateKey,
       pubkey,
       config.symmKeyOpts(mergedCfg)
     )
@@ -55,10 +80,12 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     cfg?: Partial<Config>
   ): Promise<string> {
     const mergedCfg = config.merge(this.cfg, cfg)
+    const readKey = await this.readKey()
     const pubkey = await keys.importPublicKey(publicKey, mergedCfg.curve, KeyUse.Read)
+
     const msgBytes = await operations.decryptBytes(
       utils.base64ToArrBuf(cipherText),
-      this.readKey.privateKey,
+      readKey.privateKey,
       pubkey,
       config.symmKeyOpts(mergedCfg)
     )
@@ -66,26 +93,14 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
   }
 
   async publicReadKey(): Promise<string> {
-    return operations.getPublicKey(this.readKey)
+    const readKey = await this.readKey()
+    return operations.getPublicKey(readKey)
   }
 
   async publicWriteKey(): Promise<string> {
-    return operations.getPublicKey(this.writeKey)
+    const writeKey = await this.writeKey()
+    return operations.getPublicKey(writeKey)
   }
 }
 
-export async function init(maybeCfg?: Partial<Config>): Promise<ECCKeyStore> {
-  const cfg = config.normalize({
-    ...(maybeCfg || {}),
-    type: CryptoSystem.ECC
-  })
-  const { curve, readKeyName, writeKeyName } = cfg
-  const readKey = await keys.getKey(curve, readKeyName, KeyUse.Read)
-  const writeKey = await keys.getKey(curve, writeKeyName, KeyUse.Write)
-  return new ECCKeyStore(readKey, writeKey, cfg)
-}
-
-export default {
-  ECCKeyStore,
-  init
-}
+export default ECCKeyStore

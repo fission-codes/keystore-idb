@@ -15,6 +15,9 @@ const cipherWithIVStr = utils.arrBufToBase64(cipherWithIVBytes)
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const mock = {
+  idbStore: {
+    type: 'fake-store'
+  } as any,
   keys: {
     publicKey: { type: 'pub' } as any,
     privateKey: { type: 'priv' } as any
@@ -40,4 +43,6 @@ export const mock = {
   cipherWithIVStr,
   cipherWithIVBytes,
 }
+
+export default mock
 /* eslint-enable @typescript-eslint/no-explicit-any */

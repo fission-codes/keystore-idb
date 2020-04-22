@@ -2,19 +2,15 @@ import ecc from '../src/ecc'
 import errors from '../src/errors'
 import utils from '../src/utils'
 import { KeyUse, EccCurve, HashAlg, SymmAlg, SymmKeyLength } from '../src/types'
-import { mock, cryptoMethod, idbMethod, arrBufEq } from './utils'
-
-const sinon = require('sinon')
+import { mock, cryptoMethod, arrBufEq } from './utils'
 
 describe('ecc', () => {
 
-  beforeEach(() => sinon.restore())
-
   cryptoMethod({
-    desc: 'makeKey',
+    desc: 'makeKeypair',
     setMock: fake => window.crypto.subtle.generateKey = fake,
     mockResp: mock.keys,
-    simpleReq: () => ecc.makeKey(EccCurve.P_256, KeyUse.Read),
+    simpleReq: () => ecc.makeKeypair(EccCurve.P_256, KeyUse.Read),
     simpleParams: [
       { name: 'ECDH', namedCurve: 'P-256' },
       false,
@@ -23,12 +19,12 @@ describe('ecc', () => {
     paramChecks: [
       {
         desc: 'handles multiple key algorithms',
-        req: () => ecc.makeKey(EccCurve.P_521, KeyUse.Read),
+        req: () => ecc.makeKeypair(EccCurve.P_521, KeyUse.Read),
         params: (params: any) => params[0]?.namedCurve === 'P-521'
       },
       {
         desc: 'handles write keys',
-        req: () => ecc.makeKey(EccCurve.P_256, KeyUse.Write),
+        req: () => ecc.makeKeypair(EccCurve.P_256, KeyUse.Write),
         params: [
           { name: 'ECDSA', namedCurve: 'P-256' },
           false,
@@ -39,48 +35,10 @@ describe('ecc', () => {
     shouldThrows: [
       {
         desc: 'throws an error when passing in an invalid use',
-        req: () => ecc.makeKey(EccCurve.P_256, 'sigBytes' as any),
+        req: () => ecc.makeKeypair(EccCurve.P_256, 'sigBytes' as any),
         error: errors.InvalidKeyUse
       }
     ]
-  })
-
-
-  describe('getKey', () => {
-    idbMethod({
-      desc: 'key does not exist',
-      req: () => ecc.getKey(EccCurve.P_256, 'read-key', KeyUse.Read),
-      expectedResponse: mock.keys,
-      fakeMakeResp: mock.keys,
-      putParams: [
-        'read-key',
-        mock.keys
-      ],
-      getParams: [
-        'read-key'
-      ],
-      makeParams: [
-        { name: 'ECDH', namedCurve: 'P-256' },
-        false,
-        ['deriveKey', 'deriveBits']
-      ],
-      putCount: 1,
-      getCount: 1,
-      makeCount: 1,
-    })
-
-    idbMethod({
-      desc: 'key does exist',
-      req: () => ecc.getKey(EccCurve.P_256, 'read-key', KeyUse.Read),
-      expectedResponse: mock.keys,
-      fakeGetResp: mock.keys,
-      getParams: [
-        'read-key'
-      ],
-      putCount: 0,
-      getCount: 1,
-      makeCount: 0,
-    })
   })
 
 
@@ -194,8 +152,8 @@ describe('ecc', () => {
     desc: 'encryptBytes',
     setMock: fake => {
       window.crypto.subtle.encrypt = fake
-      window.crypto.subtle.deriveKey = sinon.fake.returns(new Promise(r => r(mock.symmKey)))
-      window.crypto.getRandomValues = sinon.fake.returns(new Promise(r => r()))
+      window.crypto.subtle.deriveKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
+      window.crypto.getRandomValues = jest.fn(() => new Promise(r => r(new Uint8Array(16)))) as any
     },
     mockResp: mock.cipherBytes,
     simpleReq: () => ecc.encryptBytes(mock.msgBytes, mock.keys.privateKey, mock.keys.publicKey),
@@ -237,7 +195,7 @@ describe('ecc', () => {
     desc: 'decryptBytes',
     setMock: fake => {
       window.crypto.subtle.decrypt = fake
-      window.crypto.subtle.deriveKey = sinon.fake.returns(new Promise(r => r(mock.symmKey)))
+      window.crypto.subtle.deriveKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
     },
     mockResp: mock.msgBytes,
     simpleReq: () => ecc.decryptBytes(mock.cipherWithIVBytes, mock.keys.privateKey, mock.keys.publicKey),

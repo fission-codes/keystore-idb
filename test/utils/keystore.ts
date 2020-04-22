@@ -1,13 +1,13 @@
 import { ECCKeyStore } from '../../src/ecc/keystore'
 import { RSAKeyStore } from '../../src/rsa/keystore'
 import config from '../../src/config'
+import idb from '../../src/idb'
 import { KeyStore } from '../../src/types'
 import { mock } from './mock'
-import sinon from './sinon'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Mock = {
-  mod: object;
+  mod: any;
   meth: string;
   resp: any;
   params: any;
@@ -24,33 +24,38 @@ type KeystoreMethodOpts = {
 
 export const keystoreMethod = (opts: KeystoreMethodOpts): void => {
   describe(opts.desc, () => {
-    const fakes = [] as sinon.SinonSpy[]
+    const fakes = [] as jest.SpyInstance[]
     let response: any // eslint-disable-line @typescript-eslint/no-explicit-any 
 
     beforeAll(async () => {
-      sinon.restore()
+      jest.resetAllMocks()
+      jest.spyOn(idb, 'getKeypair').mockImplementation((keyName) => {
+        return keyName === 'read-key' ? mock.keys : mock.writeKeys
+      })
+
       opts.mocks.forEach(mock => {
-        const fake = sinon.fake.returns(new Promise(r => r(mock.resp)))
-        sinon.stub(mock.mod, mock.meth).callsFake(fake)
+        const fake = jest.spyOn(mock.mod, mock.meth)
+        fake.mockResolvedValue(mock.resp)
         fakes.push(fake)
       })
+
       const ks = opts.type === 'ecc' ?
-        new ECCKeyStore(mock.keys, mock.writeKeys, config.defaultConfig) :
-        new RSAKeyStore(mock.keys, mock.writeKeys, config.defaultConfig)
+        new ECCKeyStore(config.defaultConfig, mock.idbStore) :
+        new RSAKeyStore(config.defaultConfig, mock.idbStore)
       response = await opts.reqFn(ks)
     })
 
     opts.mocks.forEach((mock, i) => {
       it(`should call ${mock.meth} once`, () => {
-        expect(fakes[i].callCount).toEqual(1)
+        expect(fakes[i]).toBeCalledTimes(1)
       })
 
       it(`should call the library function with the expected params`, () => {
-        expect(fakes[i].args[0]).toEqual(mock.params)
+        expect(fakes[i].mock.calls[0]).toEqual(mock.params)
       })
     })
 
-    if(opts.expectedResp) {
+    if(opts.expectedResp !== undefined) {
       it('should return the expectedResp', () => {
         expect(response).toEqual(opts.expectedResp)
       })

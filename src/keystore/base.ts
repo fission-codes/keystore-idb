@@ -3,37 +3,66 @@ import idb from '../idb'
 import utils from '../utils'
 import config from '../config'
 import { Config } from '../types'
+import { checkIsKeyPair } from '../errors'
 
 export default class KeyStoreBase {
-  cfg: Config
-  readKey: CryptoKeyPair
-  writeKey: CryptoKeyPair
 
-  constructor(readKey: CryptoKeyPair, writeKey: CryptoKeyPair, cfg: Config) {
+  cfg: Config
+  store: LocalForage
+
+  constructor(cfg: Config, store: LocalForage) {
     this.cfg = cfg
-    this.readKey = readKey
-    this.writeKey = writeKey
+    this.store = store
+  }
+
+  async writeKey(): Promise<CryptoKeyPair> {
+    const maybeKey = await idb.getKeypair(this.cfg.writeKeyName, this.store)
+    return checkIsKeyPair(maybeKey)
+  }
+
+  async readKey(): Promise<CryptoKeyPair> {
+    const maybeKey = await idb.getKeypair(this.cfg.readKeyName, this.store)
+    return checkIsKeyPair(maybeKey)
+  }
+
+  async getSymmKey(keyName: string, cfg?: Partial<Config>): Promise<CryptoKey> {
+    const mergedCfg = config.merge(this.cfg, cfg)
+    const maybeKey = await idb.getKey(keyName, this.store)
+    if(maybeKey !== null) {
+      return maybeKey
+    }
+    const key = await aes.makeKey(config.symmKeyOpts(mergedCfg))
+    await idb.put(keyName, key, this.store)
+    return key
   }
 
   async keyExists(keyName: string): Promise<boolean> {
-    return idb.exists(keyName)
+    const key = await idb.getKey(keyName, this.store)
+    return key !== null
+  }
+
+  async deleteKey(keyName: string): Promise<void> {
+    return idb.rm(keyName, this.store)
+  }
+
+  async destroy(): Promise<void> {
+    return idb.dropStore(this.store)
   }
 
   async importSymmKey(keyStr: string, keyName: string, cfg?: Partial<Config>): Promise<void> {
     const mergedCfg = config.merge(this.cfg, cfg)
     const key = await aes.importKey(keyStr, config.symmKeyOpts(mergedCfg))
-    await idb.putKey(keyName, key)
+    await idb.put(keyName, key, this.store)
   }
 
   async exportSymmKey(keyName: string, cfg?: Partial<Config>): Promise<string> {
-    const mergedCfg = config.merge(this.cfg, cfg)
-    const key = await aes.getKey(keyName, config.symmKeyOpts(mergedCfg))
+    const key = await this.getSymmKey(keyName, cfg)
     return aes.exportKey(key)
   }
 
   async encryptWithSymmKey(msg: string, keyName: string, cfg?: Partial<Config>): Promise<string> {
     const mergedCfg = config.merge(this.cfg, cfg)
-    const key = await aes.getKey(keyName, config.symmKeyOpts(mergedCfg))
+    const key = await this.getSymmKey(keyName, cfg)
     const cipherText = await aes.encryptBytes(
       utils.strToArrBuf(msg, mergedCfg.charSize),
       key,
@@ -44,7 +73,7 @@ export default class KeyStoreBase {
 
   async decryptWithSymmKey(cipherText: string, keyName: string, cfg?: Partial<Config>): Promise<string> {
     const mergedCfg = config.merge(this.cfg, cfg)
-    const key = await aes.getKey(keyName, config.symmKeyOpts(mergedCfg))
+    const key = await this.getSymmKey(keyName, cfg)
     const msgBytes = await aes.decryptBytes(
       utils.base64ToArrBuf(cipherText),
       key,
@@ -52,5 +81,4 @@ export default class KeyStoreBase {
     )
     return utils.arrBufToStr(msgBytes, mergedCfg.charSize)
   }
-
 }

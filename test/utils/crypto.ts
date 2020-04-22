@@ -1,5 +1,3 @@
-import sinon from './sinon'
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Req = () => Promise<any>
 type ParamCheckFn = (params: any) => boolean
@@ -18,7 +16,7 @@ type ShouldThrow = {
 
 type WebCryptoReqOpts = {
   desc: string;
-  setMock: (fake: sinon.SinonSpy) => void;
+  setMock: (fake: jest.Mock) => void;
   mockResp: any;
   expectedResp?: any;
   simpleReq: Req;
@@ -30,16 +28,16 @@ type WebCryptoReqOpts = {
 
 export const cryptoMethod = (opts: WebCryptoReqOpts): void => {
   return describe(opts.desc, () => {
-    let fake: sinon.SinonSpy
+    let fake: jest.Mock
    
     beforeEach(async () => {
-      fake = sinon.fake.returns(new Promise(r => r(opts.mockResp)))
+      fake = jest.fn(() => new Promise(r => r(opts.mockResp)))
       opts.setMock(fake)
     })
 
     it('sends only one request', async () => {
       await opts.simpleReq()
-      expect(fake.callCount).toEqual(1)
+      expect(fake).toBeCalledTimes(1)
     })
 
     it('returns expected response', async () => {
@@ -54,7 +52,7 @@ export const cryptoMethod = (opts: WebCryptoReqOpts): void => {
     if(opts.simpleParams !== undefined){
       it('correctly passes params', async () => {
         await opts.simpleReq()
-        expect(fake.args[0]).toEqual(opts.simpleParams)
+        expect(fake.mock.calls[0]).toEqual(opts.simpleParams)
       })
     }
 
@@ -62,10 +60,10 @@ export const cryptoMethod = (opts: WebCryptoReqOpts): void => {
       it(test.desc, async () => {
         await test.req()
         if(typeof test.params === 'function'){
-          expect(test.params(fake.args[0])).toBeTruthy()
+          expect(test.params(fake.mock.calls[0])).toBeTruthy()
 
         }else {
-          expect(fake.args[0]).toEqual(test.params)
+          expect(fake.mock.calls[0]).toEqual(test.params)
         }
       })
     })

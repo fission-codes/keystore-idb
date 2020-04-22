@@ -1,22 +1,34 @@
-import keystore, { ECCKeyStore } from '../src/ecc/keystore'
+import ECCKeyStore from '../src/ecc/keystore'
 import keys from '../src/ecc/keys'
 import operations from '../src/ecc/operations'
 import config from '../src/config'
+import idb from '../src/idb'
 import { EccCurve, KeyUse, CryptoSystem } from '../src/types'
 import { mock, keystoreMethod } from './utils'
 
-const sinon = require('sinon')
+jest.mock('../src/idb')
 
 describe("ECCKeyStore", () => {
   describe("init", () => {
-    let fakeGet: sinon.SinonSpy
+
     let response: any
+    let fakeStore: jest.SpyInstance
+    let fakeMake: jest.SpyInstance
+    let fakeCreateifDNE: jest.SpyInstance
 
     beforeAll(async () => {
-      sinon.restore()
-      fakeGet = sinon.fake.returns(new Promise(r => r(mock.keys)))
-      sinon.stub(keys, 'getKey').callsFake(fakeGet)
-      response = await keystore.init({ readKeyName: 'test-read', writeKeyName: 'test-write' })
+      fakeStore = jest.spyOn(idb, 'createStore')
+      fakeStore.mockReturnValue(mock.idbStore)
+
+      fakeMake = jest.spyOn(keys, 'makeKeypair')
+      fakeMake.mockResolvedValue(mock.keys)
+
+      fakeCreateifDNE = jest.spyOn(idb, 'createIfDoesNotExist')
+      fakeCreateifDNE.mockImplementation((_name, makeFn) => {
+        makeFn()
+      })
+
+      response = await ECCKeyStore.init({ readKeyName: 'test-read', writeKeyName: 'test-write' })
     })
 
     it('should initialize a keystore with expected params', () => {
@@ -25,25 +37,34 @@ describe("ECCKeyStore", () => {
         readKeyName: 'test-read',
         writeKeyName: 'test-write'
       })
-      const keystore = new ECCKeyStore(mock.keys, mock.keys, cfg)
+      const keystore = new ECCKeyStore(cfg, mock.idbStore)
       expect(response).toStrictEqual(keystore)
     })
 
-    it('should call getKey with correct params (read key)', () => {
-      expect(fakeGet.args[0]).toEqual([
+    it('should call createIfDoesNotExist with correct params (read key)', () => {
+      expect(fakeCreateifDNE.mock.calls[0][0]).toEqual('test-read')
+      expect(fakeCreateifDNE.mock.calls[0][2]).toEqual(mock.idbStore)
+    })
+
+    it('should call createIfDoesNotExist with correct params (write key)', () => {
+      expect(fakeCreateifDNE.mock.calls[1][0]).toEqual('test-write')
+      expect(fakeCreateifDNE.mock.calls[1][2]).toEqual(mock.idbStore)
+    })
+
+    it('should call makeKeypair with correct params (read key)', () => {
+      expect(fakeMake.mock.calls[0]).toEqual([
         EccCurve.P_256,
-        'test-read',
         KeyUse.Read
       ])
     })
 
-    it('should call getKey with correct params (write key)', () => {
-      expect(fakeGet.args[1]).toEqual([
+    it('should call makeKeypair with correct params (write key)', () => {
+      expect(fakeMake.mock.calls[1]).toEqual([
         EccCurve.P_256,
-        'test-write',
         KeyUse.Write
       ])
     })
+
   })
 
 

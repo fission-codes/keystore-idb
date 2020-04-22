@@ -13,15 +13,72 @@ describe("KeyStoreBase", () => {
     mocks: [
       {
         mod: idb,
-        meth: 'exists', 
-        resp: true,
+        meth: 'getKey', 
+        resp: null,
         params: [
-          mock.symmKeyName
+          mock.symmKeyName,
+          mock.idbStore
         ]
       },
     ],
     reqFn: (ks) => ks.keyExists(mock.symmKeyName),
-    expectedResp: true,
+    expectedResp: false,
+  })
+
+
+  keystoreMethod({
+    desc: 'getSymmKey (exists)',
+    type: 'rsa',
+    mocks: [
+      {
+        mod: idb,
+        meth: 'getKey', 
+        resp: mock.symmKey,
+        params: [
+          mock.symmKeyName,
+          mock.idbStore
+        ]
+      },
+    ],
+    reqFn: (ks) => ks.getSymmKey(mock.symmKeyName),
+    expectedResp: mock.symmKey,
+  })
+
+  keystoreMethod({
+    desc: 'getSymmKey (does not exist)',
+    type: 'rsa',
+    mocks: [
+      {
+        mod: idb,
+        meth: 'getKey', 
+        resp: null,
+        params: [
+          mock.symmKeyName,
+          mock.idbStore
+        ]
+      },
+            {
+        mod: aes,
+        meth: 'makeKey', 
+        resp: mock.symmKey,
+        params: [
+          config.symmKeyOpts(config.defaultConfig)
+        ]
+      },
+      {
+        mod: idb,
+        meth: 'put', 
+        resp: null,
+        params: [
+          mock.symmKeyName,
+          mock.symmKey,
+          mock.idbStore
+        ]
+      },
+
+    ],
+    reqFn: (ks) => ks.getSymmKey(mock.symmKeyName),
+    expectedResp: mock.symmKey,
   })
 
 
@@ -40,11 +97,12 @@ describe("KeyStoreBase", () => {
       },
       {
         mod: idb,
-        meth: 'putKey', 
+        meth: 'put', 
         resp: undefined,
         params: [
           mock.symmKeyName,
-          mock.symmKey
+          mock.symmKey,
+          mock.idbStore
         ]
       }
     ],
@@ -57,12 +115,12 @@ describe("KeyStoreBase", () => {
     type: 'rsa',
     mocks: [
       {
-        mod: aes,
+        mod: idb,
         meth: 'getKey', 
         resp: mock.symmKey,
         params: [
           mock.symmKeyName,
-          defaultOpts
+          mock.idbStore
         ]
       },
       {
@@ -84,12 +142,12 @@ describe("KeyStoreBase", () => {
     type: 'rsa',
     mocks: [
       {
-        mod: aes,
+        mod: idb,
         meth: 'getKey', 
         resp: mock.symmKey,
         params: [
           mock.symmKeyName,
-          defaultOpts
+          mock.idbStore
         ]
       },
       {
@@ -113,12 +171,12 @@ describe("KeyStoreBase", () => {
     type: 'rsa',
     mocks: [
       {
-        mod: aes,
+        mod: idb,
         meth: 'getKey', 
         resp: mock.symmKey,
         params: [
           mock.symmKeyName,
-          defaultOpts
+          mock.idbStore
         ]
       },
       {
@@ -134,6 +192,42 @@ describe("KeyStoreBase", () => {
     ],
     reqFn: (ks) => ks.decryptWithSymmKey(mock.cipherStr, mock.symmKeyName),
     expectedResp: mock.msgStr
+  })
+
+
+  keystoreMethod({
+    desc: 'deleteKey',
+    type: 'rsa',
+    mocks: [
+      {
+        mod: idb,
+        meth: 'rm', 
+        resp: undefined,
+        params: [
+          mock.symmKeyName,
+          mock.idbStore
+        ]
+      }
+    ],
+    reqFn: (ks) => ks.deleteKey(mock.symmKeyName),
+    expectedResp: undefined
+  })
+
+  keystoreMethod({
+    desc: 'destory',
+    type: 'rsa',
+    mocks: [
+      {
+        mod: idb,
+        meth: 'dropStore', 
+        resp: undefined,
+        params: [
+          mock.idbStore
+        ]
+      }
+    ],
+    reqFn: (ks) => ks.destroy(),
+    expectedResp: undefined
   })
 
 })

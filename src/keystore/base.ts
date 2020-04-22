@@ -8,7 +8,7 @@ import { checkIsKeyPair } from '../errors'
 export default class KeyStoreBase {
 
   cfg: Config
-  store: LocalForage
+  protected store: LocalForage
 
   constructor(cfg: Config, store: LocalForage) {
     this.cfg = cfg

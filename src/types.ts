@@ -70,7 +70,6 @@ export enum KeyUse {
 
 export interface KeyStore {
   cfg: Config
-  store: LocalForage
 
   readKey: () => Promise<CryptoKeyPair>
   writeKey: () => Promise<CryptoKeyPair>

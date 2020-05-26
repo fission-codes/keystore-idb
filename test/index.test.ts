@@ -1,59 +1,44 @@
 import KeyStore from '../src'
-import ecc from '../src/ecc'
-import rsa from '../src/rsa'
+import ECCKeyStore from '../src/ecc/keystore'
+import RSAKeyStore from '../src/rsa/keystore'
 import config from '../src/config'
 import errors from '../src/errors'
 import { CryptoSystem } from '../src/types'
 import IDB from '../src/idb'
 
-import { mock } from './utils'
-
-const sinon = require('sinon')
+jest.mock('../src/idb')
 
 describe('keystore', () => {
   describe('init', () => {
     describe('ecc enabled', () => {
-      let fakeEnabled: sinon.SinonSpy
-      let fakeGet: sinon.SinonSpy
 
       beforeEach(async () => {
-        sinon.restore()
-        fakeEnabled = sinon.fake.returns(new Promise(r => r(true)))
-        sinon.stub(config, 'eccEnabled').callsFake(fakeEnabled)
-
-        fakeGet = sinon.fake.returns(new Promise(r => r(mock.keys)))
-        sinon.stub(IDB, 'getKey').callsFake(fakeGet)
+        const mock = jest.spyOn(config, 'eccEnabled')
+        mock.mockResolvedValue(true)
       })
 
-      it('should instantiate an ecc keystore if not specificed', async () => {
+      it('should instantiate an ecc keystore if not specified', async () => {
         const resp = await KeyStore.init()
-        const eccKeystore = await ecc.init()
+        const eccKeystore = await ECCKeyStore.init()
         expect(resp).toStrictEqual(eccKeystore)
       })
 
-      it('should instantiate an rsa keystore if specificed', async () => {
+      it('should instantiate an rsa keystore if specified', async () => {
         const resp = await KeyStore.init({ type: CryptoSystem.RSA })
-        const rsaKeystore = await rsa.init()
+        const rsaKeystore = await RSAKeyStore.init()
         expect(resp).toStrictEqual(rsaKeystore)
       })
     })
 
     describe('ecc not enabled', () => {
-      let fakeEnabled: sinon.SinonSpy
-      let fakeGet: sinon.SinonSpy
 
       beforeEach(async () => {
-        sinon.restore()
-        fakeEnabled = sinon.fake.returns(new Promise(r => r(false)))
-        sinon.stub(config, 'eccEnabled').callsFake(fakeEnabled)
-
-        fakeGet = sinon.fake.returns(new Promise(r => r(mock.keys)))
-        sinon.stub(IDB, 'getKey').callsFake(fakeGet)
+        jest.spyOn(config, 'eccEnabled').mockResolvedValue(false)
       })
 
-      it('should instantiate an rsa keystore if not specificed', async () => {
+      it('should instantiate an rsa keystore if not specified', async () => {
         const resp = await KeyStore.init()
-        const rsaKeystore = await rsa.init()
+        const rsaKeystore = await RSAKeyStore.init()
         expect(resp).toStrictEqual(rsaKeystore)
       })
 
@@ -81,16 +66,15 @@ describe('keystore', () => {
   })
 
   describe('clear', () => {
-    let fake = sinon.SinonSpy
+    let mock: jest.SpyInstance
 
     beforeAll(async () => {
-      fake = sinon.fake.returns(new Promise(r => r()))
-      sinon.stub(IDB, 'clear').callsFake(fake)
+      mock = jest.spyOn(IDB, 'clear')
       await KeyStore.clear()
     })
 
     it('calls IDB.clear once', () => {
-      expect(fake.callCount).toEqual(1)
+      expect(mock).toBeCalledTimes(1)
     })
   })
 })

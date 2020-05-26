@@ -30,6 +30,7 @@ const defaultConfig = {
   symmLen: 128, // 128 | 192 | 256
   hashAlg: 'SHA-256', // 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
   charSize: 16, // 8 | 16
+  storeName: 'keystore', // any string
   readKeyName: 'read-key', // any string
   writeKeyName: 'write-key', // any string
 }
@@ -43,8 +44,8 @@ import keystore from './index'
 async function run() {
   const ALG = types.CryptoSystem.ECC
   await keystore.clear()
-  const ks1 = await keystore.init({ readKeyName: 'read-key-1', writeKeyName: 'write-key-1' })
-  const ks2 = await keystore.init({ readKeyName: 'read-key-2', writeKeyName: 'write-key-2' })
+  const ks1 = await keystore.init({ storeName: 'keystore' })
+  const ks2 = await keystore.init({ storeName: 'keystore2' })
 
   const msg = "Incididunt id ullamco et do."
   // read keys and write keys are separate because of the Web Crypto API

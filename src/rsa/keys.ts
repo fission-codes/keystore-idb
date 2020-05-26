@@ -1,10 +1,9 @@
-import IDB from '../idb'
 import { RSA_READ_ALG, RSA_WRITE_ALG } from '../constants'
 import { RsaSize, HashAlg, KeyUse, PublicKey } from '../types'
 import utils from '../utils'
-import { checkValidKeyUse, checkIsKeyPair } from '../errors'
+import { checkValidKeyUse } from '../errors'
 
-export async function makeKey(
+export async function makeKeypair(
   size: RsaSize,
   hashAlg: HashAlg,
   use: KeyUse
@@ -22,22 +21,6 @@ export async function makeKey(
     false,
     uses
   )
-}
-
-export async function getKey(
-  size: RsaSize,
-  hashAlg: HashAlg,
-  keyName: string,
-  use: KeyUse
-): Promise<CryptoKeyPair> {
-  checkValidKeyUse(use)
-  const maybeKey = await IDB.getKey(keyName)
-  if (maybeKey) {
-    return checkIsKeyPair(maybeKey)
-  }
-  const keypair = await makeKey(size, hashAlg, use)
-  await IDB.putKey(keyName, keypair)
-  return keypair
 }
 
 function stripKeyHeader(base64Key: string): string{
@@ -61,7 +44,6 @@ export async function importPublicKey(base64Key: string, hashAlg: HashAlg, use: 
 }
 
 export default {
-  makeKey,
-  getKey,
+  makeKeypair,
   importPublicKey
 }

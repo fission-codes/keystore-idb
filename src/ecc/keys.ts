@@ -1,10 +1,9 @@
-import IDB from '../idb'
 import utils from '../utils'
 import { ECC_READ_ALG, ECC_WRITE_ALG } from '../constants'
 import { EccCurve, KeyUse, PublicKey } from '../types'
-import { checkValidKeyUse, checkIsKeyPair } from '../errors'
+import { checkValidKeyUse } from '../errors'
 
-export async function makeKey(
+export async function makeKeypair(
   curve: EccCurve,
   use: KeyUse
 ): Promise<CryptoKeyPair> {
@@ -17,21 +16,6 @@ export async function makeKey(
     false,
     uses
   )
-}
-
-export async function getKey(
-  curve: EccCurve,
-  keyName: string,
-  use: KeyUse
-): Promise<CryptoKeyPair> {
-  checkValidKeyUse(use)
-  const maybeKey = await IDB.getKey(keyName)
-  if (maybeKey) {
-    return checkIsKeyPair(maybeKey) 
-  }
-  const keypair = await makeKey(curve, use)
-  await IDB.putKey(keyName, keypair)
-  return keypair
 }
 
 export async function importPublicKey(base64Key: string, curve: EccCurve, use: KeyUse): Promise<PublicKey> {
@@ -50,7 +34,6 @@ export async function importPublicKey(base64Key: string, curve: EccCurve, use: K
 }
 
 export default {
-  makeKey,
-  getKey,
+  makeKeypair,
   importPublicKey
 }

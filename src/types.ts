@@ -12,6 +12,7 @@ export type Config = {
   symmLen: SymmKeyLength
   hashAlg: HashAlg
   charSize: CharSize
+  storeName: string
   readKeyName: string
   writeKeyName: string
 }
@@ -69,10 +70,13 @@ export enum KeyUse {
 
 export interface KeyStore {
   cfg: Config
-  readKey: CryptoKeyPair
-  writeKey: CryptoKeyPair
 
+  readKey: () => Promise<CryptoKeyPair>
+  writeKey: () => Promise<CryptoKeyPair>
+  getSymmKey: (keyName: string, cfg?: Partial<Config>) => Promise<CryptoKey>
   keyExists(keyName: string): Promise<boolean>
+  deleteKey(keyName: string): Promise<void>
+  destroy(): Promise<void>
 
   // Symmetric
 

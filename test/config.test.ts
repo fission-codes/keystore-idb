@@ -3,30 +3,26 @@ import { CryptoSystem, SymmAlg, SymmKeyLength } from '../src/types'
 import utils from '../src/utils'
 import { mock } from './utils'
 
-const sinon = require('sinon')
-
 describe('config', () => {
   describe('eccEnabled', () => {
 
-    beforeEach(() => sinon.restore())
-
     describe('structural clone works', () => {
-      let fakeClone: sinon.SinonSpy
-      let fakeMake: sinon.SinonSpy
+      let fakeClone: jest.SpyInstance
+      let fakeMake: jest.Mock
       let response: boolean
 
       beforeAll(async () => {
-        fakeClone = sinon.fake.returns(new Promise(r => r()))
-        sinon.stub(utils, 'structuralClone').callsFake(fakeClone)
+        fakeClone = jest.spyOn(utils, 'structuralClone')
+        fakeClone.mockResolvedValue(undefined)
 
-        fakeMake = sinon.fake.returns(new Promise(r => r(mock.keys)))
+        fakeMake = jest.fn(() => new Promise(r => r(mock.keys)))
         window.crypto.subtle.generateKey = fakeMake
 
         response = await config.eccEnabled()
       })
 
       it('calls structural clone once', () => {
-        expect(fakeClone.callCount).toEqual(1)
+        expect(fakeClone).toBeCalledTimes(1)
       })
 
       it('returns true', () => {
@@ -35,24 +31,24 @@ describe('config', () => {
     })
 
     describe('structural clone does not works', () => {
-      let fakeClone: sinon.SinonSpy
-      let fakeMake: sinon.SinonSpy
+      let fakeClone: jest.SpyInstance
+      let fakeMake: jest.Mock
       let response: boolean
 
       beforeAll(async () => {
-        fakeClone = sinon.fake.returns(
-          new Promise((resp, rej) => rej(new Error("cannot structural clone")))
+        fakeClone = jest.spyOn(utils, 'structuralClone')
+        fakeClone.mockReturnValue(
+          new Promise((_resp, rej) => rej(new Error("cannot structural clone")))
         )
-        sinon.stub(utils, 'structuralClone').callsFake(fakeClone)
 
-        fakeMake = sinon.fake.returns(new Promise(r => r(mock.keys)))
+        fakeMake = jest.fn(() => new Promise(r => r(mock.keys)))
         window.crypto.subtle.generateKey = fakeMake
 
         response = await config.eccEnabled()
       })
 
       it('calls structural clone once', () => {
-        expect(fakeClone.callCount).toEqual(1)
+        expect(fakeClone).toBeCalledTimes(1)
       })
 
       it('returns false', () => {

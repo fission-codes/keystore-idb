@@ -1,13 +1,9 @@
 import aes from '../src/aes'
 import utils from '../src/utils'
 import { SymmAlg, SymmKeyLength } from '../src/types'
-import { mock, cryptoMethod, idbMethod, arrBufEq } from './utils'
-
-const sinon = require('sinon')
+import { mock, cryptoMethod, arrBufEq } from './utils'
 
 describe('aes', () => {
-
-  beforeEach(() => sinon.restore())
 
   cryptoMethod({
     desc: 'makeKey',
@@ -32,47 +28,6 @@ describe('aes', () => {
       }
     ],
     shouldThrows: [ ]
-  })
-
-
-  describe('getKey', () => {
-    idbMethod({
-      desc: 'key does not exist',
-      req: () => aes.getKey(mock.symmKeyName),
-      expectedResponse: mock.symmKey,
-      fakeMakeResp: mock.symmKey,
-      putParams: [
-        mock.symmKeyName,
-        mock.symmKey
-      ],
-      getParams: [
-        mock.symmKeyName
-      ],
-      makeParams: [
-        {
-          name: 'AES-CTR',
-          length: 128
-        },
-        true,
-        ['encrypt', 'decrypt']
-      ],
-      putCount: 1,
-      getCount: 1,
-      makeCount: 1,
-    })
-
-    idbMethod({
-      desc: 'key does exist',
-      req: () => aes.getKey(mock.symmKeyName),
-      expectedResponse: mock.symmKey,
-      fakeGetResp: mock.symmKey,
-      getParams: [
-        mock.symmKeyName
-      ],
-      putCount: 0,
-      getCount: 1,
-      makeCount: 0,
-    })
   })
 
 
@@ -108,8 +63,8 @@ describe('aes', () => {
     desc: 'encrypt',
     setMock: fake => {
       window.crypto.subtle.encrypt = fake
-      window.crypto.subtle.importKey = sinon.fake.returns(new Promise(r => r(mock.symmKey)))
-      window.crypto.getRandomValues = sinon.fake.returns(new Promise(r => r()))
+      window.crypto.subtle.importKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
+      window.crypto.getRandomValues = jest.fn(() => new Promise(r => r(new Uint8Array(16)))) as any
     },
     mockResp: mock.cipherBytes,
     expectedResp: mock.cipherWithIVStr,
@@ -151,7 +106,7 @@ describe('aes', () => {
     desc: 'decrypt',
     setMock: fake => {
       window.crypto.subtle.decrypt = fake
-      window.crypto.subtle.importKey = sinon.fake.returns(new Promise(r => r(mock.symmKey)))
+      window.crypto.subtle.importKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
     },
     mockResp: mock.msgBytes,
     expectedResp: mock.msgStr,

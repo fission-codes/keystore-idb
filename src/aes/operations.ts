@@ -8,7 +8,7 @@ export async function encryptBytes(
   key: SymmKey | string,
   opts?: Partial<SymmKeyOpts>
 ): Promise<CipherText> {
-  const data = utils.normalizeTextToBuf(msg)
+  const data = utils.normalizeUtf16ToBuf(msg)
   const importedKey = typeof key === 'string' ? await keys.importKey(key, opts) : key
   const alg = opts?.alg || DEFAULT_SYMM_ALG
   const iv = opts?.iv || utils.randomBuf(16)
@@ -31,7 +31,7 @@ export async function decryptBytes(
   key: SymmKey | string,
   opts?: Partial<SymmKeyOpts>
 ): Promise<ArrayBuffer> {
-  const cipherText = utils.normalizeCipherToBuf(msg)
+  const cipherText = utils.normalizeBase64ToBuf(msg)
   const importedKey = typeof key === 'string' ? await keys.importKey(key, opts) : key
   const alg = opts?.alg || DEFAULT_SYMM_ALG
   const iv = cipherText.slice(0, 16)

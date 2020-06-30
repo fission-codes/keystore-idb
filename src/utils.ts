@@ -45,11 +45,11 @@ export function joinBufs(fst: ArrayBuffer, snd: ArrayBuffer): ArrayBuffer {
   return joined.buffer
 }
 
-export const normalizeTextToBuf = (msg: Msg): ArrayBuffer => {
+export const normalizeUtf16ToBuf = (msg: Msg): ArrayBuffer => {
   return normalizeToBuf(msg, (str) => strToArrBuf(str, CharSize.B16))
 }
 
-export const normalizeCipherToBuf = (msg: Msg): ArrayBuffer => {
+export const normalizeBase64ToBuf = (msg: Msg): ArrayBuffer => {
   return normalizeToBuf(msg, base64ToArrBuf)
 }
 
@@ -81,8 +81,8 @@ export default {
   publicExponent,
   randomBuf,
   joinBufs,
-  normalizeTextToBuf,
-  normalizeCipherToBuf,
+  normalizeUtf16ToBuf,
+  normalizeBase64ToBuf,
   normalizeToBuf,
   structuralClone
 }

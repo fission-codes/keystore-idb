@@ -2,7 +2,6 @@ import IDB from '../idb'
 import keys from './keys'
 import operations from './operations'
 import config from '../config'
-import utils from '../utils'
 import KeyStoreBase from '../keystore/base'
 import { KeyStore, Config, KeyUse, CryptoSystem } from '../types'
 
@@ -13,9 +12,10 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
       ...(maybeCfg || {}),
       type: CryptoSystem.RSA
     })
-    const { rsaSize, hashAlg, storeName, readKeyName, writeKeyName } = cfg
 
+    const { rsaSize, hashAlg, storeName, readKeyName, writeKeyName } = cfg
     const store = IDB.createStore(storeName)
+
     await IDB.createIfDoesNotExist(readKeyName, () => (
       keys.makeKeypair(rsaSize, hashAlg, KeyUse.Read)
     ), store)
@@ -28,14 +28,13 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
 
 
   async sign(msg: string, cfg?: Partial<Config>): Promise<string> {
-    const mergedCfg = config.merge(this.cfg, cfg)
     const writeKey = await this.writeKey()
 
-    const sigBytes = await operations.signBytes(
-      utils.strToArrBuf(msg, mergedCfg.charSize),
-      writeKey.privateKey
+    return await operations.signString(
+      msg,
+      writeKey.privateKey,
+      config.merge(this.cfg, cfg)
     )
-    return utils.arrBufToBase64(sigBytes)
   }
 
   async verify(
@@ -44,13 +43,11 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
     publicKey: string,
     cfg?: Partial<Config>
   ): Promise<boolean> {
-    const mergedCfg = config.merge(this.cfg, cfg)
-    const pubkey = await keys.importPublicKey(publicKey, mergedCfg.hashAlg, KeyUse.Write)
-
-    return operations.verifyBytes(
-      utils.strToArrBuf(msg, mergedCfg.charSize),
-      utils.base64ToArrBuf(sig),
-      pubkey
+    return await operations.verifyString(
+      msg,
+      sig,
+      publicKey,
+      config.merge(this.cfg, cfg)
     )
   }
 
@@ -59,28 +56,25 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
     publicKey: string,
     cfg?: Partial<Config>
   ): Promise<string> {
-    const mergedCfg = config.merge(this.cfg, cfg)
-    const pubkey = await keys.importPublicKey(publicKey, mergedCfg.hashAlg, KeyUse.Read)
-    const cipherText = await operations.encryptBytes(
-      utils.strToArrBuf(msg, mergedCfg.charSize),
-      pubkey
+    return await operations.encryptString(
+      msg,
+      publicKey,
+      config.merge(this.cfg, cfg)
     )
-    return utils.arrBufToBase64(cipherText)
   }
 
   async decrypt(
     cipherText: string,
-    publicKey?: string, //unused param so that keystore interfaces match
+    publicKey?: string, // unused param so that keystore interfaces match
     cfg?: Partial<Config>
   ): Promise<string> {
-    const mergedCfg = config.merge(this.cfg, cfg)
     const readKey = await this.readKey()
 
-    const msgBytes = await operations.decryptBytes(
-      utils.base64ToArrBuf(cipherText),
-      readKey.privateKey
+    return await operations.decryptString(
+      cipherText,
+      readKey.privateKey,
+      config.merge(this.cfg, cfg)
     )
-    return utils.arrBufToStr(msgBytes, mergedCfg.charSize)
   }
 
   async publicReadKey(): Promise<string> {

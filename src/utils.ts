@@ -45,15 +45,22 @@ export function joinBufs(fst: ArrayBuffer, snd: ArrayBuffer): ArrayBuffer {
   return joined.buffer
 }
 
-export const normalizeToBuf = (msg: Msg): ArrayBuffer => {
-  if (msg instanceof ArrayBuffer) {
-    return msg
-  } else if (msg instanceof Uint8Array) {
-    return msg.buffer
-  } else if (typeof msg === 'string') {
-    return strToArrBuf(msg, CharSize.B16)
+export const normalizeTextToBuf = (msg: Msg): ArrayBuffer => {
+  return normalizeToBuf(msg, (str) => strToArrBuf(str, CharSize.B16))
+}
+
+export const normalizeCipherToBuf = (msg: Msg): ArrayBuffer => {
+  return normalizeToBuf(msg, base64ToArrBuf)
+}
+
+export const normalizeToBuf = (msg: Msg, strConv: (str: string) => ArrayBuffer): ArrayBuffer => {
+  if (typeof msg === 'string') {
+    return strConv(msg)
+  } else if(typeof msg === 'object' && msg.byteLength !== undefined) { // this is the best runtime check I could find for ArrayBuffer/Uint8Array  
+    const temp = new Uint8Array(msg)
+    return temp.buffer
   } else {
-    throw new Error("Improper value. Must be a string, ArrayBuffer, Uint8Array, or Uint16Array")
+    throw new Error("Improper value. Must be a string, ArrayBuffer, Uint8Array")
   }
 }
 
@@ -74,6 +81,8 @@ export default {
   publicExponent,
   randomBuf,
   joinBufs,
+  normalizeTextToBuf,
+  normalizeCipherToBuf,
   normalizeToBuf,
   structuralClone
 }

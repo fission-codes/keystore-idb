@@ -61,7 +61,6 @@ export const cryptoMethod = (opts: WebCryptoReqOpts): void => {
         await test.req()
         if(typeof test.params === 'function'){
           expect(test.params(fake.mock.calls[0])).toBeTruthy()
-
         }else {
           expect(fake.mock.calls[0]).toEqual(test.params)
         }

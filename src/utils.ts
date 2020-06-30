@@ -1,4 +1,4 @@
-import { CharSize } from './types'
+import { CharSize, Msg } from './types'
 
 export function arrBufToStr(buf: ArrayBuffer, charSize: CharSize): string {
   const arr = charSize === 8 ? new Uint8Array(buf) : new Uint16Array(buf)
@@ -45,6 +45,18 @@ export function joinBufs(fst: ArrayBuffer, snd: ArrayBuffer): ArrayBuffer {
   return joined.buffer
 }
 
+export const normalizeToBuf = (msg: Msg): ArrayBuffer => {
+  if (msg instanceof ArrayBuffer) {
+    return msg
+  } else if (msg instanceof Uint8Array) {
+    return msg.buffer
+  } else if (typeof msg === 'string') {
+    return strToArrBuf(msg, CharSize.B16)
+  } else {
+    throw new Error("Improper value. Must be a string, ArrayBuffer, Uint8Array, or Uint16Array")
+  }
+}
+
 /* istanbul ignore next */
 export async function structuralClone(obj: any) {
   return new Promise(resolve => {
@@ -62,5 +74,6 @@ export default {
   publicExponent,
   randomBuf,
   joinBufs,
+  normalizeToBuf,
   structuralClone
 }

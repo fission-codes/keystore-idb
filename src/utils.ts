@@ -45,6 +45,10 @@ export function joinBufs(fst: ArrayBuffer, snd: ArrayBuffer): ArrayBuffer {
   return joined.buffer
 }
 
+export const normalizeUtf8ToBuf = (msg: Msg): ArrayBuffer => {
+  return normalizeToBuf(msg, (str) => strToArrBuf(str, CharSize.B8))
+}
+
 export const normalizeUtf16ToBuf = (msg: Msg): ArrayBuffer => {
   return normalizeToBuf(msg, (str) => strToArrBuf(str, CharSize.B16))
 }
@@ -53,10 +57,18 @@ export const normalizeBase64ToBuf = (msg: Msg): ArrayBuffer => {
   return normalizeToBuf(msg, base64ToArrBuf)
 }
 
+export const normalizeUnicodeToBuf = (msg: Msg, charSize: CharSize) => {
+  switch (charSize) {
+    case 8: return normalizeUtf8ToBuf(msg)
+    default: return normalizeUtf16ToBuf(msg)
+  }
+}
+
 export const normalizeToBuf = (msg: Msg, strConv: (str: string) => ArrayBuffer): ArrayBuffer => {
   if (typeof msg === 'string') {
     return strConv(msg)
-  } else if(typeof msg === 'object' && msg.byteLength !== undefined) { // this is the best runtime check I could find for ArrayBuffer/Uint8Array  
+  } else if (typeof msg === 'object' && msg.byteLength !== undefined) {
+    // this is the best runtime check I could find for ArrayBuffer/Uint8Array
     const temp = new Uint8Array(msg)
     return temp.buffer
   } else {
@@ -81,6 +93,7 @@ export default {
   publicExponent,
   randomBuf,
   joinBufs,
+  normalizeUtf8ToBuf,
   normalizeUtf16ToBuf,
   normalizeBase64ToBuf,
   normalizeToBuf,

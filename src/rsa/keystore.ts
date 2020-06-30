@@ -3,7 +3,7 @@ import keys from './keys'
 import operations from './operations'
 import config from '../config'
 import KeyStoreBase from '../keystore/base'
-import { KeyStore, Config, KeyUse, CryptoSystem } from '../types'
+import { KeyStore, Config, KeyUse, CryptoSystem, Msg, PublicKey } from '../types'
 
 export class RSAKeyStore extends KeyStoreBase implements KeyStore {
 
@@ -27,53 +27,61 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
   }
 
 
-  async sign(msg: string, cfg?: Partial<Config>): Promise<string> {
+  async sign(msg: Msg, cfg?: Partial<Config>): Promise<string> {
+    const mergedCfg = config.merge(this.cfg, cfg)
     const writeKey = await this.writeKey()
-
-    return operations.signString(
+    const signedBuf = await operations.sign(
       msg,
       writeKey.privateKey,
-      config.merge(this.cfg, cfg)
+      mergedCfg.charSize
     )
+
+    return utils.arrBufToBase64(signedBuf)
   }
 
   async verify(
     msg: string,
     sig: string,
-    publicKey: string,
+    publicKey: string | PublicKey,
     cfg?: Partial<Config>
   ): Promise<boolean> {
-    return operations.verifyString(
+    const mergedCfg = config.merge(this.cfg, cfg)
+
+    return operations.verify(
       msg,
       sig,
       publicKey,
-      config.merge(this.cfg, cfg)
+      mergedCfg.charSize,
+      mergedCfg.hashAlg
     )
   }
 
   async encrypt(
-    msg: string,
-    publicKey: string,
+    msg: Msg,
+    publicKey: string | PublicKey,
     cfg?: Partial<Config>
   ): Promise<string> {
-    return operations.encryptString(
+    const mergedCfg = config.merge(this.cfg, cfg)
+    const cipherText = await operations.encrypt(
       msg,
       publicKey,
-      config.merge(this.cfg, cfg)
+      mergedCfg.charSize,
+      mergedCfg.hashAlg
     )
+
+    return utils.arrBufToBase64(cipherText)
   }
 
   async decrypt(
-    cipherText: string,
-    publicKey?: string, // unused param so that keystore interfaces match
+    cipherText: Msg,
+    publicKey?: string | PublicKey, // unused param so that keystore interfaces match
     cfg?: Partial<Config>
   ): Promise<string> {
     const readKey = await this.readKey()
 
-    return operations.decryptString(
+    return operations.decrypt(
       cipherText,
-      readKey.privateKey,
-      config.merge(this.cfg, cfg)
+      readKey.privateKey
     )
   }
 

@@ -30,7 +30,7 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
   async sign(msg: string, cfg?: Partial<Config>): Promise<string> {
     const writeKey = await this.writeKey()
 
-    return await operations.signString(
+    return operations.signString(
       msg,
       writeKey.privateKey,
       config.merge(this.cfg, cfg)
@@ -43,7 +43,7 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
     publicKey: string,
     cfg?: Partial<Config>
   ): Promise<boolean> {
-    return await operations.verifyString(
+    return operations.verifyString(
       msg,
       sig,
       publicKey,
@@ -56,7 +56,7 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
     publicKey: string,
     cfg?: Partial<Config>
   ): Promise<string> {
-    return await operations.encryptString(
+    return operations.encryptString(
       msg,
       publicKey,
       config.merge(this.cfg, cfg)
@@ -70,7 +70,7 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
   ): Promise<string> {
     const readKey = await this.readKey()
 
-    return await operations.decryptString(
+    return operations.decryptString(
       cipherText,
       readKey.privateKey,
       config.merge(this.cfg, cfg)

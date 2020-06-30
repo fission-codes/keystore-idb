@@ -6,23 +6,23 @@ import { defaultConfig } from '../config'
 
 export async function signBytes(
   data: ArrayBuffer,
-  privKey: PrivateKey
+  privateKey: PrivateKey
 ): Promise<ArrayBuffer> {
   return window.crypto.subtle.sign(
     { name: RSA_WRITE_ALG, saltLength: SALT_LENGTH },
-    privKey,
+    privateKey,
     data
   )
 }
 
 export async function signString(
   msg: string,
-  privKey: PrivateKey,
-  config: Config = defaultConfig
+  privateKey: PrivateKey,
+  cfg: Config = defaultConfig
 ): Promise<string> {
   const sigBytes = await signBytes(
-    utils.strToArrBuf(msg, config.charSize),
-    privKey
+    utils.strToArrBuf(msg, cfg.charSize),
+    privateKey
   )
 
   return utils.arrBufToBase64(sigBytes)
@@ -31,11 +31,11 @@ export async function signString(
 export async function verifyBytes(
   data: ArrayBuffer,
   sig: ArrayBuffer,
-  pubKey: PublicKey
+  publicKey: PublicKey
 ): Promise<boolean> {
   return window.crypto.subtle.verify(
     { name: RSA_WRITE_ALG, saltLength: SALT_LENGTH },
-    pubKey,
+    publicKey,
     sig,
     data
   )
@@ -43,40 +43,39 @@ export async function verifyBytes(
 
 export async function verifyString(
   msg: string,
-  signature: string,
-  publicKey: string,
-  config: Config = defaultConfig
+  sig: string,
+  publicKey64: string,
+  cfg: Config = defaultConfig
 ): Promise<boolean> {
-  const pubKey = await keys.importPublicKey(publicKey, config.hashAlg, KeyUse.Write)
+  const publicKey = await keys.importPublicKey(publicKey64, cfg.hashAlg, KeyUse.Write)
 
   return verifyBytes(
-    utils.strToArrBuf(msg, config.charSize),
-    utils.base64ToArrBuf(signature),
-    pubKey
+    utils.strToArrBuf(msg, cfg.charSize),
+    utils.base64ToArrBuf(sig),
+    publicKey
   )
 }
 
 export async function encryptBytes(
   data: ArrayBuffer,
-  pubKey: PublicKey
+  publicKey: PublicKey
 ): Promise<CipherText> {
   return window.crypto.subtle.encrypt(
     { name: RSA_READ_ALG },
-    pubKey,
+    publicKey,
     data
   )
 }
 
 export async function encryptString(
   msg: string,
-  publicKey: string,
-  config: Config = defaultConfig
+  publicKey64: string,
+  cfg: Config = defaultConfig
 ): Promise<string> {
-  const pubKey = await keys.importPublicKey(publicKey, config.hashAlg, KeyUse.Read)
-
+  const publicKey = await keys.importPublicKey(publicKey64, cfg.hashAlg, KeyUse.Read)
   const cipherText = await encryptBytes(
-    utils.strToArrBuf(msg, config.charSize),
-    pubKey
+    utils.strToArrBuf(msg, cfg.charSize),
+    publicKey
   )
 
   return utils.arrBufToBase64(cipherText)
@@ -96,14 +95,14 @@ export async function decryptBytes(
 export async function decryptString(
   cipherText: string,
   privateKey: PrivateKey,
-  config: Config = defaultConfig
+  cfg: Config = defaultConfig
 ): Promise<string> {
   const msgBytes = await decryptBytes(
     utils.base64ToArrBuf(cipherText),
     privateKey
   )
 
-  return utils.arrBufToStr(msgBytes, config.charSize)
+  return utils.arrBufToStr(msgBytes, cfg.charSize)
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {

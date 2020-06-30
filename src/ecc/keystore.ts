@@ -28,15 +28,13 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
 
 
   async sign(msg: string, cfg?: Partial<Config>): Promise<string> {
-    const mergedCfg = config.merge(this.cfg, cfg)
     const writeKey = await this.writeKey()
 
-    const sigBytes = await operations.signBytes(
-      utils.strToArrBuf(msg, mergedCfg.charSize),
+    return await operations.signString(
+      msg,
       writeKey.privateKey,
-      mergedCfg.hashAlg
+      config.merge(this.cfg, cfg)
     )
-    return utils.arrBufToBase64(sigBytes)
   }
 
   async verify(
@@ -45,14 +43,11 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     publicKey: string,
     cfg?: Partial<Config>
   ): Promise<boolean> {
-    const mergedCfg = config.merge(this.cfg, cfg)
-    const pubkey = await keys.importPublicKey(publicKey, mergedCfg.curve, KeyUse.Write)
-
-    return operations.verifyBytes(
-      utils.strToArrBuf(msg, mergedCfg.charSize),
-      utils.base64ToArrBuf(sig),
-      pubkey,
-      mergedCfg.hashAlg
+    return operations.verifyString (
+      msg,
+      sig,
+      publicKey,
+      config.merge(this.cfg, cfg)
     )
   }
 
@@ -61,17 +56,14 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     publicKey: string,
     cfg?: Partial<Config>
   ): Promise<string> {
-    const mergedCfg = config.merge(this.cfg, cfg)
     const readKey = await this.readKey()
-    const pubkey = await keys.importPublicKey(publicKey, mergedCfg.curve, KeyUse.Read)
 
-    const cipherText = await operations.encryptBytes(
-      utils.strToArrBuf(msg, mergedCfg.charSize),
+    return operations.encryptString(
+      msg,
       readKey.privateKey,
-      pubkey,
-      config.symmKeyOpts(mergedCfg)
+      publicKey,
+      config.merge(this.cfg, cfg)
     )
-    return utils.arrBufToBase64(cipherText)
   }
 
   async decrypt(
@@ -79,17 +71,14 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     publicKey: string,
     cfg?: Partial<Config>
   ): Promise<string> {
-    const mergedCfg = config.merge(this.cfg, cfg)
     const readKey = await this.readKey()
-    const pubkey = await keys.importPublicKey(publicKey, mergedCfg.curve, KeyUse.Read)
 
-    const msgBytes = await operations.decryptBytes(
-      utils.base64ToArrBuf(cipherText),
+    return operations.decryptString(
+      cipherText,
       readKey.privateKey,
-      pubkey,
-      config.symmKeyOpts(mergedCfg)
+      publicKey,
+      config.merge(this.cfg, cfg)
     )
-    return utils.arrBufToStr(msgBytes, mergedCfg.charSize)
   }
 
   async publicReadKey(): Promise<string> {

@@ -21,7 +21,7 @@ export async function signString(
   msg: string,
   privateKey: PrivateKey,
   cfg: Config = defaultConfig
-) {
+): Promise<string> {
   const sigBytes = await signBytes(
     utils.strToArrBuf(msg, cfg.charSize),
     privateKey,
@@ -50,7 +50,7 @@ export async function verifyString(
   sig: string,
   publicKey64: string,
   cfg: Config = defaultConfig
-) {
+): Promise<boolean> {
   const publicKey = await keys.importPublicKey(publicKey64, cfg.curve, KeyUse.Write)
 
   return verifyBytes(
@@ -76,7 +76,7 @@ export async function encryptString(
   privateKey: PrivateKey,
   publicKey64: string,
   cfg: Config = defaultConfig
-) {
+): Promise<string> {
   const publicKey = await keys.importPublicKey(publicKey64, cfg.curve, KeyUse.Read)
   const cipherText = await encryptBytes(
     utils.strToArrBuf(msg, cfg.charSize),
@@ -103,7 +103,7 @@ export async function decryptString(
   privateKey: PrivateKey,
   publicKey64: string,
   cfg: Config = defaultConfig
-) {
+): Promise<string> {
   const publicKey = await keys.importPublicKey(publicKey64, cfg.curve, KeyUse.Read)
   const msgBytes = await decryptBytes(
     utils.base64ToArrBuf(cipherText),

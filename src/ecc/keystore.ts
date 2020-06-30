@@ -2,7 +2,6 @@ import IDB from '../idb'
 import keys from './keys'
 import operations from './operations'
 import config from '../config'
-import utils from '../utils'
 import KeyStoreBase from '../keystore/base'
 import { KeyStore, Config, KeyUse, CryptoSystem } from '../types'
 

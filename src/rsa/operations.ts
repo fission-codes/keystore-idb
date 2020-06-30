@@ -1,7 +1,7 @@
 import keys from './keys'
 import utils from '../utils'
 import { RSA_READ_ALG, RSA_WRITE_ALG, SALT_LENGTH } from '../constants'
-import { CharSize, Config, KeyUse, PrivateKey, PublicKey, CipherText } from '../types'
+import { Config, KeyUse, PrivateKey, PublicKey, CipherText } from '../types'
 import { defaultConfig } from '../config'
 
 export async function signBytes(

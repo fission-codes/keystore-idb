@@ -1,7 +1,7 @@
 import aes from '../aes'
 import keys from './keys'
 import utils, { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils'
-import { DEFAULT_CHAR_SIZE, DEFAULT_EccCurve, DEFAULT_HASH_ALG, ECC_READ_ALG, ECC_WRITE_ALG, DEFAULT_SYMM_ALG, DEFAULT_SYMM_LEN } from '../constants'
+import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE, DEFAULT_HASH_ALG, ECC_READ_ALG, ECC_WRITE_ALG, DEFAULT_SYMM_ALG, DEFAULT_SYMM_LEN } from '../constants'
 import { CharSize, Config, EccCurve, Msg, PrivateKey, PublicKey, HashAlg, KeyUse, SymmKey, SymmKeyOpts, CipherText } from '../types'
 import config, { defaultConfig } from '../config'
 
@@ -24,7 +24,7 @@ export async function verify(
   sig: Msg,
   publicKey: string | PublicKey,
   charSize: CharSize = DEFAULT_CHAR_SIZE,
-  curve: EccCurve = DEFAULT_EccCurve,
+  curve: EccCurve = DEFAULT_ECC_CURVE,
   hashAlg: HashAlg = DEFAULT_HASH_ALG
 ): Promise<boolean> {
   return window.crypto.subtle.verify(
@@ -42,7 +42,7 @@ export async function encrypt(
   privateKey: PrivateKey,
   publicKey: string | PublicKey,
   charSize: CharSize = DEFAULT_CHAR_SIZE,
-  curve: EccCurve = DEFAULT_EccCurve,
+  curve: EccCurve = DEFAULT_ECC_CURVE,
   opts?: Partial<SymmKeyOpts>
 ): Promise<ArrayBuffer> {
   const importedPublicKey = typeof publicKey === "string"
@@ -58,7 +58,7 @@ export async function decrypt(
   privateKey: PrivateKey,
   publicKey: string | PublicKey,
   charSize: CharSize = DEFAULT_CHAR_SIZE,
-  curve: EccCurve = DEFAULT_EccCurve,
+  curve: EccCurve = DEFAULT_ECC_CURVE,
   opts?: Partial<SymmKeyOpts>
 ): Promise<ArrayBuffer> {
   const importedPublicKey = typeof publicKey === "string"

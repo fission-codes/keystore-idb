@@ -3,7 +3,7 @@ import keys from '../src/ecc/keys'
 import operations from '../src/ecc/operations'
 import config, { defaultConfig } from '../src/config'
 import idb from '../src/idb'
-import { DEFAULT_CHAR_SIZE, DEFAULT_EccCurve, DEFAULT_HASH_ALG } from '../src/constants'
+import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE, DEFAULT_HASH_ALG } from '../src/constants'
 import { EccCurve, KeyUse, CryptoSystem } from '../src/types'
 import { mock, keystoreMethod } from './utils'
 
@@ -103,7 +103,7 @@ describe("ECCKeyStore", () => {
           mock.sigStr,
           mock.keyBase64,
           DEFAULT_CHAR_SIZE,
-          DEFAULT_EccCurve,
+          DEFAULT_ECC_CURVE,
           DEFAULT_HASH_ALG
         ]
       }
@@ -126,7 +126,7 @@ describe("ECCKeyStore", () => {
           mock.keys.privateKey,
           mock.keyBase64,
           DEFAULT_CHAR_SIZE,
-          DEFAULT_EccCurve
+          DEFAULT_ECC_CURVE
         ]
       }
     ],
@@ -148,7 +148,7 @@ describe("ECCKeyStore", () => {
           mock.keys.privateKey,
           mock.keyBase64,
           DEFAULT_CHAR_SIZE,
-          DEFAULT_EccCurve
+          DEFAULT_ECC_CURVE
         ]
       }
     ],

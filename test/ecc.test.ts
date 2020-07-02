@@ -1,7 +1,7 @@
 import ecc from '../src/ecc'
 import errors from '../src/errors'
 import utils from '../src/utils'
-import { DEFAULT_CHAR_SIZE, DEFAULT_EccCurve } from '../src/constants'
+import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE } from '../src/constants'
 import { KeyUse, EccCurve, HashAlg, SymmAlg, SymmKeyLength } from '../src/types'
 import { mock, cryptoMethod, arrBufEq } from './utils'
 
@@ -150,7 +150,7 @@ describe('ecc', () => {
           mock.sigBytes,
           mock.keys.publicKey,
           DEFAULT_CHAR_SIZE,
-          DEFAULT_EccCurve,
+          DEFAULT_ECC_CURVE,
           HashAlg.SHA_512
         ),
         params: (params: any) => params[0]?.hash?.name === 'SHA-512'
@@ -169,7 +169,7 @@ describe('ecc', () => {
       mock.sigStr,
       mock.keyBase64,
       DEFAULT_CHAR_SIZE,
-      DEFAULT_EccCurve,
+      DEFAULT_ECC_CURVE,
       HashAlg.SHA_256
     ),
     simpleParams: [
@@ -212,7 +212,7 @@ describe('ecc', () => {
           mock.keys.privateKey,
           mock.keys.publicKey,
           DEFAULT_CHAR_SIZE,
-          DEFAULT_EccCurve,
+          DEFAULT_ECC_CURVE,
           { alg: SymmAlg.AES_CBC }
         ),
         params: (params: any) => params[0]?.name === 'AES-CBC'
@@ -224,7 +224,7 @@ describe('ecc', () => {
           mock.keys.privateKey,
           mock.keys.publicKey,
           DEFAULT_CHAR_SIZE,
-          DEFAULT_EccCurve,
+          DEFAULT_ECC_CURVE,
           { length: SymmKeyLength.B256 }
         ),
         params: (params: any) => params[0]?.length === 256
@@ -236,7 +236,7 @@ describe('ecc', () => {
           mock.keys.privateKey,
           mock.keys.publicKey,
           DEFAULT_CHAR_SIZE,
-          DEFAULT_EccCurve,
+          DEFAULT_ECC_CURVE,
           { iv: mock.iv }
         ),
         params: (params: any) => arrBufEq(params[0]?.counter, mock.iv)
@@ -248,7 +248,7 @@ describe('ecc', () => {
           mock.keys.privateKey,
           mock.keys.publicKey,
           DEFAULT_CHAR_SIZE,
-          DEFAULT_EccCurve,
+          DEFAULT_ECC_CURVE,
           { alg: SymmAlg.AES_CBC, iv: mock.iv }
         ),
         params: (params: any) => params[0]?.iv === mock.iv
@@ -271,7 +271,7 @@ describe('ecc', () => {
       mock.keys.privateKey,
       mock.keyBase64,
       DEFAULT_CHAR_SIZE,
-      DEFAULT_EccCurve
+      DEFAULT_ECC_CURVE
     ),
     simpleParams: [
       { name: 'AES-CTR',
@@ -321,7 +321,7 @@ describe('ecc', () => {
           mock.keys.privateKey,
           mock.keys.publicKey,
           DEFAULT_CHAR_SIZE,
-          DEFAULT_EccCurve,
+          DEFAULT_ECC_CURVE,
           { alg: SymmAlg.AES_CBC }
         ),
         params: (params: any) => (
@@ -337,7 +337,7 @@ describe('ecc', () => {
           mock.keys.privateKey,
           mock.keys.publicKey,
           DEFAULT_CHAR_SIZE,
-          DEFAULT_EccCurve,
+          DEFAULT_ECC_CURVE,
           { length: SymmKeyLength.B256 }
         ),
         params: (params: any) => params[0]?.length === 256
@@ -359,7 +359,7 @@ describe('ecc', () => {
       mock.keys.privateKey,
       mock.keyBase64,
       DEFAULT_CHAR_SIZE,
-      DEFAULT_EccCurve
+      DEFAULT_ECC_CURVE
     ),
     paramChecks: [],
     shouldThrows: []

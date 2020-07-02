@@ -1,8 +1,8 @@
 import ecc from './ecc/keys'
 import {
   DEFAULT_CRYPTOSYSTEM,
-  DEFAULT_EccCurve,
-  DEFAULT_RsaSize,
+  DEFAULT_ECC_CURVE,
+  DEFAULT_RSA_SIZE,
   DEFAULT_SYMM_ALG,
   DEFAULT_SYMM_LEN,
   DEFAULT_HASH_ALG,
@@ -16,8 +16,8 @@ import utils from './utils'
 
 export const defaultConfig = {
   type: DEFAULT_CRYPTOSYSTEM,
-  curve: DEFAULT_EccCurve,
-  rsaSize: DEFAULT_RsaSize,
+  curve: DEFAULT_ECC_CURVE,
+  rsaSize: DEFAULT_RSA_SIZE,
   symmAlg: DEFAULT_SYMM_ALG,
   symmLen: DEFAULT_SYMM_LEN,
   hashAlg: DEFAULT_HASH_ALG,
@@ -49,7 +49,7 @@ export function normalize(
 // Attempt a structural clone of an ECC Key (required to store in IndexedDB)
 // If it throws an error, use RSA, otherwise use ECC
 export async function eccEnabled(): Promise<boolean> {
-  const keypair = await ecc.makeKeypair(DEFAULT_EccCurve, KeyUse.Read)
+  const keypair = await ecc.makeKeypair(DEFAULT_ECC_CURVE, KeyUse.Read)
   try {
     await utils.structuralClone(keypair)
   } catch (err) {

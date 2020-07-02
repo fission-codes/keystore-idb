@@ -1,8 +1,9 @@
 import ECCKeyStore from '../src/ecc/keystore'
 import keys from '../src/ecc/keys'
 import operations from '../src/ecc/operations'
-import config from '../src/config'
+import config, { defaultConfig } from '../src/config'
 import idb from '../src/idb'
+import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE, DEFAULT_HASH_ALG } from '../src/constants'
 import { EccCurve, KeyUse, CryptoSystem } from '../src/types'
 import { mock, keystoreMethod } from './utils'
 
@@ -74,12 +75,13 @@ describe("ECCKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'signBytes', 
+        meth: 'sign',
         resp: mock.sigBytes,
         params: [
-          mock.msgBytes,
+          mock.msgStr,
           mock.writeKeys.privateKey,
-          config.defaultConfig.hashAlg
+          DEFAULT_CHAR_SIZE,
+          DEFAULT_HASH_ALG
         ]
       }
     ],
@@ -94,23 +96,15 @@ describe("ECCKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'verifyBytes', 
+        meth: 'verify',
         resp: true,
         params: [
-          mock.msgBytes,
-          mock.sigBytes,
-          mock.writeKeys.publicKey,
-          config.defaultConfig.hashAlg
-        ]
-      },
-      {
-        mod: keys,
-        meth: 'importPublicKey',
-        resp: mock.writeKeys.publicKey,
-        params: [
+          mock.msgStr,
+          mock.sigStr,
           mock.keyBase64,
-          config.defaultConfig.curve,
-          KeyUse.Write
+          DEFAULT_CHAR_SIZE,
+          DEFAULT_ECC_CURVE,
+          DEFAULT_HASH_ALG
         ]
       }
     ],
@@ -125,26 +119,14 @@ describe("ECCKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'encryptBytes', 
+        meth: 'encrypt',
         resp: mock.cipherBytes,
         params: [
-          mock.msgBytes,
+          mock.msgStr,
           mock.keys.privateKey,
-          mock.encryptForKey.publicKey,
-          {
-            alg: config.defaultConfig.symmAlg,
-            length: config.defaultConfig.symmLen
-          }
-        ]
-      },
-      {
-        mod: keys,
-        meth: 'importPublicKey',
-        resp: mock.encryptForKey.publicKey,
-        params: [
           mock.keyBase64,
-          config.defaultConfig.curve,
-          KeyUse.Read
+          DEFAULT_CHAR_SIZE,
+          DEFAULT_ECC_CURVE
         ]
       }
     ],
@@ -159,26 +141,14 @@ describe("ECCKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'decryptBytes', 
+        meth: 'decrypt',
         resp: mock.msgBytes,
         params: [
-          mock.cipherBytes,
+          mock.cipherStr,
           mock.keys.privateKey,
-          mock.encryptForKey.publicKey,
-          {
-            alg: config.defaultConfig.symmAlg,
-            length: config.defaultConfig.symmLen
-          }
-        ]
-      },
-      {
-        mod: keys,
-        meth: 'importPublicKey',
-        resp: mock.encryptForKey.publicKey,
-        params: [
           mock.keyBase64,
-          config.defaultConfig.curve,
-          KeyUse.Read
+          DEFAULT_CHAR_SIZE,
+          DEFAULT_ECC_CURVE
         ]
       }
     ],
@@ -193,7 +163,7 @@ describe("ECCKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'getPublicKey', 
+        meth: 'getPublicKey',
         resp: mock.keyBase64,
         params: [
           mock.keys
@@ -211,7 +181,7 @@ describe("ECCKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'getPublicKey', 
+        meth: 'getPublicKey',
         resp: mock.keyBase64,
         params: [
           mock.writeKeys

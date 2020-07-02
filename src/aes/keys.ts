@@ -29,5 +29,5 @@ export async function importKey(base64key: string, opts?: Partial<SymmKeyOpts>):
 
 export default {
   makeKey,
-  importKey
+  importKey,
 }

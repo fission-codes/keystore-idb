@@ -7,8 +7,8 @@ export const RSA_WRITE_ALG = 'RSASSA-PKCS1-v1_5'
 export const SALT_LENGTH = 128
 
 export const DEFAULT_CRYPTOSYSTEM = 'ecc'
-export const DEFAULT_EccCurve = EccCurve.P_256
-export const DEFAULT_RsaSize = RsaSize.B2048
+export const DEFAULT_ECC_CURVE = EccCurve.P_256
+export const DEFAULT_RSA_SIZE = RsaSize.B2048
 export const DEFAULT_SYMM_ALG = SymmAlg.AES_CTR
 export const DEFAULT_SYMM_LEN = SymmKeyLength.B128
 export const DEFAULT_HASH_ALG = HashAlg.SHA_256
@@ -25,8 +25,8 @@ export default {
   RSA_WRITE_ALG,
   SALT_LENGTH,
   DEFAULT_CRYPTOSYSTEM,
-  DEFAULT_EccCurve,
-  DEFAULT_RsaSize,
+  DEFAULT_ECC_CURVE,
+  DEFAULT_RSA_SIZE,
   DEFAULT_SYMM_ALG,
   DEFAULT_HASH_ALG,
   DEFAULT_CHAR_SIZE,

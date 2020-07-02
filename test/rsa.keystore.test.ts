@@ -1,8 +1,9 @@
 import RSAKeyStore from '../src/rsa/keystore'
 import keys from '../src/rsa/keys'
 import operations from '../src/rsa/operations'
-import config from '../src/config'
+import config, { defaultConfig } from '../src/config'
 import idb from '../src/idb'
+import { DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG } from '../src/constants'
 import { KeyUse, RsaSize, HashAlg, CryptoSystem } from '../src/types'
 import { mock, keystoreMethod } from './utils'
 
@@ -76,11 +77,12 @@ describe("RSAKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'signBytes', 
+        meth: 'sign',
         resp: mock.sigBytes,
         params: [
-          mock.msgBytes,
+          mock.msgStr,
           mock.writeKeys.privateKey,
+          DEFAULT_CHAR_SIZE
         ]
       }
     ],
@@ -95,22 +97,14 @@ describe("RSAKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'verifyBytes', 
+        meth: 'verify',
         resp: true,
         params: [
-          mock.msgBytes,
-          mock.sigBytes,
-          mock.writeKeys.publicKey,
-        ]
-      },
-      {
-        mod: keys,
-        meth: 'importPublicKey',
-        resp: mock.writeKeys.publicKey,
-        params: [
+          mock.msgStr,
+          mock.sigStr,
           mock.keyBase64,
-          config.defaultConfig.hashAlg,
-          KeyUse.Write
+          DEFAULT_CHAR_SIZE,
+          DEFAULT_HASH_ALG
         ]
       }
     ],
@@ -125,21 +119,13 @@ describe("RSAKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'encryptBytes', 
+        meth: 'encrypt',
         resp: mock.cipherBytes,
         params: [
-          mock.msgBytes,
-          mock.encryptForKey.publicKey,
-        ]
-      },
-      {
-        mod: keys,
-        meth: 'importPublicKey',
-        resp: mock.encryptForKey.publicKey,
-        params: [
+          mock.msgStr,
           mock.keyBase64,
-          config.defaultConfig.hashAlg,
-          KeyUse.Read
+          DEFAULT_CHAR_SIZE,
+          DEFAULT_HASH_ALG
         ]
       }
     ],
@@ -154,11 +140,12 @@ describe("RSAKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'decryptBytes', 
+        meth: 'decrypt',
         resp: mock.msgBytes,
         params: [
-          mock.cipherBytes,
+          mock.cipherStr,
           mock.keys.privateKey,
+          DEFAULT_CHAR_SIZE
         ]
       },
     ],
@@ -173,7 +160,7 @@ describe("RSAKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'getPublicKey', 
+        meth: 'getPublicKey',
         resp: mock.keyBase64,
         params: [
           mock.keys
@@ -191,7 +178,7 @@ describe("RSAKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'getPublicKey', 
+        meth: 'getPublicKey',
         resp: mock.keyBase64,
         params: [
           mock.writeKeys

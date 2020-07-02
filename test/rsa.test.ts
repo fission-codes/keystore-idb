@@ -1,6 +1,7 @@
 import rsa from '../src/rsa'
 import errors from '../src/errors'
 import utils from '../src/utils'
+import { DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG } from '../src/constants'
 import { KeyUse, RsaSize, HashAlg } from '../src/types'
 import { mock, cryptoMethod } from './utils'
 
@@ -93,12 +94,15 @@ describe('rsa', () => {
 
 
   cryptoMethod({
-    desc: 'signBytes',
+    desc: 'sign',
     setMock: fake => window.crypto.subtle.sign = fake,
     mockResp: mock.sigBytes,
-    simpleReq: () => rsa.signBytes(mock.msgBytes, mock.keys.privateKey),
+    simpleReq: () => rsa.sign(
+      mock.msgBytes,
+      mock.keys.privateKey
+    ),
     simpleParams: [
-      { name: 'RSASSA-PKCS1-v1_5', saltLength: 128},
+      { name: 'RSASSA-PKCS1-v1_5', saltLength: 128 },
       mock.keys.privateKey,
       mock.msgBytes
     ],
@@ -108,12 +112,35 @@ describe('rsa', () => {
 
 
   cryptoMethod({
-    desc: 'verifyBytes',
+    desc: 'sign',
+    setMock: fake => window.crypto.subtle.sign = fake,
+    mockResp: mock.sigBytes,
+    simpleReq: () => rsa.sign(
+      mock.msgStr,
+      mock.keys.privateKey,
+      DEFAULT_CHAR_SIZE
+    ),
+    simpleParams: [
+      { name: 'RSASSA-PKCS1-v1_5', saltLength: 128 },
+      mock.keys.privateKey,
+      mock.msgBytes
+    ],
+    paramChecks: [],
+    shouldThrows: []
+  })
+
+
+  cryptoMethod({
+    desc: 'verify',
     setMock: fake => window.crypto.subtle.verify = fake,
     mockResp: true,
-    simpleReq: () => rsa.verifyBytes(mock.msgBytes, mock.sigBytes, mock.keys.publicKey),
+    simpleReq: () => rsa.verify(
+      mock.msgBytes,
+      mock.sigBytes,
+      mock.keys.publicKey
+    ),
     simpleParams: [
-      { name: 'RSASSA-PKCS1-v1_5', saltLength: 128},
+      { name: 'RSASSA-PKCS1-v1_5', saltLength: 128 },
       mock.keys.publicKey,
       mock.sigBytes,
       mock.msgBytes
@@ -124,10 +151,35 @@ describe('rsa', () => {
 
 
   cryptoMethod({
-    desc: 'encryptBytes',
+    desc: 'verify',
+    setMock: fake => window.crypto.subtle.verify = fake,
+    mockResp: true,
+    simpleReq: () => rsa.verify(
+      mock.msgStr,
+      mock.sigStr,
+      mock.keyBase64,
+      DEFAULT_CHAR_SIZE,
+      DEFAULT_HASH_ALG
+    ),
+    simpleParams: [
+      { name: 'RSASSA-PKCS1-v1_5', saltLength: 128 },
+      mock.keys.publicKey,
+      mock.sigBytes,
+      mock.msgBytes
+    ],
+    paramChecks: [],
+    shouldThrows: []
+  })
+
+
+  cryptoMethod({
+    desc: 'encrypt',
     setMock: fake => window.crypto.subtle.encrypt = fake,
     mockResp: mock.cipherBytes,
-    simpleReq: () => rsa.encryptBytes(mock.msgBytes, mock.keys.publicKey),
+    simpleReq: () => rsa.encrypt(
+      mock.msgBytes,
+      mock.keys.publicKey
+    ),
     simpleParams: [
       { name: 'RSA-OAEP' },
       mock.keys.publicKey,
@@ -139,10 +191,52 @@ describe('rsa', () => {
 
 
   cryptoMethod({
-    desc: 'decryptBytes',
+    desc: 'encrypt',
+    setMock: fake => window.crypto.subtle.encrypt = fake,
+    mockResp: mock.cipherBytes,
+    simpleReq: () => rsa.encrypt(
+      mock.msgStr,
+      mock.keyBase64,
+      DEFAULT_CHAR_SIZE,
+      DEFAULT_HASH_ALG
+    ),
+    simpleParams: [
+      { name: 'RSA-OAEP' },
+      mock.keys.publicKey,
+      mock.msgBytes
+    ],
+    paramChecks: [],
+    shouldThrows: []
+  })
+
+
+  cryptoMethod({
+    desc: 'decrypt',
     setMock: fake => window.crypto.subtle.decrypt = fake,
     mockResp: mock.msgBytes,
-    simpleReq: () => rsa.decryptBytes(mock.cipherBytes, mock.keys.privateKey),
+    simpleReq: () => rsa.decrypt(
+      mock.cipherBytes,
+      mock.keys.privateKey
+    ),
+    simpleParams: [
+      { name: 'RSA-OAEP' },
+      mock.keys.privateKey,
+      mock.cipherBytes
+    ],
+    paramChecks: [],
+    shouldThrows: []
+  })
+
+
+  cryptoMethod({
+    desc: 'decrypt',
+    setMock: fake => window.crypto.subtle.decrypt = fake,
+    mockResp: mock.msgBytes,
+    simpleReq: () => rsa.decrypt(
+      mock.cipherStr,
+      mock.keys.privateKey,
+      DEFAULT_CHAR_SIZE
+    ),
     simpleParams: [
       { name: 'RSA-OAEP' },
       mock.keys.privateKey,

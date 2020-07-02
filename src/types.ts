@@ -1,3 +1,5 @@
+export type Msg = ArrayBuffer | string | Uint8Array
+
 export type CipherText = ArrayBuffer
 export type SymmKey = CryptoKey
 

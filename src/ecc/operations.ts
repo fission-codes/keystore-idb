@@ -2,8 +2,7 @@ import aes from '../aes'
 import keys from './keys'
 import utils, { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils'
 import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE, DEFAULT_HASH_ALG, ECC_READ_ALG, ECC_WRITE_ALG, DEFAULT_SYMM_ALG, DEFAULT_SYMM_LEN } from '../constants'
-import { CharSize, Config, EccCurve, Msg, PrivateKey, PublicKey, HashAlg, KeyUse, SymmKey, SymmKeyOpts, CipherText } from '../types'
-import config, { defaultConfig } from '../config'
+import { CharSize, EccCurve, Msg, PrivateKey, PublicKey, HashAlg, KeyUse, SymmKey, SymmKeyOpts } from '../types'
 
 
 export async function sign(

@@ -1,8 +1,7 @@
 import keys from './keys'
 import utils, { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils'
 import { DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG, RSA_READ_ALG, RSA_WRITE_ALG, SALT_LENGTH } from '../constants'
-import { CharSize, Config, HashAlg, KeyUse, Msg, PrivateKey, PublicKey, CipherText } from '../types'
-import { defaultConfig } from '../config'
+import { CharSize, HashAlg, KeyUse, Msg, PrivateKey, PublicKey } from '../types'
 
 
 export async function sign(

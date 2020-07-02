@@ -2,7 +2,7 @@ import ecc from './ecc/keys'
 import {
   DEFAULT_CRYPTOSYSTEM,
   DEFAULT_ECC_CURVE,
-  DEFAULT_RsaSize,
+  DEFAULT_RSA_SIZE,
   DEFAULT_SYMM_ALG,
   DEFAULT_SYMM_LEN,
   DEFAULT_HASH_ALG,
@@ -17,7 +17,7 @@ import utils from './utils'
 export const defaultConfig = {
   type: DEFAULT_CRYPTOSYSTEM,
   curve: DEFAULT_ECC_CURVE,
-  rsaSize: DEFAULT_RsaSize,
+  rsaSize: DEFAULT_RSA_SIZE,
   symmAlg: DEFAULT_SYMM_ALG,
   symmLen: DEFAULT_SYMM_LEN,
   hashAlg: DEFAULT_HASH_ALG,

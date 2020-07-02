@@ -2,6 +2,7 @@ import IDB from '../idb'
 import keys from './keys'
 import operations from './operations'
 import config from '../config'
+import utils from '../utils'
 import KeyStoreBase from '../keystore/base'
 import { KeyStore, Config, KeyUse, CryptoSystem } from '../types'
 
@@ -27,13 +28,15 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
 
 
   async sign(msg: string, cfg?: Partial<Config>): Promise<string> {
+    const mergedCfg = config.merge(this.cfg, cfg)
     const writeKey = await this.writeKey()
 
-    return await operations.signString(
+    return utils.arrBufToBase64(await operations.sign(
       msg,
       writeKey.privateKey,
-      config.merge(this.cfg, cfg)
-    )
+      mergedCfg.charSize,
+      mergedCfg.hashAlg
+    ))
   }
 
   async verify(
@@ -42,11 +45,15 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     publicKey: string,
     cfg?: Partial<Config>
   ): Promise<boolean> {
-    return operations.verifyString (
+    const mergedCfg = config.merge(this.cfg, cfg)
+
+    return operations.verify(
       msg,
       sig,
       publicKey,
-      config.merge(this.cfg, cfg)
+      mergedCfg.charSize,
+      mergedCfg.curve,
+      mergedCfg.hashAlg
     )
   }
 
@@ -55,14 +62,16 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     publicKey: string,
     cfg?: Partial<Config>
   ): Promise<string> {
+    const mergedCfg = config.merge(this.cfg, cfg)
     const readKey = await this.readKey()
 
-    return operations.encryptString(
+    return utils.arrBufToBase64(await operations.encrypt(
       msg,
       readKey.privateKey,
       publicKey,
-      config.merge(this.cfg, cfg)
-    )
+      mergedCfg.charSize,
+      mergedCfg.curve
+    ))
   }
 
   async decrypt(
@@ -70,13 +79,18 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     publicKey: string,
     cfg?: Partial<Config>
   ): Promise<string> {
+    const mergedCfg = config.merge(this.cfg, cfg)
     const readKey = await this.readKey()
 
-    return operations.decryptString(
-      cipherText,
-      readKey.privateKey,
-      publicKey,
-      config.merge(this.cfg, cfg)
+    return utils.arrBufToStr(
+      await operations.decrypt(
+        cipherText,
+        readKey.privateKey,
+        publicKey,
+        mergedCfg.charSize,
+        mergedCfg.curve
+      ),
+      mergedCfg.charSize
     )
   }
 

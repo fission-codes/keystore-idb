@@ -2,6 +2,7 @@ import IDB from '../idb'
 import keys from './keys'
 import operations from './operations'
 import config from '../config'
+import utils from '../utils'
 import KeyStoreBase from '../keystore/base'
 import { KeyStore, Config, KeyUse, CryptoSystem, Msg, PublicKey } from '../types'
 
@@ -30,13 +31,12 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
   async sign(msg: Msg, cfg?: Partial<Config>): Promise<string> {
     const mergedCfg = config.merge(this.cfg, cfg)
     const writeKey = await this.writeKey()
-    const signedBuf = await operations.sign(
+
+    return utils.arrBufToBase64(await operations.sign(
       msg,
       writeKey.privateKey,
       mergedCfg.charSize
-    )
-
-    return utils.arrBufToBase64(signedBuf)
+    ))
   }
 
   async verify(
@@ -62,14 +62,13 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
     cfg?: Partial<Config>
   ): Promise<string> {
     const mergedCfg = config.merge(this.cfg, cfg)
-    const cipherText = await operations.encrypt(
+
+    return utils.arrBufToBase64(await operations.encrypt(
       msg,
       publicKey,
       mergedCfg.charSize,
       mergedCfg.hashAlg
-    )
-
-    return utils.arrBufToBase64(cipherText)
+    ))
   }
 
   async decrypt(
@@ -78,10 +77,15 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
     cfg?: Partial<Config>
   ): Promise<string> {
     const readKey = await this.readKey()
+    const mergedCfg = config.merge(this.cfg, cfg)
 
-    return operations.decrypt(
-      cipherText,
-      readKey.privateKey
+    return utils.arrBufToStr(
+      await operations.decrypt(
+        cipherText,
+        readKey.privateKey,
+        mergedCfg.charSize
+      ),
+      mergedCfg.charSize
     )
   }
 

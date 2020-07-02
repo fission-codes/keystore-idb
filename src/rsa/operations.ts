@@ -1,7 +1,7 @@
 import keys from './keys'
-import utils, { normalizeUnicodeToBuf } from '../utils'
+import utils, { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils'
 import { DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG, RSA_READ_ALG, RSA_WRITE_ALG, SALT_LENGTH } from '../constants'
-import { Config, HashAlg, KeyUse, Msg, PrivateKey, PublicKey, CipherText } from '../types'
+import { CharSize, Config, HashAlg, KeyUse, Msg, PrivateKey, PublicKey, CipherText } from '../types'
 import { defaultConfig } from '../config'
 
 
@@ -39,11 +39,11 @@ export async function encrypt(
   publicKey: string | PublicKey,
   charSize: CharSize = DEFAULT_CHAR_SIZE,
   hashAlg: HashAlg = DEFAULT_HASH_ALG
-): Promise<CipherText> {
+): Promise<ArrayBuffer> {
   return window.crypto.subtle.encrypt(
     { name: RSA_READ_ALG },
     typeof publicKey === "string"
-      ? await keys.importPublicKey(publicKey, hashAlg, KeyUse.Write)
+      ? await keys.importPublicKey(publicKey, hashAlg, KeyUse.Read)
       : publicKey,
     normalizeUnicodeToBuf(msg, charSize)
   )
@@ -51,12 +51,13 @@ export async function encrypt(
 
 export async function decrypt(
   msg: Msg,
-  privateKey: PrivateKey
+  privateKey: PrivateKey,
+  charSize: CharSize = DEFAULT_CHAR_SIZE
 ): Promise<ArrayBuffer> {
   return window.crypto.subtle.decrypt(
     { name: RSA_READ_ALG },
     privateKey,
-    normalizeBase64ToBuf(msg)
+    normalizeUnicodeToBuf(msg, charSize)
   )
 }
 
@@ -66,13 +67,9 @@ export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
 }
 
 export default {
-  signBytes,
-  signString,
-  verifyBytes,
-  verifyString,
-  encryptBytes,
-  encryptString,
-  decryptBytes,
-  decryptString,
+  sign,
+  verify,
+  encrypt,
+  decrypt,
   getPublicKey,
 }

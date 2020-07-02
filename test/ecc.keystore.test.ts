@@ -3,6 +3,7 @@ import keys from '../src/ecc/keys'
 import operations from '../src/ecc/operations'
 import config, { defaultConfig } from '../src/config'
 import idb from '../src/idb'
+import { DEFAULT_CHAR_SIZE, DEFAULT_EccCurve, DEFAULT_HASH_ALG } from '../src/constants'
 import { EccCurve, KeyUse, CryptoSystem } from '../src/types'
 import { mock, keystoreMethod } from './utils'
 
@@ -74,12 +75,13 @@ describe("ECCKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'signString',
-        resp: mock.sigStr,
+        meth: 'sign',
+        resp: mock.sigBytes,
         params: [
           mock.msgStr,
           mock.writeKeys.privateKey,
-          defaultConfig
+          DEFAULT_CHAR_SIZE,
+          DEFAULT_HASH_ALG
         ]
       }
     ],
@@ -94,13 +96,15 @@ describe("ECCKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'verifyString',
+        meth: 'verify',
         resp: true,
         params: [
           mock.msgStr,
           mock.sigStr,
           mock.keyBase64,
-          defaultConfig
+          DEFAULT_CHAR_SIZE,
+          DEFAULT_EccCurve,
+          DEFAULT_HASH_ALG
         ]
       }
     ],
@@ -115,13 +119,14 @@ describe("ECCKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'encryptString',
-        resp: mock.cipherStr,
+        meth: 'encrypt',
+        resp: mock.cipherBytes,
         params: [
           mock.msgStr,
           mock.keys.privateKey,
           mock.keyBase64,
-          defaultConfig
+          DEFAULT_CHAR_SIZE,
+          DEFAULT_EccCurve
         ]
       }
     ],
@@ -136,13 +141,14 @@ describe("ECCKeyStore", () => {
     mocks: [
       {
         mod: operations,
-        meth: 'decryptString',
-        resp: mock.msgStr,
+        meth: 'decrypt',
+        resp: mock.msgBytes,
         params: [
           mock.cipherStr,
           mock.keys.privateKey,
           mock.keyBase64,
-          defaultConfig
+          DEFAULT_CHAR_SIZE,
+          DEFAULT_EccCurve
         ]
       }
     ],

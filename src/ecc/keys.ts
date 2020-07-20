@@ -22,7 +22,7 @@ export async function importPublicKey(base64Key: string, curve: EccCurve, use: K
   checkValidKeyUse(use)
   const alg = use === KeyUse.Read ? ECC_READ_ALG : ECC_WRITE_ALG
   const uses: KeyUsage[] =
-    use === KeyUse.Read ? [] : ['verify'] as KeyUsage[]
+    use === KeyUse.Read ? [] : ['verify']
   const buf = utils.base64ToArrBuf(base64Key)
   return window.crypto.subtle.importKey(
     'raw',

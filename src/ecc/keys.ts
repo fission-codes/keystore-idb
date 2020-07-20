@@ -9,7 +9,7 @@ export async function makeKeypair(
 ): Promise<CryptoKeyPair> {
   checkValidKeyUse(use)
   const alg = use === KeyUse.Read ? ECC_READ_ALG : ECC_WRITE_ALG
-  const uses =
+  const uses: KeyUsage[] =
     use === KeyUse.Read ? ['deriveKey', 'deriveBits'] : ['sign', 'verify']
   return window.crypto.subtle.generateKey(
     { name: alg, namedCurve: curve },
@@ -21,8 +21,8 @@ export async function makeKeypair(
 export async function importPublicKey(base64Key: string, curve: EccCurve, use: KeyUse): Promise<PublicKey> {
   checkValidKeyUse(use)
   const alg = use === KeyUse.Read ? ECC_READ_ALG : ECC_WRITE_ALG
-  const uses =
-    use === KeyUse.Read ? [] : ['verify']
+  const uses: KeyUsage[] =
+    use === KeyUse.Read ? [] : ['verify'] as KeyUsage[]
   const buf = utils.base64ToArrBuf(base64Key)
   return window.crypto.subtle.importKey(
     'raw',

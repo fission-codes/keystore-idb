@@ -199,7 +199,7 @@ describe('ecc', () => {
     simpleParams: [
       { name: 'AES-CTR',
         counter: new Uint8Array(16),
-        length: 128
+        length: 256
       },
       mock.symmKey,
       mock.msgBytes
@@ -276,7 +276,7 @@ describe('ecc', () => {
     simpleParams: [
       { name: 'AES-CTR',
         counter: new Uint8Array(16),
-        length: 128
+        length: 256
       },
       mock.symmKey,
       mock.msgBytes
@@ -308,7 +308,7 @@ describe('ecc', () => {
         ),
         params: (params: any) => (
           params[0].name === 'AES-CTR'
-          && params[0].length === 128
+          && params[0].length === 256
           && arrBufEq(params[0].counter.buffer, mock.iv)
           && params[1] === mock.symmKey
           && arrBufEq(params[2], mock.cipherBytes)
@@ -389,7 +389,7 @@ describe('ecc', () => {
     simpleParams: [
       { name: 'ECDH', public: mock.keys.publicKey },
       mock.keys.privateKey,
-      { name: 'AES-CTR', length: 128 },
+      { name: 'AES-CTR', length: 256 },
       false,
       ['encrypt', 'decrypt']
     ],

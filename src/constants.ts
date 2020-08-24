@@ -10,7 +10,7 @@ export const DEFAULT_CRYPTOSYSTEM = 'ecc'
 export const DEFAULT_ECC_CURVE = EccCurve.P_256
 export const DEFAULT_RSA_SIZE = RsaSize.B2048
 export const DEFAULT_SYMM_ALG = SymmAlg.AES_CTR
-export const DEFAULT_SYMM_LEN = SymmKeyLength.B128
+export const DEFAULT_SYMM_LEN = SymmKeyLength.B256
 export const DEFAULT_HASH_ALG = HashAlg.SHA_256
 export const DEFAULT_CHAR_SIZE = CharSize.B16
 

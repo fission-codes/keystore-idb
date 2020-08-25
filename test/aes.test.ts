@@ -75,7 +75,7 @@ describe('aes', () => {
         req: () => aes.encrypt(mock.msgStr, mock.keyBase64, { iv: mock.iv }),
         params: (params: any) => (
           params[0]?.name === 'AES-CTR'
-          && params[0]?.length === 256
+          && params[0]?.length === 64
           && arrBufEq(params[0]?.counter, mock.iv)
           && params[1] === mock.symmKey
           && arrBufEq(params[2], mock.msgBytes)
@@ -86,16 +86,10 @@ describe('aes', () => {
         req: () => aes.encrypt(mock.msgStr, mock.keyBase64, { alg: SymmAlg.AES_CBC, iv: mock.iv }),
         params: (params: any) => (
           params[0]?.name === 'AES-CBC'
-          && params[0]?.length === 256
           && arrBufEq(params[0]?.iv, mock.iv)
           && params[1] === mock.symmKey
           && arrBufEq(params[2], mock.msgBytes)
         )
-      },
-      {
-        desc: 'handles multiple symm key lengths',
-        req: () => aes.encrypt(mock.msgStr, mock.keyBase64, { length: SymmKeyLength.B256}),
-        params: (params: any) => params[0]?.length === 256
       }
     ],
     shouldThrows: []
@@ -117,7 +111,7 @@ describe('aes', () => {
         req: () => aes.decrypt(mock.cipherWithIVStr, mock.keyBase64),
         params: (params: any) => (
           params[0].name === 'AES-CTR'
-          && params[0].length === 256 
+          && params[0].length === 64 
           && arrBufEq(params[0].counter.buffer, mock.iv)
           && params[1] === mock.symmKey 
           && arrBufEq(params[2], mock.cipherBytes)
@@ -131,12 +125,7 @@ describe('aes', () => {
           && arrBufEq(params[0].iv, mock.iv)
           && arrBufEq(params[2], mock.cipherBytes)
         )
-      },
-      {
-        desc: 'handles multiple symm key lengths',
-        req: () => aes.decrypt(mock.cipherWithIVStr, mock.keyBase64, { length: SymmKeyLength.B256 }),
-        params: (params: any) => params[0]?.length === 256
-      },
+      }
     ],
     shouldThrows: []
   })

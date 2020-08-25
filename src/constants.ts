@@ -9,8 +9,11 @@ export const SALT_LENGTH = 128
 export const DEFAULT_CRYPTOSYSTEM = 'ecc'
 export const DEFAULT_ECC_CURVE = EccCurve.P_256
 export const DEFAULT_RSA_SIZE = RsaSize.B2048
+
 export const DEFAULT_SYMM_ALG = SymmAlg.AES_CTR
 export const DEFAULT_SYMM_LEN = SymmKeyLength.B256
+export const DEFAULT_CTR_LEN = 64
+
 export const DEFAULT_HASH_ALG = HashAlg.SHA_256
 export const DEFAULT_CHAR_SIZE = CharSize.B16
 
@@ -28,6 +31,7 @@ export default {
   DEFAULT_ECC_CURVE,
   DEFAULT_RSA_SIZE,
   DEFAULT_SYMM_ALG,
+  DEFAULT_CTR_LEN,
   DEFAULT_HASH_ALG,
   DEFAULT_CHAR_SIZE,
   DEFAULT_STORE_NAME,

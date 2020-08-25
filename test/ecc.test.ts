@@ -199,7 +199,7 @@ describe('ecc', () => {
     simpleParams: [
       { name: 'AES-CTR',
         counter: new Uint8Array(16),
-        length: 256
+        length: 64
       },
       mock.symmKey,
       mock.msgBytes
@@ -216,18 +216,6 @@ describe('ecc', () => {
           { alg: SymmAlg.AES_CBC }
         ),
         params: (params: any) => params[0]?.name === 'AES-CBC'
-      },
-      {
-        desc: 'handles multiple symm key lengths',
-        req: () => ecc.encrypt(
-          mock.msgBytes,
-          mock.keys.privateKey,
-          mock.keys.publicKey,
-          DEFAULT_CHAR_SIZE,
-          DEFAULT_ECC_CURVE,
-          { length: SymmKeyLength.B256 }
-        ),
-        params: (params: any) => params[0]?.length === 256
       },
       {
         desc: 'handles an IV with AES-CTR',
@@ -276,7 +264,7 @@ describe('ecc', () => {
     simpleParams: [
       { name: 'AES-CTR',
         counter: new Uint8Array(16),
-        length: 256
+        length: 64
       },
       mock.symmKey,
       mock.msgBytes
@@ -308,7 +296,7 @@ describe('ecc', () => {
         ),
         params: (params: any) => (
           params[0].name === 'AES-CTR'
-          && params[0].length === 256
+          && params[0].length === 64
           && arrBufEq(params[0].counter.buffer, mock.iv)
           && params[1] === mock.symmKey
           && arrBufEq(params[2], mock.cipherBytes)
@@ -329,19 +317,7 @@ describe('ecc', () => {
           && arrBufEq(params[0].iv, mock.iv)
           && arrBufEq(params[2], mock.cipherBytes)
         )
-      },
-      {
-        desc: 'handles multiple symm key lengths',
-        req: () => ecc.decrypt(
-          mock.cipherWithIVBytes,
-          mock.keys.privateKey,
-          mock.keys.publicKey,
-          DEFAULT_CHAR_SIZE,
-          DEFAULT_ECC_CURVE,
-          { length: SymmKeyLength.B256 }
-        ),
-        params: (params: any) => params[0]?.length === 256
-      },
+      }
     ],
     shouldThrows: []
   })

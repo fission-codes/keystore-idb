@@ -1,6 +1,6 @@
 import keys from './keys'
 import utils from '../utils'
-import { DEFAULT_SYMM_ALG, DEFAULT_SYMM_LEN } from '../constants'
+import { DEFAULT_SYMM_ALG, DEFAULT_CTR_LEN } from '../constants'
 import { SymmKey, SymmKeyOpts, SymmAlg, CipherText, Msg } from '../types'
 
 export async function encryptBytes(
@@ -15,10 +15,10 @@ export async function encryptBytes(
   const cipherBuf = await window.crypto.subtle.encrypt(
     { 
       name: alg,
-      length: opts?.length || DEFAULT_SYMM_LEN,
       // AES-CTR uses a counter, AES-GCM/AES-CBC use an initialization vector
       iv: alg === SymmAlg.AES_CTR ? undefined : iv,
       counter: alg === SymmAlg.AES_CTR ? new Uint8Array(iv) : undefined,
+      length: alg === SymmAlg.AES_CTR ? DEFAULT_CTR_LEN : undefined,
     },
     importedKey,
     data
@@ -38,10 +38,10 @@ export async function decryptBytes(
   const cipherBytes = cipherText.slice(16)
   const msgBuff = await window.crypto.subtle.decrypt(
     { name: alg,
-      length: opts?.length || DEFAULT_SYMM_LEN,
       // AES-CTR uses a counter, AES-GCM/AES-CBC use an initialization vector
       iv: alg === SymmAlg.AES_CTR ? undefined : iv,
       counter: alg === SymmAlg.AES_CTR ? new Uint8Array(iv) : undefined,
+      length: alg === SymmAlg.AES_CTR ? DEFAULT_CTR_LEN : undefined,
     },
     importedKey,
     cipherBytes

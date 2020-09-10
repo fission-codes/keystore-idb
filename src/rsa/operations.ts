@@ -50,13 +50,13 @@ export async function encrypt(
 
 export async function decrypt(
   msg: Msg,
-  privateKey: PrivateKey,
-  charSize: CharSize = DEFAULT_CHAR_SIZE
+  privateKey: PrivateKey
 ): Promise<ArrayBuffer> {
+  const normalized = normalizeBase64ToBuf(msg)
   return window.crypto.subtle.decrypt(
     { name: RSA_READ_ALG },
     privateKey,
-    normalizeUnicodeToBuf(msg, charSize)
+    normalized
   )
 }
 

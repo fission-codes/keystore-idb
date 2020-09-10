@@ -144,8 +144,7 @@ describe("RSAKeyStore", () => {
         resp: mock.msgBytes,
         params: [
           mock.cipherStr,
-          mock.keys.privateKey,
-          DEFAULT_CHAR_SIZE
+          mock.keys.privateKey
         ]
       },
     ],

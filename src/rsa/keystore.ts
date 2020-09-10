@@ -83,7 +83,6 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
       await operations.decrypt(
         cipherText,
         readKey.privateKey,
-        mergedCfg.charSize
       ),
       mergedCfg.charSize
     )

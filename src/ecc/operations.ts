@@ -56,7 +56,6 @@ export async function decrypt(
   msg: Msg,
   privateKey: PrivateKey,
   publicKey: string | PublicKey,
-  charSize: CharSize = DEFAULT_CHAR_SIZE,
   curve: EccCurve = DEFAULT_ECC_CURVE,
   opts?: Partial<SymmKeyOpts>
 ): Promise<ArrayBuffer> {
@@ -65,7 +64,7 @@ export async function decrypt(
     : publicKey
 
   const cipherKey = await getSharedKey(privateKey, importedPublicKey, opts)
-  return aes.decryptBytes(normalizeUnicodeToBuf(msg, charSize), cipherKey, opts)
+  return aes.decryptBytes(normalizeBase64ToBuf(msg), cipherKey, opts)
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {

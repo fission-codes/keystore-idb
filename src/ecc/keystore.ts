@@ -90,7 +90,6 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
         cipherText,
         readKey.privateKey,
         publicKey,
-        mergedCfg.charSize,
         mergedCfg.curve
       ),
       mergedCfg.charSize

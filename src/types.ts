@@ -127,7 +127,7 @@ export interface KeyStore {
 
   decrypt(
     cipherText: string,
-    publicKey?: string,
+    publicKey: string,
     cfg?: Partial<Config>
   ): Promise<string>
 

@@ -79,9 +79,6 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     publicKey: string,
     cfg?: Partial<Config>
   ): Promise<string> {
-    if(publicKey === undefined) {
-      throw new Error("Must pass a public key to decrypt on an ECCKeyStore")
-    }
     const mergedCfg = config.merge(this.cfg, cfg)
     const readKey = await this.readKey()
 

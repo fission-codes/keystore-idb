@@ -235,7 +235,6 @@ describe('rsa', () => {
     simpleReq: () => rsa.decrypt(
       mock.cipherStr,
       mock.keys.privateKey,
-      DEFAULT_CHAR_SIZE
     ),
     simpleParams: [
       { name: 'RSA-OAEP' },

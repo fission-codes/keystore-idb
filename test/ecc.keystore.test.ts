@@ -147,7 +147,6 @@ describe("ECCKeyStore", () => {
           mock.cipherStr,
           mock.keys.privateKey,
           mock.keyBase64,
-          DEFAULT_CHAR_SIZE,
           DEFAULT_ECC_CURVE
         ]
       }

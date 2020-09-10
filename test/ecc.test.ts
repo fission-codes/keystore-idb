@@ -308,7 +308,6 @@ describe('ecc', () => {
           mock.cipherWithIVBytes,
           mock.keys.privateKey,
           mock.keys.publicKey,
-          DEFAULT_CHAR_SIZE,
           DEFAULT_ECC_CURVE,
           { alg: SymmAlg.AES_CBC }
         ),
@@ -334,7 +333,6 @@ describe('ecc', () => {
       mock.cipherWithIVStr,
       mock.keys.privateKey,
       mock.keyBase64,
-      DEFAULT_CHAR_SIZE,
       DEFAULT_ECC_CURVE
     ),
     paramChecks: [],

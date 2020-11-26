@@ -12,7 +12,7 @@ export async function encryptBytes(
   const importedKey = typeof key === 'string' ? await keys.importKey(key, opts) : key
   const alg = opts?.alg || DEFAULT_SYMM_ALG
   const iv = opts?.iv || utils.randomBuf(16)
-  const cipherBuf = await window.crypto.subtle.encrypt(
+  const cipherBuf = await globalThis.crypto.subtle.encrypt(
     { 
       name: alg,
       // AES-CTR uses a counter, AES-GCM/AES-CBC use an initialization vector
@@ -36,7 +36,7 @@ export async function decryptBytes(
   const alg = opts?.alg || DEFAULT_SYMM_ALG
   const iv = cipherText.slice(0, 16)
   const cipherBytes = cipherText.slice(16)
-  const msgBuff = await window.crypto.subtle.decrypt(
+  const msgBuff = await globalThis.crypto.subtle.decrypt(
     { name: alg,
       // AES-CTR uses a counter, AES-GCM/AES-CBC use an initialization vector
       iv: alg === SymmAlg.AES_CTR ? undefined : iv,
@@ -69,7 +69,7 @@ export async function decrypt(
 
 
 export async function exportKey(key: SymmKey): Promise<string> {
-  const raw = await window.crypto.subtle.exportKey('raw', key)
+  const raw = await globalThis.crypto.subtle.exportKey('raw', key)
   return utils.arrBufToBase64(raw)
 }
 

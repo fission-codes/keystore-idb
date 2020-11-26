@@ -1,7 +1,7 @@
 import utils from '../../src/utils'
 
-window.atob = require('atob')
-window.btoa = require('btoa')
+globalThis.atob = require('atob')
+globalThis.btoa = require('btoa')
 
 const iv = (new Uint8Array([1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4])).buffer
 const msgStr = "test msg bytes"
@@ -28,7 +28,7 @@ export const mock = {
   } as any,
   encryptForKey: {
     publicKey: { type: 'encrypt-pub' } as any,
-    privateKey: { type: 'encrypt-priv' } as any 
+    privateKey: { type: 'encrypt-priv' } as any
   } as any,
   symmKey: { type: 'symm', algorithm: 'AES-CTR' } as any,
   symmKeyName: 'symm-key',

@@ -16,7 +16,7 @@ describe('config', () => {
         fakeClone.mockResolvedValue(undefined)
 
         fakeMake = jest.fn(() => new Promise(r => r(mock.keys)))
-        window.crypto.subtle.generateKey = fakeMake
+        globalThis.crypto.subtle.generateKey = fakeMake
 
         response = await config.eccEnabled()
       })
@@ -42,7 +42,7 @@ describe('config', () => {
         )
 
         fakeMake = jest.fn(() => new Promise(r => r(mock.keys)))
-        window.crypto.subtle.generateKey = fakeMake
+        globalThis.crypto.subtle.generateKey = fakeMake
 
         response = await config.eccEnabled()
       })

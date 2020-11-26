@@ -7,7 +7,7 @@ describe('aes', () => {
 
   cryptoMethod({
     desc: 'makeKey',
-    setMock: fake => window.crypto.subtle.generateKey = fake,
+    setMock: fake => globalThis.crypto.subtle.generateKey = fake,
     mockResp: mock.symmKey,
     simpleReq: () => aes.makeKey(),
     simpleParams: [
@@ -33,7 +33,7 @@ describe('aes', () => {
 
   cryptoMethod({
     desc: 'importKey',
-    setMock: fake => window.crypto.subtle.importKey = fake,
+    setMock: fake => globalThis.crypto.subtle.importKey = fake,
     mockResp: mock.symmKey,
     simpleReq: () => aes.importKey(mock.keyBase64),
     simpleParams: [
@@ -62,9 +62,9 @@ describe('aes', () => {
   cryptoMethod({
     desc: 'encrypt',
     setMock: fake => {
-      window.crypto.subtle.encrypt = fake
-      window.crypto.subtle.importKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
-      window.crypto.getRandomValues = jest.fn(() => new Promise(r => r(new Uint8Array(16)))) as any
+      globalThis.crypto.subtle.encrypt = fake
+      globalThis.crypto.subtle.importKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
+      globalThis.crypto.getRandomValues = jest.fn(() => new Promise(r => r(new Uint8Array(16)))) as any
     },
     mockResp: mock.cipherBytes,
     expectedResp: mock.cipherWithIVStr,
@@ -99,8 +99,8 @@ describe('aes', () => {
   cryptoMethod({
     desc: 'decrypt',
     setMock: fake => {
-      window.crypto.subtle.decrypt = fake
-      window.crypto.subtle.importKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
+      globalThis.crypto.subtle.decrypt = fake
+      globalThis.crypto.subtle.importKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
     },
     mockResp: mock.msgBytes,
     expectedResp: mock.msgStr,
@@ -111,9 +111,9 @@ describe('aes', () => {
         req: () => aes.decrypt(mock.cipherWithIVStr, mock.keyBase64),
         params: (params: any) => (
           params[0].name === 'AES-CTR'
-          && params[0].length === 64 
+          && params[0].length === 64
           && arrBufEq(params[0].counter.buffer, mock.iv)
-          && params[1] === mock.symmKey 
+          && params[1] === mock.symmKey
           && arrBufEq(params[2], mock.cipherBytes)
         )
       },
@@ -133,7 +133,7 @@ describe('aes', () => {
 
   cryptoMethod({
     desc: 'exportKey',
-    setMock: fake => window.crypto.subtle.exportKey = fake,
+    setMock: fake => globalThis.crypto.subtle.exportKey = fake,
     mockResp: utils.base64ToArrBuf(mock.keyBase64),
     expectedResp: mock.keyBase64,
     simpleReq: () => aes.exportKey(mock.symmKey),

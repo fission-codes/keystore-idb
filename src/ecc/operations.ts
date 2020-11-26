@@ -11,7 +11,7 @@ export async function sign(
   charSize: CharSize = DEFAULT_CHAR_SIZE,
   hashAlg: HashAlg = DEFAULT_HASH_ALG,
 ): Promise<ArrayBuffer> {
-  return window.crypto.subtle.sign(
+  return globalThis.crypto.subtle.sign(
     { name: ECC_WRITE_ALG, hash: { name: hashAlg }},
     privateKey,
     normalizeUnicodeToBuf(msg, charSize)
@@ -26,7 +26,7 @@ export async function verify(
   curve: EccCurve = DEFAULT_ECC_CURVE,
   hashAlg: HashAlg = DEFAULT_HASH_ALG
 ): Promise<boolean> {
-  return window.crypto.subtle.verify(
+  return globalThis.crypto.subtle.verify(
     { name: ECC_WRITE_ALG, hash: { name: hashAlg }},
     typeof publicKey === "string"
       ? await keys.importPublicKey(publicKey, curve, KeyUse.Write)
@@ -68,12 +68,12 @@ export async function decrypt(
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
-  const raw = await window.crypto.subtle.exportKey('raw', keypair.publicKey)
+  const raw = await globalThis.crypto.subtle.exportKey('raw', keypair.publicKey)
   return utils.arrBufToBase64(raw)
 }
 
 export async function getSharedKey(privateKey: PrivateKey, publicKey: PublicKey, opts?: Partial<SymmKeyOpts>): Promise<SymmKey> {
-  return window.crypto.subtle.deriveKey(
+  return globalThis.crypto.subtle.deriveKey(
     { name: ECC_READ_ALG, public: publicKey },
     privateKey,
     {

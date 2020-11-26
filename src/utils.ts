@@ -9,7 +9,7 @@ export function arrBufToStr(buf: ArrayBuffer, charSize: CharSize): string {
 
 export function arrBufToBase64(buf: ArrayBuffer): string {
   const str = arrBufToStr(buf, 8)
-  return window.btoa(str)
+  return globalThis.btoa(str)
 }
 
 export function strToArrBuf(str: string, charSize: CharSize): ArrayBuffer {
@@ -22,7 +22,7 @@ export function strToArrBuf(str: string, charSize: CharSize): ArrayBuffer {
 }
 
 export function base64ToArrBuf(base64: string): ArrayBuffer {
-  const str = window.atob(base64)
+  const str = globalThis.atob(base64)
   return strToArrBuf(str, 8)
 }
 
@@ -32,7 +32,7 @@ export function publicExponent(): Uint8Array {
 
 export function randomBuf(length: number): ArrayBuffer {
   const arr = new Uint8Array(length)
-  window.crypto.getRandomValues(arr)
+  globalThis.crypto.getRandomValues(arr)
   return arr.buffer
 }
 

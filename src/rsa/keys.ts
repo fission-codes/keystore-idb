@@ -11,7 +11,7 @@ export async function makeKeypair(
   checkValidKeyUse(use)
   const alg = use === KeyUse.Read ? RSA_READ_ALG : RSA_WRITE_ALG
   const uses: KeyUsage[] = use === KeyUse.Read ? ['encrypt', 'decrypt'] : ['sign', 'verify']
-  return window.crypto.subtle.generateKey(
+  return globalThis.crypto.subtle.generateKey(
     {
       name: alg,
       modulusLength: size,
@@ -34,7 +34,7 @@ export async function importPublicKey(base64Key: string, hashAlg: HashAlg, use: 
   const alg = use === KeyUse.Read ? RSA_READ_ALG : RSA_WRITE_ALG
   const uses: KeyUsage[] = use === KeyUse.Read ? ['encrypt'] : ['verify']
   const buf = utils.base64ToArrBuf(stripKeyHeader(base64Key))
-  return window.crypto.subtle.importKey(
+  return globalThis.crypto.subtle.importKey(
     'spki',
     buf,
     { name: alg, hash: {name: hashAlg}},

@@ -9,7 +9,7 @@ describe('rsa', () => {
 
   cryptoMethod({
     desc: 'makeKeypair',
-    setMock: fake => window.crypto.subtle.generateKey = fake,
+    setMock: fake => globalThis.crypto.subtle.generateKey = fake,
     mockResp: mock.keys,
     simpleReq: () => rsa.makeKeypair(RsaSize.B2048, HashAlg.SHA_256, KeyUse.Read),
     simpleParams: [
@@ -60,7 +60,7 @@ describe('rsa', () => {
 
   cryptoMethod({
     desc: 'importPublicReadKey',
-    setMock: fake => window.crypto.subtle.importKey = fake,
+    setMock: fake => globalThis.crypto.subtle.importKey = fake,
     mockResp: mock.keys.publicKey,
     expectedResp: mock.keys.publicKey,
     simpleReq: () => rsa.importPublicKey(mock.keyBase64, HashAlg.SHA_256, KeyUse.Read),
@@ -95,7 +95,7 @@ describe('rsa', () => {
 
   cryptoMethod({
     desc: 'sign',
-    setMock: fake => window.crypto.subtle.sign = fake,
+    setMock: fake => globalThis.crypto.subtle.sign = fake,
     mockResp: mock.sigBytes,
     simpleReq: () => rsa.sign(
       mock.msgBytes,
@@ -113,7 +113,7 @@ describe('rsa', () => {
 
   cryptoMethod({
     desc: 'sign',
-    setMock: fake => window.crypto.subtle.sign = fake,
+    setMock: fake => globalThis.crypto.subtle.sign = fake,
     mockResp: mock.sigBytes,
     simpleReq: () => rsa.sign(
       mock.msgStr,
@@ -132,7 +132,7 @@ describe('rsa', () => {
 
   cryptoMethod({
     desc: 'verify',
-    setMock: fake => window.crypto.subtle.verify = fake,
+    setMock: fake => globalThis.crypto.subtle.verify = fake,
     mockResp: true,
     simpleReq: () => rsa.verify(
       mock.msgBytes,
@@ -152,7 +152,7 @@ describe('rsa', () => {
 
   cryptoMethod({
     desc: 'verify',
-    setMock: fake => window.crypto.subtle.verify = fake,
+    setMock: fake => globalThis.crypto.subtle.verify = fake,
     mockResp: true,
     simpleReq: () => rsa.verify(
       mock.msgStr,
@@ -174,7 +174,7 @@ describe('rsa', () => {
 
   cryptoMethod({
     desc: 'encrypt',
-    setMock: fake => window.crypto.subtle.encrypt = fake,
+    setMock: fake => globalThis.crypto.subtle.encrypt = fake,
     mockResp: mock.cipherBytes,
     simpleReq: () => rsa.encrypt(
       mock.msgBytes,
@@ -192,7 +192,7 @@ describe('rsa', () => {
 
   cryptoMethod({
     desc: 'encrypt',
-    setMock: fake => window.crypto.subtle.encrypt = fake,
+    setMock: fake => globalThis.crypto.subtle.encrypt = fake,
     mockResp: mock.cipherBytes,
     simpleReq: () => rsa.encrypt(
       mock.msgStr,
@@ -212,7 +212,7 @@ describe('rsa', () => {
 
   cryptoMethod({
     desc: 'decrypt',
-    setMock: fake => window.crypto.subtle.decrypt = fake,
+    setMock: fake => globalThis.crypto.subtle.decrypt = fake,
     mockResp: mock.msgBytes,
     simpleReq: () => rsa.decrypt(
       mock.cipherBytes,
@@ -230,7 +230,7 @@ describe('rsa', () => {
 
   cryptoMethod({
     desc: 'decrypt',
-    setMock: fake => window.crypto.subtle.decrypt = fake,
+    setMock: fake => globalThis.crypto.subtle.decrypt = fake,
     mockResp: mock.msgBytes,
     simpleReq: () => rsa.decrypt(
       mock.cipherStr,
@@ -248,7 +248,7 @@ describe('rsa', () => {
 
   cryptoMethod({
     desc: 'getPublicKey',
-    setMock: fake => window.crypto.subtle.exportKey = fake,
+    setMock: fake => globalThis.crypto.subtle.exportKey = fake,
     mockResp: utils.base64ToArrBuf(mock.keyBase64),
     expectedResp: mock.keyBase64,
     simpleReq: () => rsa.getPublicKey(mock.keys),

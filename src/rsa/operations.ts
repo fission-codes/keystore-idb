@@ -9,7 +9,7 @@ export async function sign(
   privateKey: PrivateKey,
   charSize: CharSize = DEFAULT_CHAR_SIZE
 ): Promise<ArrayBuffer> {
-  return window.crypto.subtle.sign(
+  return globalThis.crypto.subtle.sign(
     { name: RSA_WRITE_ALG, saltLength: SALT_LENGTH },
     privateKey,
     normalizeUnicodeToBuf(msg, charSize)
@@ -23,7 +23,7 @@ export async function verify(
   charSize: CharSize = DEFAULT_CHAR_SIZE,
   hashAlg: HashAlg = DEFAULT_HASH_ALG
 ): Promise<boolean> {
-  return window.crypto.subtle.verify(
+  return globalThis.crypto.subtle.verify(
     { name: RSA_WRITE_ALG, saltLength: SALT_LENGTH },
     typeof publicKey === "string"
       ? await keys.importPublicKey(publicKey, hashAlg, KeyUse.Write)
@@ -39,7 +39,7 @@ export async function encrypt(
   charSize: CharSize = DEFAULT_CHAR_SIZE,
   hashAlg: HashAlg = DEFAULT_HASH_ALG
 ): Promise<ArrayBuffer> {
-  return window.crypto.subtle.encrypt(
+  return globalThis.crypto.subtle.encrypt(
     { name: RSA_READ_ALG },
     typeof publicKey === "string"
       ? await keys.importPublicKey(publicKey, hashAlg, KeyUse.Read)
@@ -53,7 +53,7 @@ export async function decrypt(
   privateKey: PrivateKey
 ): Promise<ArrayBuffer> {
   const normalized = normalizeBase64ToBuf(msg)
-  return window.crypto.subtle.decrypt(
+  return globalThis.crypto.subtle.decrypt(
     { name: RSA_READ_ALG },
     privateKey,
     normalized
@@ -61,7 +61,7 @@ export async function decrypt(
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
-  const spki = await window.crypto.subtle.exportKey('spki', keypair.publicKey)
+  const spki = await globalThis.crypto.subtle.exportKey('spki', keypair.publicKey)
   return utils.arrBufToBase64(spki)
 }
 

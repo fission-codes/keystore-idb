@@ -26,7 +26,7 @@ module.exports = { // eslint-disable-line
     "src/**/*.{js,ts}"
   ],
   globals: {
-    window: {
+    globalThis: {
       crypto: {
         subtle: {}
       }

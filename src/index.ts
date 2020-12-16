@@ -1,3 +1,4 @@
+import "@ungap/global-this"
 import { init, clear } from './keystore'
 
 import * as ecc from './ecc'

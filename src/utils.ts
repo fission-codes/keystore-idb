@@ -9,7 +9,7 @@ export function arrBufToStr(buf: ArrayBuffer, charSize: CharSize): string {
 
 export function arrBufToBase64(buf: ArrayBuffer): string {
   const str = arrBufToStr(buf, 8)
-  return globalThis.btoa(str)
+  return Buffer.from(str, 'binary').toString('base64')
 }
 
 export function strToArrBuf(str: string, charSize: CharSize): ArrayBuffer {
@@ -22,7 +22,7 @@ export function strToArrBuf(str: string, charSize: CharSize): ArrayBuffer {
 }
 
 export function base64ToArrBuf(base64: string): ArrayBuffer {
-  const str = globalThis.atob(base64)
+  const str = Buffer.from(base64, 'base64').toString('binary')
   return strToArrBuf(str, 8)
 }
 

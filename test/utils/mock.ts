@@ -1,8 +1,5 @@
 import utils from '../../src/utils'
 
-globalThis.atob = require('atob')
-globalThis.btoa = require('btoa')
-
 const iv = (new Uint8Array([1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4])).buffer
 const msgStr = "test msg bytes"
 const msgBytes = utils.strToArrBuf(msgStr, 16)

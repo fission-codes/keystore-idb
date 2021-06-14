@@ -24,6 +24,7 @@
     "test": "jest --coverage",
     "test:watch": "jest --coverage --watch",
     "test:prod": "npm run lint && npm run test -- --no-cache",
+    "do-publish": "yarn build && cp package.json LICENSE README.md dist/ && cd dist && npm publish",
     "precommit": "lint-staged"
   },
   "lint-staged": {

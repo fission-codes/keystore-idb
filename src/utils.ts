@@ -1,4 +1,5 @@
 import { CharSize, Msg } from './types'
+import { Buffer } from 'buffer'
 
 export function arrBufToStr(buf: ArrayBuffer, charSize: CharSize): string {
   const arr = charSize === 8 ? new Uint8Array(buf) : new Uint16Array(buf)

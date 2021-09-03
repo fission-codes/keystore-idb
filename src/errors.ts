@@ -30,7 +30,7 @@ export function checkValidCryptoSystem(type: CryptoSystem): void {
 }
 
 export function checkValidKeyUse(use: KeyUse): void {
-  checkValid(use, [KeyUse.Read, KeyUse.Write], InvalidKeyUse)
+  checkValid(use, [KeyUse.Exchange, KeyUse.Write], InvalidKeyUse)
 }
 
 function checkValid<T>(toCheck: T, opts: T[], error: Error): void {

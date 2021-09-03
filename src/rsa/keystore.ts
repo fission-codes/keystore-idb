@@ -18,7 +18,7 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
     const store = IDB.createStore(storeName)
 
     await IDB.createIfDoesNotExist(readKeyName, () => (
-      keys.makeKeypair(rsaSize, hashAlg, KeyUse.Read)
+      keys.makeKeypair(rsaSize, hashAlg, KeyUse.Exchange)
     ), store)
     await IDB.createIfDoesNotExist(writeKeyName, () => (
       keys.makeKeypair(rsaSize, hashAlg, KeyUse.Write)

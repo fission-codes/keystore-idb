@@ -66,7 +66,7 @@ export enum CharSize {
 }
 
 export enum KeyUse {
-  Read = 'read',
+  Exchange = 'exchange',
   Write = 'write',
 }
 

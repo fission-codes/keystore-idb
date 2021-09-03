@@ -42,7 +42,7 @@ export async function encrypt(
   return globalThis.crypto.subtle.encrypt(
     { name: RSA_READ_ALG },
     typeof publicKey === "string"
-      ? await keys.importPublicKey(publicKey, hashAlg, KeyUse.Read)
+      ? await keys.importPublicKey(publicKey, hashAlg, KeyUse.Exchange)
       : publicKey,
     normalizeUnicodeToBuf(msg, charSize)
   )

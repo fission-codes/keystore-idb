@@ -45,7 +45,7 @@ export async function encrypt(
   opts?: Partial<SymmKeyOpts>
 ): Promise<ArrayBuffer> {
   const importedPublicKey = typeof publicKey === "string"
-    ? await keys.importPublicKey(publicKey, curve, KeyUse.Read)
+    ? await keys.importPublicKey(publicKey, curve, KeyUse.Exchange)
     : publicKey
 
   const cipherKey = await getSharedKey(privateKey, importedPublicKey, opts)
@@ -60,7 +60,7 @@ export async function decrypt(
   opts?: Partial<SymmKeyOpts>
 ): Promise<ArrayBuffer> {
   const importedPublicKey = typeof publicKey === "string"
-    ? await keys.importPublicKey(publicKey, curve, KeyUse.Read)
+    ? await keys.importPublicKey(publicKey, curve, KeyUse.Exchange)
     : publicKey
 
   const cipherKey = await getSharedKey(privateKey, importedPublicKey, opts)

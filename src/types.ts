@@ -15,7 +15,7 @@ export type Config = {
   hashAlg: HashAlg
   charSize: CharSize
   storeName: string
-  readKeyName: string
+  exchangeKeyName: string
   writeKeyName: string
 }
 
@@ -73,7 +73,7 @@ export enum KeyUse {
 export interface KeyStore {
   cfg: Config
 
-  readKey: () => Promise<CryptoKeyPair>
+  exchangeKey: () => Promise<CryptoKeyPair>
   writeKey: () => Promise<CryptoKeyPair>
   getSymmKey: (keyName: string, cfg?: Partial<Config>) => Promise<CryptoKey>
   keyExists(keyName: string): Promise<boolean>
@@ -131,6 +131,6 @@ export interface KeyStore {
     cfg?: Partial<Config>
   ): Promise<string>
 
-  publicReadKey(): Promise<string>
+  publicExchangeKey(): Promise<string>
   publicWriteKey(): Promise<string>
 }

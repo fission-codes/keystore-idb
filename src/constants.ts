@@ -1,8 +1,8 @@
 import { EccCurve, RsaSize, SymmAlg, SymmKeyLength, HashAlg, CharSize } from './types'
 
-export const ECC_READ_ALG = 'ECDH'
+export const ECC_EXCHANGE_ALG = 'ECDH'
 export const ECC_WRITE_ALG = 'ECDSA'
-export const RSA_READ_ALG = 'RSA-OAEP'
+export const RSA_EXCHANGE_ALG = 'RSA-OAEP'
 export const RSA_WRITE_ALG = 'RSASSA-PKCS1-v1_5'
 export const SALT_LENGTH = 128
 
@@ -18,13 +18,13 @@ export const DEFAULT_HASH_ALG = HashAlg.SHA_256
 export const DEFAULT_CHAR_SIZE = CharSize.B16
 
 export const DEFAULT_STORE_NAME = 'keystore'
-export const DEFAULT_READ_KEY_NAME = 'read-key'
+export const DEFAULT_EXCHANGE_KEY_NAME = 'exchange-key'
 export const DEFAULT_WRITE_KEY_NAME = 'write-key'
 
 export default {
-  ECC_READ_ALG,
+  ECC_EXCHANGE_ALG,
   ECC_WRITE_ALG,
-  RSA_READ_ALG,
+  RSA_EXCHANGE_ALG,
   RSA_WRITE_ALG,
   SALT_LENGTH,
   DEFAULT_CRYPTOSYSTEM,
@@ -35,6 +35,6 @@ export default {
   DEFAULT_HASH_ALG,
   DEFAULT_CHAR_SIZE,
   DEFAULT_STORE_NAME,
-  DEFAULT_READ_KEY_NAME,
+  DEFAULT_EXCHANGE_KEY_NAME,
   DEFAULT_WRITE_KEY_NAME,
 }

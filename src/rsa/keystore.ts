@@ -14,10 +14,10 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
       type: CryptoSystem.RSA
     })
 
-    const { rsaSize, hashAlg, storeName, readKeyName, writeKeyName } = cfg
+    const { rsaSize, hashAlg, storeName, exchangeKeyName, writeKeyName } = cfg
     const store = IDB.createStore(storeName)
 
-    await IDB.createIfDoesNotExist(readKeyName, () => (
+    await IDB.createIfDoesNotExist(exchangeKeyName, () => (
       keys.makeKeypair(rsaSize, hashAlg, KeyUse.Exchange)
     ), store)
     await IDB.createIfDoesNotExist(writeKeyName, () => (
@@ -76,21 +76,21 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
     publicKey?: string | PublicKey, // unused param so that keystore interfaces match
     cfg?: Partial<Config>
   ): Promise<string> {
-    const readKey = await this.readKey()
+    const exchangeKey = await this.exchangeKey()
     const mergedCfg = config.merge(this.cfg, cfg)
 
     return utils.arrBufToStr(
       await operations.decrypt(
         cipherText,
-        readKey.privateKey,
+        exchangeKey.privateKey,
       ),
       mergedCfg.charSize
     )
   }
 
-  async publicReadKey(): Promise<string> {
-    const readKey = await this.readKey()
-    return operations.getPublicKey(readKey)
+  async publicExchangeKey(): Promise<string> {
+    const exchangeKey = await this.exchangeKey()
+    return operations.getPublicKey(exchangeKey)
   }
 
   async publicWriteKey(): Promise<string> {

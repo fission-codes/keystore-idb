@@ -20,8 +20,8 @@ export default class KeyStoreBase {
     return checkIsKeyPair(maybeKey)
   }
 
-  async readKey(): Promise<CryptoKeyPair> {
-    const maybeKey = await idb.getKeypair(this.cfg.readKeyName, this.store)
+  async exchangeKey(): Promise<CryptoKeyPair> {
+    const maybeKey = await idb.getKeypair(this.cfg.exchangeKeyName, this.store)
     return checkIsKeyPair(maybeKey)
   }
 

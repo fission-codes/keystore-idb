@@ -8,7 +8,7 @@ import {
   DEFAULT_HASH_ALG,
   DEFAULT_CHAR_SIZE,
   DEFAULT_STORE_NAME,
-  DEFAULT_READ_KEY_NAME,
+  DEFAULT_EXCHANGE_KEY_NAME,
   DEFAULT_WRITE_KEY_NAME
 } from './constants'
 import { Config, KeyUse, CryptoSystem, SymmKeyOpts } from './types'
@@ -23,7 +23,7 @@ export const defaultConfig = {
   hashAlg: DEFAULT_HASH_ALG,
   charSize: DEFAULT_CHAR_SIZE,
   storeName: DEFAULT_STORE_NAME,
-  readKeyName: DEFAULT_READ_KEY_NAME,
+  exchangeKeyName: DEFAULT_EXCHANGE_KEY_NAME,
   writeKeyName: DEFAULT_WRITE_KEY_NAME
 } as Config
 

@@ -13,10 +13,10 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
       ...(maybeCfg || {}),
       type: CryptoSystem.ECC
     })
-    const { curve, storeName, readKeyName, writeKeyName } = cfg
+    const { curve, storeName, exchangeKeyName, writeKeyName } = cfg
 
     const store = IDB.createStore(storeName)
-    await IDB.createIfDoesNotExist(readKeyName, () => (
+    await IDB.createIfDoesNotExist(exchangeKeyName, () => (
       keys.makeKeypair(curve, KeyUse.Exchange)
     ), store)
     await IDB.createIfDoesNotExist(writeKeyName, () => (
@@ -63,11 +63,11 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     cfg?: Partial<Config>
   ): Promise<string> {
     const mergedCfg = config.merge(this.cfg, cfg)
-    const readKey = await this.readKey()
+    const exchangeKey = await this.exchangeKey()
 
     return utils.arrBufToBase64(await operations.encrypt(
       msg,
-      readKey.privateKey,
+      exchangeKey.privateKey,
       publicKey,
       mergedCfg.charSize,
       mergedCfg.curve
@@ -80,12 +80,12 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     cfg?: Partial<Config>
   ): Promise<string> {
     const mergedCfg = config.merge(this.cfg, cfg)
-    const readKey = await this.readKey()
+    const exchangeKey = await this.exchangeKey()
 
     return utils.arrBufToStr(
       await operations.decrypt(
         cipherText,
-        readKey.privateKey,
+        exchangeKey.privateKey,
         publicKey,
         mergedCfg.curve
       ),
@@ -93,9 +93,9 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     )
   }
 
-  async publicReadKey(): Promise<string> {
-    const readKey = await this.readKey()
-    return operations.getPublicKey(readKey)
+  async publicExchangeKey(): Promise<string> {
+    const exchangeKey = await this.exchangeKey()
+    return operations.getPublicKey(exchangeKey)
   }
 
   async publicWriteKey(): Promise<string> {

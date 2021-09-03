@@ -29,21 +29,21 @@ describe("ECCKeyStore", () => {
         makeFn()
       })
 
-      response = await ECCKeyStore.init({ readKeyName: 'test-read', writeKeyName: 'test-write' })
+      response = await ECCKeyStore.init({ exchangeKeyName: 'test-exchange', writeKeyName: 'test-write' })
     })
 
     it('should initialize a keystore with expected params', () => {
       let cfg = config.normalize({
         type: CryptoSystem.ECC,
-        readKeyName: 'test-read',
+        exchangeKeyName: 'test-exchange',
         writeKeyName: 'test-write'
       })
       const keystore = new ECCKeyStore(cfg, mock.idbStore)
       expect(response).toStrictEqual(keystore)
     })
 
-    it('should call createIfDoesNotExist with correct params (read key)', () => {
-      expect(fakeCreateifDNE.mock.calls[0][0]).toEqual('test-read')
+    it('should call createIfDoesNotExist with correct params (exchange key)', () => {
+      expect(fakeCreateifDNE.mock.calls[0][0]).toEqual('test-exchange')
       expect(fakeCreateifDNE.mock.calls[0][2]).toEqual(mock.idbStore)
     })
 
@@ -52,10 +52,10 @@ describe("ECCKeyStore", () => {
       expect(fakeCreateifDNE.mock.calls[1][2]).toEqual(mock.idbStore)
     })
 
-    it('should call makeKeypair with correct params (read key)', () => {
+    it('should call makeKeypair with correct params (exchange key)', () => {
       expect(fakeMake.mock.calls[0]).toEqual([
         EccCurve.P_256,
-        KeyUse.Read
+        KeyUse.Exchange
       ])
     })
 
@@ -157,7 +157,7 @@ describe("ECCKeyStore", () => {
 
 
   keystoreMethod({
-    desc: 'publicReadKey',
+    desc: 'publicExchangeKey',
     type: 'ecc',
     mocks: [
       {
@@ -169,7 +169,7 @@ describe("ECCKeyStore", () => {
         ]
       }
     ],
-    reqFn: (ks) => ks.publicReadKey(),
+    reqFn: (ks) => ks.publicExchangeKey(),
     expectedResp: mock.keyBase64,
   })
 

@@ -11,7 +11,7 @@ describe('rsa', () => {
     desc: 'makeKeypair',
     setMock: fake => globalThis.crypto.subtle.generateKey = fake,
     mockResp: mock.keys,
-    simpleReq: () => rsa.makeKeypair(RsaSize.B2048, HashAlg.SHA_256, KeyUse.Read),
+    simpleReq: () => rsa.makeKeypair(RsaSize.B2048, HashAlg.SHA_256, KeyUse.Exchange),
     simpleParams: [
       {
         name: 'RSA-OAEP',
@@ -59,11 +59,11 @@ describe('rsa', () => {
 
 
   cryptoMethod({
-    desc: 'importPublicReadKey',
+    desc: 'importPublicExchangeKey',
     setMock: fake => globalThis.crypto.subtle.importKey = fake,
     mockResp: mock.keys.publicKey,
     expectedResp: mock.keys.publicKey,
-    simpleReq: () => rsa.importPublicKey(mock.keyBase64, HashAlg.SHA_256, KeyUse.Read),
+    simpleReq: () => rsa.importPublicKey(mock.keyBase64, HashAlg.SHA_256, KeyUse.Exchange),
     simpleParams: [
       'spki',
       utils.base64ToArrBuf(mock.keyBase64),
@@ -74,7 +74,7 @@ describe('rsa', () => {
     paramChecks: [
       {
         desc: 'handles multiple hash algs',
-        req: () => rsa.importPublicKey(mock.keyBase64, HashAlg.SHA_512, KeyUse.Read),
+        req: () => rsa.importPublicKey(mock.keyBase64, HashAlg.SHA_512, KeyUse.Exchange),
         params: (params: any) => params[2]?.hash?.name === 'SHA-512'
       },
       {

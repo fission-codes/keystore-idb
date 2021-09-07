@@ -1,4 +1,4 @@
-import * as base64 from 'base64-js'
+import * as uint8arrays from 'uint8arrays'
 import { CharSize, Msg } from './types'
 
 
@@ -10,7 +10,7 @@ export function arrBufToStr(buf: ArrayBuffer, charSize: CharSize): string {
 }
 
 export function arrBufToBase64(buf: ArrayBuffer): string {
-  return base64.fromByteArray(new Uint8Array(buf))
+  return uint8arrays.toString(new Uint8Array(buf), "base64pad")
 }
 
 export function strToArrBuf(str: string, charSize: CharSize): ArrayBuffer {
@@ -23,7 +23,7 @@ export function strToArrBuf(str: string, charSize: CharSize): ArrayBuffer {
 }
 
 export function base64ToArrBuf(string: string): ArrayBuffer {
-  return base64.toByteArray(string).buffer
+  return uint8arrays.fromString(string, "base64pad").buffer
 }
 
 export function publicExponent(): Uint8Array {

@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "@ungap/global-this": "^0.4.3",
-    "base64-js": "^1.5.1",
-    "localforage": "^1.7.3"
+    "localforage": "^1.7.3",
+    "uint8arrays": "^3.0.0"
   }
 }

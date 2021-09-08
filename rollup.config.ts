@@ -2,7 +2,6 @@ import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 import json from 'rollup-plugin-json'
-import inject from '@rollup/plugin-inject'
 import polyfills from 'rollup-plugin-node-polyfills'
 import typescript from 'rollup-plugin-typescript2'
 
@@ -26,10 +25,10 @@ const plugins = [
 
   // Compile TypeScript files
   // We use CommonJS for lib but ESNext as compiler step for Rollup, hence the override
-  typescript({ 
+  typescript({
     useTsconfigDeclarationDir: true,
-    tsconfigOverride: { 
-      compilerOptions: { module: "ESNext"} 
+    tsconfigOverride: {
+      compilerOptions: { module: "ESNext"}
     }
   }),
 
@@ -41,10 +40,6 @@ const plugins = [
 
   // Most packages in node_modules are legacy CommonJS, so let's convert them to ES
   commonjs(),
-
-  inject({
-    Buffer: ['buffer/', 'Buffer']
-  }),
 
   // Polyfills for node builtins/globals
   polyfills(),

@@ -1,5 +1,6 @@
+import * as uint8arrays from 'uint8arrays'
 import { CharSize, Msg } from './types'
-import { Buffer } from 'buffer'
+
 
 export function arrBufToStr(buf: ArrayBuffer, charSize: CharSize): string {
   const arr = charSize === 8 ? new Uint8Array(buf) : new Uint16Array(buf)
@@ -9,8 +10,7 @@ export function arrBufToStr(buf: ArrayBuffer, charSize: CharSize): string {
 }
 
 export function arrBufToBase64(buf: ArrayBuffer): string {
-  const str = arrBufToStr(buf, 8)
-  return Buffer.from(str, 'binary').toString('base64')
+  return uint8arrays.toString(new Uint8Array(buf), "base64pad")
 }
 
 export function strToArrBuf(str: string, charSize: CharSize): ArrayBuffer {
@@ -22,9 +22,8 @@ export function strToArrBuf(str: string, charSize: CharSize): ArrayBuffer {
   return view.buffer
 }
 
-export function base64ToArrBuf(base64: string): ArrayBuffer {
-  const str = Buffer.from(base64, 'base64').toString('binary')
-  return strToArrBuf(str, 8)
+export function base64ToArrBuf(string: string): ArrayBuffer {
+  return uint8arrays.fromString(string, "base64pad").buffer
 }
 
 export function publicExponent(): Uint8Array {

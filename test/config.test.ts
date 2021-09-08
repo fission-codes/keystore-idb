@@ -66,11 +66,11 @@ describe('config', () => {
 
     it('merges with default config', () => {
       const cfg = config.normalize({
-        readKeyName: 'test'
+        exchangeKeyName: 'test'
       })
       const modifiedDef = {
         ...config.defaultConfig,
-        readKeyName: 'test'
+        exchangeKeyName: 'test'
       }
       expect(cfg).toEqual(modifiedDef)
     })

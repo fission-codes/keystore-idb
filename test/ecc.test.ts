@@ -11,7 +11,7 @@ describe('ecc', () => {
     desc: 'makeKeypair',
     setMock: fake => globalThis.crypto.subtle.generateKey = fake,
     mockResp: mock.keys,
-    simpleReq: () => ecc.makeKeypair(EccCurve.P_256, KeyUse.Read),
+    simpleReq: () => ecc.makeKeypair(EccCurve.P_256, KeyUse.Exchange),
     simpleParams: [
       { name: 'ECDH', namedCurve: 'P-256' },
       false,
@@ -20,7 +20,7 @@ describe('ecc', () => {
     paramChecks: [
       {
         desc: 'handles multiple key algorithms',
-        req: () => ecc.makeKeypair(EccCurve.P_521, KeyUse.Read),
+        req: () => ecc.makeKeypair(EccCurve.P_521, KeyUse.Exchange),
         params: (params: any) => params[0]?.namedCurve === 'P-521'
       },
       {
@@ -44,11 +44,11 @@ describe('ecc', () => {
 
 
   cryptoMethod({
-    desc: 'importPublicReadKey',
+    desc: 'importPublicExchangeKey',
     setMock: fake => globalThis.crypto.subtle.importKey = fake,
     mockResp: mock.keys.publicKey,
     expectedResp: mock.keys.publicKey,
-    simpleReq: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_256, KeyUse.Read),
+    simpleReq: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_256, KeyUse.Exchange),
     simpleParams: [
       'raw',
       utils.base64ToArrBuf(mock.keyBase64),
@@ -59,7 +59,7 @@ describe('ecc', () => {
     paramChecks: [
       {
         desc: 'handles multiple curves',
-        req: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_521, KeyUse.Read),
+        req: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_521, KeyUse.Exchange),
         params: (params: any) => params[2]?.namedCurve === 'P-521'
       },
       {

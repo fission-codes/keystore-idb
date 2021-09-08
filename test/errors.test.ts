@@ -70,7 +70,7 @@ describe('errors', () => {
     })
 
     describe('passes on valid inputs', () => {
-      [KeyUse.Read, KeyUse.Write].map((val: KeyUse) => {
+      [KeyUse.Exchange, KeyUse.Write].map((val: KeyUse) => {
         it(`passes on ${val}`, () => {
           errors.checkValidKeyUse(val)
           expect(true)

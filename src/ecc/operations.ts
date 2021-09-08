@@ -1,7 +1,7 @@
 import aes from '../aes'
 import keys from './keys'
 import utils, { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils'
-import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE, DEFAULT_HASH_ALG, ECC_READ_ALG, ECC_WRITE_ALG, DEFAULT_SYMM_ALG, DEFAULT_SYMM_LEN } from '../constants'
+import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE, DEFAULT_HASH_ALG, ECC_EXCHANGE_ALG, ECC_WRITE_ALG, DEFAULT_SYMM_ALG, DEFAULT_SYMM_LEN } from '../constants'
 import { CharSize, EccCurve, Msg, PrivateKey, PublicKey, HashAlg, KeyUse, SymmKey, SymmKeyOpts } from '../types'
 
 
@@ -45,7 +45,7 @@ export async function encrypt(
   opts?: Partial<SymmKeyOpts>
 ): Promise<ArrayBuffer> {
   const importedPublicKey = typeof publicKey === "string"
-    ? await keys.importPublicKey(publicKey, curve, KeyUse.Read)
+    ? await keys.importPublicKey(publicKey, curve, KeyUse.Exchange)
     : publicKey
 
   const cipherKey = await getSharedKey(privateKey, importedPublicKey, opts)
@@ -60,7 +60,7 @@ export async function decrypt(
   opts?: Partial<SymmKeyOpts>
 ): Promise<ArrayBuffer> {
   const importedPublicKey = typeof publicKey === "string"
-    ? await keys.importPublicKey(publicKey, curve, KeyUse.Read)
+    ? await keys.importPublicKey(publicKey, curve, KeyUse.Exchange)
     : publicKey
 
   const cipherKey = await getSharedKey(privateKey, importedPublicKey, opts)
@@ -74,7 +74,7 @@ export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
 
 export async function getSharedKey(privateKey: PrivateKey, publicKey: PublicKey, opts?: Partial<SymmKeyOpts>): Promise<SymmKey> {
   return globalThis.crypto.subtle.deriveKey(
-    { name: ECC_READ_ALG, public: publicKey },
+    { name: ECC_EXCHANGE_ALG, public: publicKey },
     privateKey,
     {
       name: opts?.alg || DEFAULT_SYMM_ALG,

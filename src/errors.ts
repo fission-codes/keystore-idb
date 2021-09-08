@@ -5,7 +5,7 @@ export const NotKeyPair = new Error("Retrieved a symmetric key when an asymmetri
 export const NotKey = new Error("Retrieved an asymmetric keypair when an symmetric key was expected. Please use a different key name.")
 export const ECCNotEnabled = new Error("ECC is not enabled for this browser. Please use RSA instead.")
 export const UnsupportedCrypto = new Error("Cryptosystem not supported. Please use ECC or RSA")
-export const InvalidKeyUse = new Error("Invalid key use. Please use 'read' or 'write")
+export const InvalidKeyUse = new Error("Invalid key use. Please use 'exchange' or 'write")
 
 export function checkIsKeyPair(keypair: any): CryptoKeyPair {
   if(!keypair || keypair === null) {
@@ -30,7 +30,7 @@ export function checkValidCryptoSystem(type: CryptoSystem): void {
 }
 
 export function checkValidKeyUse(use: KeyUse): void {
-  checkValid(use, [KeyUse.Read, KeyUse.Write], InvalidKeyUse)
+  checkValid(use, [KeyUse.Exchange, KeyUse.Write], InvalidKeyUse)
 }
 
 function checkValid<T>(toCheck: T, opts: T[], error: Error): void {

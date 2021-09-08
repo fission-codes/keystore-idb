@@ -29,21 +29,21 @@ describe("RSAKeyStore", () => {
         makeFn()
       })
 
-      response = await RSAKeyStore.init({ readKeyName: 'test-read', writeKeyName: 'test-write' })
+      response = await RSAKeyStore.init({ exchangeKeyName: 'test-exchange', writeKeyName: 'test-write' })
     })
 
     it('should initialize a keystore with expected params', () => {
       let cfg = config.normalize({
         type: CryptoSystem.RSA,
-        readKeyName: 'test-read',
+        exchangeKeyName: 'test-exchange',
         writeKeyName: 'test-write'
       })
       const keystore = new RSAKeyStore(cfg, mock.idbStore)
       expect(response).toStrictEqual(keystore)
     })
 
-    it('should call createIfDoesNotExist with correct params (read key)', () => {
-      expect(fakeCreateifDNE.mock.calls[0][0]).toEqual('test-read')
+    it('should call createIfDoesNotExist with correct params (exchange key)', () => {
+      expect(fakeCreateifDNE.mock.calls[0][0]).toEqual('test-exchange')
       expect(fakeCreateifDNE.mock.calls[0][2]).toEqual(mock.idbStore)
     })
 
@@ -52,11 +52,11 @@ describe("RSAKeyStore", () => {
       expect(fakeCreateifDNE.mock.calls[1][2]).toEqual(mock.idbStore)
     })
 
-    it('should call makeKeypair with correct params (read key)', () => {
+    it('should call makeKeypair with correct params (exchange key)', () => {
       expect(fakeMake.mock.calls[0]).toEqual([
         RsaSize.B2048,
         HashAlg.SHA_256,
-        KeyUse.Read
+        KeyUse.Exchange
       ])
     })
 
@@ -154,7 +154,7 @@ describe("RSAKeyStore", () => {
 
 
   keystoreMethod({
-    desc: 'publicReadKey',
+    desc: 'publicExchangeKey',
     type: 'rsa',
     mocks: [
       {
@@ -166,7 +166,7 @@ describe("RSAKeyStore", () => {
         ]
       }
     ],
-    reqFn: (ks) => ks.publicReadKey(),
+    reqFn: (ks) => ks.publicExchangeKey(),
     expectedResp: mock.keyBase64,
   })
 

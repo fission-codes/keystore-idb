@@ -1,6 +1,6 @@
 import keys from './keys'
 import utils, { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils'
-import { DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG, RSA_READ_ALG, RSA_WRITE_ALG, SALT_LENGTH } from '../constants'
+import { DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG, RSA_EXCHANGE_ALG, RSA_WRITE_ALG, SALT_LENGTH } from '../constants'
 import { CharSize, HashAlg, KeyUse, Msg, PrivateKey, PublicKey } from '../types'
 
 
@@ -40,9 +40,9 @@ export async function encrypt(
   hashAlg: HashAlg = DEFAULT_HASH_ALG
 ): Promise<ArrayBuffer> {
   return globalThis.crypto.subtle.encrypt(
-    { name: RSA_READ_ALG },
+    { name: RSA_EXCHANGE_ALG },
     typeof publicKey === "string"
-      ? await keys.importPublicKey(publicKey, hashAlg, KeyUse.Read)
+      ? await keys.importPublicKey(publicKey, hashAlg, KeyUse.Exchange)
       : publicKey,
     normalizeUnicodeToBuf(msg, charSize)
   )
@@ -54,7 +54,7 @@ export async function decrypt(
 ): Promise<ArrayBuffer> {
   const normalized = normalizeBase64ToBuf(msg)
   return globalThis.crypto.subtle.decrypt(
-    { name: RSA_READ_ALG },
+    { name: RSA_EXCHANGE_ALG },
     privateKey,
     normalized
   )

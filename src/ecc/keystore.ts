@@ -4,7 +4,7 @@ import operations from './operations'
 import config from '../config'
 import utils from '../utils'
 import KeyStoreBase from '../keystore/base'
-import { KeyStore, Config, KeyUse, CryptoSystem } from '../types'
+import { KeyStore, Config, KeyUse, CryptoSystem, PrivateKey } from '../types'
 
 export class ECCKeyStore extends KeyStoreBase implements KeyStore {
 
@@ -33,7 +33,7 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
 
     return utils.arrBufToBase64(await operations.sign(
       msg,
-      writeKey.privateKey,
+      writeKey.privateKey as PrivateKey,
       mergedCfg.charSize,
       mergedCfg.hashAlg
     ))
@@ -67,7 +67,7 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
 
     return utils.arrBufToBase64(await operations.encrypt(
       msg,
-      exchangeKey.privateKey,
+      exchangeKey.privateKey as PrivateKey,
       publicKey,
       mergedCfg.charSize,
       mergedCfg.curve
@@ -85,7 +85,7 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     return utils.arrBufToStr(
       await operations.decrypt(
         cipherText,
-        exchangeKey.privateKey,
+        exchangeKey.privateKey as PrivateKey,
         publicKey,
         mergedCfg.curve
       ),

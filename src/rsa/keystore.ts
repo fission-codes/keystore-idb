@@ -4,7 +4,7 @@ import operations from './operations'
 import config from '../config'
 import utils from '../utils'
 import KeyStoreBase from '../keystore/base'
-import { KeyStore, Config, KeyUse, CryptoSystem, Msg, PublicKey } from '../types'
+import { KeyStore, Config, KeyUse, CryptoSystem, Msg, PublicKey, PrivateKey } from '../types'
 
 export class RSAKeyStore extends KeyStoreBase implements KeyStore {
 
@@ -34,7 +34,7 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
 
     return utils.arrBufToBase64(await operations.sign(
       msg,
-      writeKey.privateKey,
+      writeKey.privateKey as PrivateKey,
       mergedCfg.charSize
     ))
   }
@@ -82,7 +82,7 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
     return utils.arrBufToStr(
       await operations.decrypt(
         cipherText,
-        exchangeKey.privateKey,
+        exchangeKey.privateKey as PrivateKey,
       ),
       mergedCfg.charSize
     )

@@ -68,7 +68,7 @@ export async function decrypt(
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
-  const raw = await globalThis.crypto.subtle.exportKey('raw', keypair.publicKey)
+  const raw = await globalThis.crypto.subtle.exportKey('raw', keypair.publicKey as PublicKey)
   return utils.arrBufToBase64(raw)
 }
 

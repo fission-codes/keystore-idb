@@ -61,7 +61,7 @@ export async function decrypt(
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
-  const spki = await globalThis.crypto.subtle.exportKey('spki', keypair.publicKey)
+  const spki = await globalThis.crypto.subtle.exportKey('spki', keypair.publicKey as PublicKey)
   return utils.arrBufToBase64(spki)
 }
 

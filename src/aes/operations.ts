@@ -1,7 +1,7 @@
-import keys from './keys'
-import utils from '../utils'
-import { DEFAULT_SYMM_ALG, DEFAULT_CTR_LEN } from '../constants'
-import { SymmKey, SymmKeyOpts, SymmAlg, CipherText, Msg } from '../types'
+import keys from './keys.js'
+import utils from '../utils.js'
+import { DEFAULT_SYMM_ALG, DEFAULT_CTR_LEN } from '../constants.js'
+import { SymmKey, SymmKeyOpts, SymmAlg, CipherText, Msg } from '../types.js'
 
 export async function encryptBytes(
   msg: Msg,
@@ -13,7 +13,7 @@ export async function encryptBytes(
   const alg = opts?.alg || DEFAULT_SYMM_ALG
   const iv = opts?.iv || utils.randomBuf(16)
   const cipherBuf = await globalThis.crypto.subtle.encrypt(
-    { 
+    {
       name: alg,
       // AES-CTR uses a counter, AES-GCM/AES-CBC use an initialization vector
       iv: alg === SymmAlg.AES_CTR ? undefined : iv,

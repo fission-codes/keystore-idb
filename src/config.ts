@@ -1,4 +1,4 @@
-import ecc from './ecc/keys'
+import ecc from './ecc/keys.js'
 import {
   DEFAULT_CRYPTOSYSTEM,
   DEFAULT_ECC_CURVE,

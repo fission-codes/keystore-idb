@@ -1,10 +1,10 @@
-import IDB from '../idb'
-import keys from './keys'
-import operations from './operations'
-import config from '../config'
-import utils from '../utils'
-import KeyStoreBase from '../keystore/base'
-import { KeyStore, Config, KeyUse, CryptoSystem, Msg, PublicKey, PrivateKey } from '../types'
+import IDB from '../idb.js'
+import keys from './keys.js'
+import operations from './operations.js'
+import config from '../config.js'
+import utils from '../utils.js'
+import KeyStoreBase from '../keystore/base.js'
+import { KeyStore, Config, KeyUse, CryptoSystem, Msg, PublicKey, PrivateKey } from '../types.js'
 
 export class RSAKeyStore extends KeyStoreBase implements KeyStore {
 

@@ -1,13 +1,13 @@
 import "@ungap/global-this"
-import { init, clear } from './keystore'
+import { init, clear } from './keystore/index.js'
 
-import * as ecc from './ecc'
-import * as rsa from './rsa'
-import * as config from './config'
-import * as constants from './constants'
-import * as utils from './utils'
-import * as idb from './idb'
-import * as types from './types'
+import * as ecc from './ecc/index.js'
+import * as rsa from './rsa/index.js'
+import * as config from './config.js'
+import * as constants from './constants.js'
+import * as utils from './utils.js'
+import * as idb from './idb.js'
+import * as types from './types.js'
 
 export default {
   init,

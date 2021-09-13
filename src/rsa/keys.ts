@@ -1,7 +1,7 @@
-import { RSA_EXCHANGE_ALG, RSA_WRITE_ALG } from '../constants'
-import { RsaSize, HashAlg, KeyUse, PublicKey } from '../types'
-import utils from '../utils'
-import { checkValidKeyUse } from '../errors'
+import { RSA_EXCHANGE_ALG, RSA_WRITE_ALG } from '../constants.js'
+import { RsaSize, HashAlg, KeyUse, PublicKey } from '../types.js'
+import utils from '../utils.js'
+import { checkValidKeyUse } from '../errors.js'
 
 export async function makeKeypair(
   size: RsaSize,

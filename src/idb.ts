@@ -1,5 +1,5 @@
 import localforage from 'localforage'
-import { checkIsKeyPair, checkIsKey } from './errors'
+import { checkIsKeyPair, checkIsKey } from './errors.js'
 
 /* istanbul ignore next */
 export function createStore(name: string): LocalForage {
@@ -8,7 +8,7 @@ export function createStore(name: string): LocalForage {
 
 export async function createIfDoesNotExist(id: string, makeFn: () => Promise<CryptoKeyPair | CryptoKey>, store: LocalForage = localforage): Promise<void> {
   if(await exists(id, store)) {
-    return 
+    return
   }
   const key = await makeFn()
   await put(id, key, store)

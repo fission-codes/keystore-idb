@@ -1,4 +1,4 @@
-import { KeyUse, CryptoSystem } from './types'
+import { KeyUse, CryptoSystem } from './types.js'
 
 export const KeyDoesNotExist = new Error("Key does not exist. Make sure you properly instantiated the keystore.")
 export const NotKeyPair = new Error("Retrieved a symmetric key when an asymmetric keypair was expected. Please use a different key name.")

@@ -63,6 +63,7 @@
     "eslint": "^7.32.0",
     "jest": "^26.0.0",
     "jest-config": "^26.0.0",
+    "jest-ts-webcompat-resolver": "^1.0.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.0.0",
     "ts-node": "^10.2.1",

@@ -1,4 +1,4 @@
-import { EccCurve, RsaSize, SymmAlg, SymmKeyLength, HashAlg, CharSize } from './types'
+import { EccCurve, RsaSize, SymmAlg, SymmKeyLength, HashAlg, CharSize } from './types.js'
 
 export const ECC_EXCHANGE_ALG = 'ECDH'
 export const ECC_WRITE_ALG = 'ECDSA'

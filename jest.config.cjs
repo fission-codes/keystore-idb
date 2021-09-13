@@ -1,4 +1,5 @@
 module.exports = {
+  resolver: "jest-ts-webcompat-resolver",
   transform: {
     ".(ts|tsx)": "ts-jest"
   },

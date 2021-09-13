@@ -1,9 +1,9 @@
-import aes from '../aes'
-import idb from '../idb'
-import utils from '../utils'
-import config from '../config'
-import { Config } from '../types'
-import { checkIsKeyPair } from '../errors'
+import aes from '../aes/index.js'
+import idb from '../idb.js'
+import utils from '../utils.js'
+import config from '../config.js'
+import { Config } from '../types.js'
+import { checkIsKeyPair } from '../errors.js'
 
 export default class KeyStoreBase {
 

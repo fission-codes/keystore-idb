@@ -1,8 +1,8 @@
-import aes from '../aes'
-import keys from './keys'
-import utils, { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils'
-import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE, DEFAULT_HASH_ALG, ECC_EXCHANGE_ALG, ECC_WRITE_ALG, DEFAULT_SYMM_ALG, DEFAULT_SYMM_LEN } from '../constants'
-import { CharSize, EccCurve, Msg, PrivateKey, PublicKey, HashAlg, KeyUse, SymmKey, SymmKeyOpts } from '../types'
+import aes from '../aes/index.js'
+import keys from './keys.js'
+import utils, { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils.js'
+import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE, DEFAULT_HASH_ALG, ECC_EXCHANGE_ALG, ECC_WRITE_ALG, DEFAULT_SYMM_ALG, DEFAULT_SYMM_LEN } from '../constants.js'
+import { CharSize, EccCurve, Msg, PrivateKey, PublicKey, HashAlg, KeyUse, SymmKey, SymmKeyOpts } from '../types.js'
 
 
 export async function sign(

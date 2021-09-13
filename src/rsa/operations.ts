@@ -1,7 +1,7 @@
-import keys from './keys'
-import utils, { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils'
-import { DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG, RSA_EXCHANGE_ALG, RSA_WRITE_ALG, SALT_LENGTH } from '../constants'
-import { CharSize, HashAlg, KeyUse, Msg, PrivateKey, PublicKey } from '../types'
+import keys from './keys.js'
+import utils, { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils.js'
+import { DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG, RSA_EXCHANGE_ALG, RSA_WRITE_ALG, SALT_LENGTH } from '../constants.js'
+import { CharSize, HashAlg, KeyUse, Msg, PrivateKey, PublicKey } from '../types.js'
 
 
 export async function sign(

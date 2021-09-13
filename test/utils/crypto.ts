@@ -5,7 +5,7 @@ type ParamCheckFn = (params: any) => boolean
 type ParamCheck = {
   desc: string;
   req: Req;
-  params: object | ParamCheckFn;
+  params: any[] | ParamCheckFn;
 }
 
 type ShouldThrow = {
@@ -20,7 +20,7 @@ type WebCryptoReqOpts = {
   mockResp: any;
   expectedResp?: any;
   simpleReq: Req;
-  simpleParams?: object;
+  simpleParams?: any[];
   paramChecks: ParamCheck[];
   shouldThrows: ShouldThrow[];
 }
@@ -29,7 +29,7 @@ type WebCryptoReqOpts = {
 export const cryptoMethod = (opts: WebCryptoReqOpts): void => {
   return describe(opts.desc, () => {
     let fake: jest.Mock
-   
+
     beforeEach(async () => {
       fake = jest.fn(() => new Promise(r => r(opts.mockResp)))
       opts.setMock(fake)

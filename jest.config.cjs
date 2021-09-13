@@ -1,4 +1,4 @@
-module.exports = { // eslint-disable-line
+module.exports = {
   transform: {
     ".(ts|tsx)": "ts-jest"
   },
@@ -9,6 +9,9 @@ module.exports = { // eslint-disable-line
     "tsx",
     "js"
   ],
+  collectCoverage: true,
+  coverageDirectory: "coverage",
+  coverageProvider: "v8",
   coveragePathIgnorePatterns: [
     "/node_modules/",
     "/test/",

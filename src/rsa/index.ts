@@ -1,15 +1,13 @@
-import keys from './keys'
-import operations from './operations'
-import keystore from './keystore'
+import keys from './keys.js'
+import operations from './operations.js'
+import keystore from './keystore.js'
 
-export * from './keys'
-export * from './operations'
-export * from './keystore'
+export * from './keys.js'
+export * from './operations.js'
+export * from './keystore.js'
 
 export default {
   ...keys,
   ...operations,
   ...keystore,
 }
-
-

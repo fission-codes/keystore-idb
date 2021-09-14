@@ -1,23 +1,24 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "target": "es5",
-    "module":"CommonJS",
-    "lib": ["es2015", "es2016", "es2017", "dom"],
+    "target": "ES2020",
+    "module":"ESNext",
+    "lib": ["dom", "es2021"],
     "strict": true,
     "sourceMap": true,
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "declarationDir": "dist",
-    "outDir": "dist",
-    "typeRoots": [
-      "node_modules/@types",
-      "src/@types"
-    ]
+    "skipLibCheck": true,
+    "declarationDir": "lib",
+    "outDir": "lib",
   },
   "include": [
-    "src"
+    "src/**/*"
+  ],
+  "exclude": [
+    "src/**/*.test.ts",
+    "test/**/*"
   ]
 }

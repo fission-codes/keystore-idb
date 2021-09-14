@@ -1,5 +1,5 @@
 import * as uint8arrays from 'uint8arrays'
-import { CharSize, Msg } from './types'
+import { CharSize, Msg } from './types.js'
 
 
 export function arrBufToStr(buf: ArrayBuffer, charSize: CharSize): string {

@@ -1,7 +1,7 @@
-import utils from '../utils'
-import { ECC_EXCHANGE_ALG, ECC_WRITE_ALG } from '../constants'
-import { EccCurve, KeyUse, PublicKey } from '../types'
-import { checkValidKeyUse } from '../errors'
+import utils from '../utils.js'
+import { ECC_EXCHANGE_ALG, ECC_WRITE_ALG } from '../constants.js'
+import { EccCurve, KeyUse, PublicKey } from '../types.js'
+import { checkValidKeyUse } from '../errors.js'
 
 export async function makeKeypair(
   curve: EccCurve,

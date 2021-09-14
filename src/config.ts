@@ -1,4 +1,4 @@
-import ecc from './ecc/keys'
+import ecc from './ecc/keys.js'
 import {
   DEFAULT_CRYPTOSYSTEM,
   DEFAULT_ECC_CURVE,
@@ -10,9 +10,9 @@ import {
   DEFAULT_STORE_NAME,
   DEFAULT_EXCHANGE_KEY_NAME,
   DEFAULT_WRITE_KEY_NAME
-} from './constants'
-import { Config, KeyUse, CryptoSystem, SymmKeyOpts } from './types'
-import utils from './utils'
+} from './constants.js'
+import { Config, KeyUse, CryptoSystem, SymmKeyOpts } from './types.js'
+import utils from './utils.js'
 
 export const defaultConfig = {
   type: DEFAULT_CRYPTOSYSTEM,

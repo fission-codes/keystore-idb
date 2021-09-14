@@ -1,8 +1,8 @@
-import keys from './keys'
-import operations from './operations'
+import keys from './keys.js'
+import operations from './operations.js'
 
-export * from './keys'
-export * from './operations'
+export * from './keys.js'
+export * from './operations.js'
 
 export default {
   ...keys,

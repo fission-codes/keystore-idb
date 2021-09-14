@@ -44,7 +44,7 @@ _Note: if you don't include a crypto "type" (`'ecc' | 'rsa'`), the library will 
 ## Example Usage
 
 ```typescript
-import keystore from './index'
+import keystore from 'keystore-idb'
 
 async function run() {
   await keystore.clear()

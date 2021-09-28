@@ -1,12 +1,13 @@
 {
   "name": "keystore-idb",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "In-browser key management with IndexedDB and the Web Crypto API",
   "keywords": [],
   "type": "module",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
+    "./lib/*": "./lib/*",
     "./*": "./lib/*",
     "./package.json": "./package.json"
   },
@@ -15,6 +16,9 @@
     "*": {
       "lib/index.d.ts": [
         "lib/index.d.ts"
+      ],
+      "lib/*": [
+        "lib/*"
       ],
       "*": [
         "lib/*"

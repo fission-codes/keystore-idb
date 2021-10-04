@@ -22,6 +22,11 @@ describe('aes', () => {
         params: (params: any) => params[0]?.name === 'AES-CBC'
       },
       {
+        desc: 'handles multiple key algorithms',
+        req: () => aes.makeKey({ alg: SymmAlg.AES_GCM }),
+        params: (params: any) => params[0]?.name === 'AES-GCM'
+      },
+      {
         desc: 'handles multiple key lengths',
         req: () => aes.makeKey({ length: SymmKeyLength.B256 }),
         params: (params: any) => params[0]?.length === 256

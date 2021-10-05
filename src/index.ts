@@ -1,4 +1,3 @@
-import "@ungap/global-this"
 import { init, clear } from './keystore/index.js'
 
 import * as ecc from './ecc/index.js'

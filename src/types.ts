@@ -45,6 +45,7 @@ export enum RsaSize {
 export enum SymmAlg {
   AES_CTR = 'AES-CTR',
   AES_CBC = 'AES-CBC',
+  AES_GCM = 'AES-GCM',
 }
 
 export enum SymmKeyLength {

@@ -3,13 +3,14 @@ import errors from '../src/errors'
 import utils from '../src/utils'
 import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE } from '../src/constants'
 import { KeyUse, EccCurve, HashAlg, SymmAlg, SymmKeyLength } from '../src/types'
+import { crypto, webcrypto } from '../src/webcrypto'
 import { mock, cryptoMethod, arrBufEq } from './utils'
 
 describe('ecc', () => {
 
   cryptoMethod({
     desc: 'makeKeypair',
-    setMock: fake => globalThis.crypto.subtle.generateKey = fake,
+    setMock: fake => webcrypto.generateKey = fake,
     mockResp: mock.keys,
     simpleReq: () => ecc.makeKeypair(EccCurve.P_256, KeyUse.Exchange),
     simpleParams: [
@@ -45,7 +46,7 @@ describe('ecc', () => {
 
   cryptoMethod({
     desc: 'importPublicExchangeKey',
-    setMock: fake => globalThis.crypto.subtle.importKey = fake,
+    setMock: fake => webcrypto.importKey = fake,
     mockResp: mock.keys.publicKey,
     expectedResp: mock.keys.publicKey,
     simpleReq: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_256, KeyUse.Exchange),
@@ -80,7 +81,7 @@ describe('ecc', () => {
 
   cryptoMethod({
     desc: 'sign',
-    setMock: fake => globalThis.crypto.subtle.sign = fake,
+    setMock: fake => webcrypto.sign = fake,
     mockResp: mock.sigBytes,
     simpleReq: () => ecc.sign(
       mock.msgBytes,
@@ -109,7 +110,7 @@ describe('ecc', () => {
 
   cryptoMethod({
     desc: 'sign',
-    setMock: fake => globalThis.crypto.subtle.sign = fake,
+    setMock: fake => webcrypto.sign = fake,
     mockResp: mock.sigBytes,
     simpleReq: () => ecc.sign(
       mock.msgStr,
@@ -129,7 +130,7 @@ describe('ecc', () => {
 
   cryptoMethod({
     desc: 'verify',
-    setMock: fake => globalThis.crypto.subtle.verify = fake,
+    setMock: fake => webcrypto.verify = fake,
     mockResp: true,
     simpleReq: () => ecc.verify(
       mock.msgBytes,
@@ -162,7 +163,7 @@ describe('ecc', () => {
 
   cryptoMethod({
     desc: 'verify',
-    setMock: fake => globalThis.crypto.subtle.verify = fake,
+    setMock: fake => webcrypto.verify = fake,
     mockResp: true,
     simpleReq: () => ecc.verify(
       mock.msgStr,
@@ -186,9 +187,9 @@ describe('ecc', () => {
   cryptoMethod({
     desc: 'encrypt',
     setMock: fake => {
-      globalThis.crypto.subtle.encrypt = fake
-      globalThis.crypto.subtle.deriveKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
-      globalThis.crypto.getRandomValues = jest.fn(() => new Promise(r => r(new Uint8Array(16)))) as any
+      webcrypto.encrypt = fake
+      webcrypto.deriveKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
+      crypto.getRandomValues = jest.fn(() => new Promise(r => r(new Uint8Array(16)))) as any
     },
     mockResp: mock.cipherBytes,
     simpleReq: () => ecc.encrypt(
@@ -249,9 +250,9 @@ describe('ecc', () => {
   cryptoMethod({
     desc: 'encrypt',
     setMock: fake => {
-      globalThis.crypto.subtle.encrypt = fake
-      globalThis.crypto.subtle.deriveKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
-      globalThis.crypto.getRandomValues = jest.fn(() => new Promise(r => r(new Uint8Array(16)))) as any
+      webcrypto.encrypt = fake
+      webcrypto.deriveKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
+      crypto.getRandomValues = jest.fn(() => new Promise(r => r(new Uint8Array(16)))) as any
     },
     mockResp: mock.cipherBytes,
     simpleReq: () => ecc.encrypt(
@@ -277,8 +278,8 @@ describe('ecc', () => {
   cryptoMethod({
     desc: 'decrypt',
     setMock: fake => {
-      globalThis.crypto.subtle.decrypt = fake
-      globalThis.crypto.subtle.deriveKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
+      webcrypto.decrypt = fake
+      webcrypto.deriveKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
     },
     mockResp: mock.msgBytes,
     simpleReq: () => ecc.decrypt(
@@ -325,8 +326,8 @@ describe('ecc', () => {
   cryptoMethod({
     desc: 'decrypt',
     setMock: fake => {
-      globalThis.crypto.subtle.decrypt = fake
-      globalThis.crypto.subtle.deriveKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
+      webcrypto.decrypt = fake
+      webcrypto.deriveKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
     },
     mockResp: mock.msgBytes,
     simpleReq: () => ecc.decrypt(
@@ -342,7 +343,7 @@ describe('ecc', () => {
 
   cryptoMethod({
     desc: 'getPublicKey',
-    setMock: fake => globalThis.crypto.subtle.exportKey = fake,
+    setMock: fake => webcrypto.exportKey = fake,
     mockResp: utils.base64ToArrBuf(mock.keyBase64),
     expectedResp: mock.keyBase64,
     simpleReq: () => ecc.getPublicKey(mock.keys),
@@ -357,7 +358,7 @@ describe('ecc', () => {
 
   cryptoMethod({
     desc: 'getSharedKey',
-    setMock: fake => globalThis.crypto.subtle.deriveKey = fake,
+    setMock: fake => webcrypto.deriveKey = fake,
     mockResp: mock.symmKey,
     simpleReq: () => ecc.getSharedKey(mock.keys.privateKey, mock.keys.publicKey),
     simpleParams: [

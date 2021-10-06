@@ -1,5 +1,10 @@
 # Changelog
 
+### v0.15.2
+
+- Add `AES-GCM` to the list of valid symmetric algorithms (`SymmAlg`)
+- Internally dynamically refer to either the NodeJS or Browser webcrypto API
+
 ### v0.15.1
 
 Importing `keystore-idb/lib/*` directly should now work as intended. This allows bundlers to use the "real" import paths (eg. `import "keystore-idb/lib/utils.js"`) in addition to the "proxy" import paths (eg. `import "keystore-idb/utils.js"`). One reason to do this could be that you want your library to support both new and old bundlers, ie. bundlers with or without `exports` support in their `package.json` file.

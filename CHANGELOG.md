@@ -1,5 +1,9 @@
 # Changelog
 
+### v0.15.3
+
+- Internally use the one-webcrypto library for referring to the webcrypto API
+
 ### v0.15.2
 
 - Add `AES-GCM` to the list of valid symmetric algorithms (`SymmAlg`)

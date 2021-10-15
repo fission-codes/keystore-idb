@@ -1,6 +1,6 @@
+import { webcrypto } from 'one-webcrypto'
 import * as uint8arrays from 'uint8arrays'
 import { CharSize, Msg } from './types.js'
-import { crypto } from './webcrypto.js'
 
 
 export function arrBufToStr(buf: ArrayBuffer, charSize: CharSize): string {
@@ -33,7 +33,7 @@ export function publicExponent(): Uint8Array {
 
 export function randomBuf(length: number): ArrayBuffer {
   const arr = new Uint8Array(length)
-  crypto.getRandomValues(arr)
+  webcrypto.getRandomValues(arr)
   return arr.buffer
 }
 

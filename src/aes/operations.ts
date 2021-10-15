@@ -1,8 +1,8 @@
+import { webcrypto } from 'one-webcrypto'
 import keys from './keys.js'
 import utils from '../utils.js'
 import { DEFAULT_SYMM_ALG, DEFAULT_CTR_LEN } from '../constants.js'
 import { SymmKey, SymmKeyOpts, SymmAlg, CipherText, Msg } from '../types.js'
-import { webcrypto } from '../webcrypto.js'
 
 export async function encryptBytes(
   msg: Msg,
@@ -13,7 +13,7 @@ export async function encryptBytes(
   const importedKey = typeof key === 'string' ? await keys.importKey(key, opts) : key
   const alg = opts?.alg || DEFAULT_SYMM_ALG
   const iv = opts?.iv || utils.randomBuf(16)
-  const cipherBuf = await webcrypto.encrypt(
+  const cipherBuf = await webcrypto.subtle.encrypt(
     {
       name: alg,
       // AES-CTR uses a counter, AES-GCM/AES-CBC use an initialization vector
@@ -37,7 +37,7 @@ export async function decryptBytes(
   const alg = opts?.alg || DEFAULT_SYMM_ALG
   const iv = cipherText.slice(0, 16)
   const cipherBytes = cipherText.slice(16)
-  const msgBuff = await webcrypto.decrypt(
+  const msgBuff = await webcrypto.subtle.decrypt(
     { name: alg,
       // AES-CTR uses a counter, AES-GCM/AES-CBC use an initialization vector
       iv: alg === SymmAlg.AES_CTR ? undefined : iv,
@@ -70,7 +70,7 @@ export async function decrypt(
 
 
 export async function exportKey(key: SymmKey): Promise<string> {
-  const raw = await webcrypto.exportKey('raw', key)
+  const raw = await webcrypto.subtle.exportKey('raw', key)
   return utils.arrBufToBase64(raw)
 }
 

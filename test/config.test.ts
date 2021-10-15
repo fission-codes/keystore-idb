@@ -1,7 +1,7 @@
+import { webcrypto } from 'one-webcrypto'
 import config from '../src/config'
 import { CryptoSystem, SymmAlg, SymmKeyLength } from '../src/types'
 import utils from '../src/utils'
-import { webcrypto } from '../src/webcrypto'
 import { mock } from './utils'
 
 describe('config', () => {
@@ -17,7 +17,7 @@ describe('config', () => {
         fakeClone.mockResolvedValue(undefined)
 
         fakeMake = jest.fn(() => new Promise(r => r(mock.keys)))
-        webcrypto.generateKey = fakeMake
+        webcrypto.subtle.generateKey = fakeMake
 
         response = await config.eccEnabled()
       })
@@ -43,7 +43,7 @@ describe('config', () => {
         )
 
         fakeMake = jest.fn(() => new Promise(r => r(mock.keys)))
-        webcrypto.generateKey = fakeMake
+        webcrypto.subtle.generateKey = fakeMake
 
         response = await config.eccEnabled()
       })

@@ -2,7 +2,7 @@ import keys from './keys.js'
 import utils, { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils.js'
 import { DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG, RSA_EXCHANGE_ALG, RSA_WRITE_ALG, SALT_LENGTH } from '../constants.js'
 import { CharSize, HashAlg, KeyUse, Msg, PrivateKey, PublicKey } from '../types.js'
-import { webcrypto } from '../webcrypto.js'
+import { webcrypto } from 'one-webcrypto'
 
 
 export async function sign(
@@ -10,7 +10,7 @@ export async function sign(
   privateKey: PrivateKey,
   charSize: CharSize = DEFAULT_CHAR_SIZE
 ): Promise<ArrayBuffer> {
-  return webcrypto.sign(
+  return webcrypto.subtle.sign(
     { name: RSA_WRITE_ALG, saltLength: SALT_LENGTH },
     privateKey,
     normalizeUnicodeToBuf(msg, charSize)
@@ -24,7 +24,7 @@ export async function verify(
   charSize: CharSize = DEFAULT_CHAR_SIZE,
   hashAlg: HashAlg = DEFAULT_HASH_ALG
 ): Promise<boolean> {
-  return webcrypto.verify(
+  return webcrypto.subtle.verify(
     { name: RSA_WRITE_ALG, saltLength: SALT_LENGTH },
     typeof publicKey === "string"
       ? await keys.importPublicKey(publicKey, hashAlg, KeyUse.Write)
@@ -40,7 +40,7 @@ export async function encrypt(
   charSize: CharSize = DEFAULT_CHAR_SIZE,
   hashAlg: HashAlg = DEFAULT_HASH_ALG
 ): Promise<ArrayBuffer> {
-  return webcrypto.encrypt(
+  return webcrypto.subtle.encrypt(
     { name: RSA_EXCHANGE_ALG },
     typeof publicKey === "string"
       ? await keys.importPublicKey(publicKey, hashAlg, KeyUse.Exchange)
@@ -54,7 +54,7 @@ export async function decrypt(
   privateKey: PrivateKey
 ): Promise<ArrayBuffer> {
   const normalized = normalizeBase64ToBuf(msg)
-  return webcrypto.decrypt(
+  return webcrypto.subtle.decrypt(
     { name: RSA_EXCHANGE_ALG },
     privateKey,
     normalized
@@ -62,7 +62,7 @@ export async function decrypt(
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
-  const spki = await webcrypto.exportKey('spki', keypair.publicKey as PublicKey)
+  const spki = await webcrypto.subtle.exportKey('spki', keypair.publicKey as PublicKey)
   return utils.arrBufToBase64(spki)
 }
 

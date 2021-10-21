@@ -1,14 +1,14 @@
+import { webcrypto } from 'one-webcrypto'
 import aes from '../src/aes'
 import utils from '../src/utils'
 import { SymmAlg, SymmKeyLength } from '../src/types'
-import { crypto, webcrypto } from '../src/webcrypto'
 import { mock, cryptoMethod, arrBufEq } from './utils'
 
 describe('aes', () => {
 
   cryptoMethod({
     desc: 'makeKey',
-    setMock: fake => webcrypto.generateKey = fake,
+    setMock: fake => webcrypto.subtle.generateKey = fake,
     mockResp: mock.symmKey,
     simpleReq: () => aes.makeKey(),
     simpleParams: [
@@ -39,7 +39,7 @@ describe('aes', () => {
 
   cryptoMethod({
     desc: 'importKey',
-    setMock: fake => webcrypto.importKey = fake,
+    setMock: fake => webcrypto.subtle.importKey = fake,
     mockResp: mock.symmKey,
     simpleReq: () => aes.importKey(mock.keyBase64),
     simpleParams: [
@@ -68,9 +68,9 @@ describe('aes', () => {
   cryptoMethod({
     desc: 'encrypt',
     setMock: fake => {
-      webcrypto.encrypt = fake
-      webcrypto.importKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
-      crypto.getRandomValues = jest.fn(() => new Promise(r => r(new Uint8Array(16)))) as any
+      webcrypto.subtle.encrypt = fake
+      webcrypto.subtle.importKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
+      webcrypto.getRandomValues = jest.fn(() => new Promise(r => r(new Uint8Array(16)))) as any
     },
     mockResp: mock.cipherBytes,
     expectedResp: mock.cipherWithIVStr,
@@ -105,8 +105,8 @@ describe('aes', () => {
   cryptoMethod({
     desc: 'decrypt',
     setMock: fake => {
-      webcrypto.decrypt = fake
-      webcrypto.importKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
+      webcrypto.subtle.decrypt = fake
+      webcrypto.subtle.importKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
     },
     mockResp: mock.msgBytes,
     expectedResp: mock.msgStr,
@@ -139,7 +139,7 @@ describe('aes', () => {
 
   cryptoMethod({
     desc: 'exportKey',
-    setMock: fake => webcrypto.exportKey = fake,
+    setMock: fake => webcrypto.subtle.exportKey = fake,
     mockResp: utils.base64ToArrBuf(mock.keyBase64),
     expectedResp: mock.keyBase64,
     simpleReq: () => aes.exportKey(mock.symmKey),

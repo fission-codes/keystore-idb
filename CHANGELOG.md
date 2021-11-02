@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.15.4
+### v0.15.4
 
 - Bump one-webcrypto to 1.0.3 for wider bundler support.
 

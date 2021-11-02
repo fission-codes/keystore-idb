@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "localforage": "^1.10.0",
-    "one-webcrypto": "^1.0.2",
+    "one-webcrypto": "^1.0.3",
     "uint8arrays": "^3.0.0"
   }
 }

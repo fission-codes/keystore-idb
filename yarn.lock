@@ -3139,10 +3139,10 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
   dependencies:
     wrappy "1"
 
-one-webcrypto@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/one-webcrypto/-/one-webcrypto-1.0.2.tgz#005443714b7b615405ee876afe526b056ac6d79f"
-  integrity sha512-7RVA4EE7hPSy0KCDYouCCSN5dwH1ThB1WQhiydtZsslgZoJvaBGhO27QpnL+ZDUleyBq/9jkIhyvEJxEu96KbQ==
+one-webcrypto@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/one-webcrypto/-/one-webcrypto-1.0.3.tgz#f951243cde29b79b6745ad14966fc598a609997c"
+  integrity sha512-fu9ywBVBPx0gS9K0etIROTiCkvI5S1TDjFsYFb3rC1ewFxeOqsbzq7aIMBHsYfrTHBcGXJaONXXjTl8B01cW1Q==
 
 onetime@^5.1.0:
   version "5.1.2"

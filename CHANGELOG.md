@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.15.4
+
+- Bump one-webcrypto to 1.0.3 for wider bundler support.
+
 ### v0.15.3
 
 - Internally use the one-webcrypto library for referring to the webcrypto API

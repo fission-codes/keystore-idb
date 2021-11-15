@@ -81,17 +81,3 @@ export const cryptoMethod = (opts: WebCryptoReqOpts): void => {
 
   })
 }
-
-export function arrBufEq(fstBuf: ArrayBuffer, sndBuf: ArrayBuffer): boolean {
-  const fst = new Uint8Array(fstBuf)
-  const snd = new Uint8Array(sndBuf)
-  if (fst.length !== snd.length) {
-    return false
-  }
-  for(let i=0; i<fst.length; i++) {
-    if(fst[i] !== snd[i]) {
-      return false
-    }
-  }
-  return true
-}

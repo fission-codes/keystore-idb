@@ -12,12 +12,12 @@ export async function sign(
   msg: Msg,
   privateKey: PrivateKey,
   hashAlg: HashAlg = DEFAULT_HASH_ALG,
-): Promise<ArrayBuffer> {
-  return webcrypto.subtle.sign(
+): Promise<Uint8Array> {
+  return new Uint8Array(await webcrypto.subtle.sign(
     { name: ECC_WRITE_ALG, hash: { name: hashAlg }},
     privateKey,
     normalizeAssumingUtf8(msg)
-  )
+  ))
 }
 
 export async function verify(
@@ -43,7 +43,7 @@ export async function encrypt(
   publicKey: string | PublicKey,
   curve: EccCurve = DEFAULT_ECC_CURVE,
   opts?: Partial<SymmKeyOpts>
-): Promise<ArrayBuffer> {
+): Promise<Uint8Array> {
   const importedPublicKey = typeof publicKey === "string"
     ? await keys.importPublicKey(publicKey, curve, KeyUse.Exchange)
     : publicKey
@@ -58,7 +58,7 @@ export async function decrypt(
   publicKey: string | PublicKey,
   curve: EccCurve = DEFAULT_ECC_CURVE,
   opts?: Partial<SymmKeyOpts>
-): Promise<ArrayBuffer> {
+): Promise<Uint8Array> {
   const importedPublicKey = typeof publicKey === "string"
     ? await keys.importPublicKey(publicKey, curve, KeyUse.Exchange)
     : publicKey

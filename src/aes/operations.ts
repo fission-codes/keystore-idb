@@ -20,20 +20,20 @@ export async function encryptBytes(
       name: alg,
       // AES-CTR uses a counter, AES-GCM/AES-CBC use an initialization vector
       iv: alg === SymmAlg.AES_CTR ? undefined : iv,
-      counter: alg === SymmAlg.AES_CTR ? new Uint8Array(iv) : undefined,
+      counter: alg === SymmAlg.AES_CTR ? iv : undefined,
       length: alg === SymmAlg.AES_CTR ? DEFAULT_CTR_LEN : undefined,
     },
     importedKey,
     data
   )
-  return uint8arrays.concat([new Uint8Array(iv), new Uint8Array(cipherBuf)]).buffer
+  return uint8arrays.concat([iv, new Uint8Array(cipherBuf)])
 }
 
 export async function decryptBytes(
   msg: Msg,
   key: SymmKey | string,
   opts?: Partial<SymmKeyOpts>
-): Promise<ArrayBuffer> {
+): Promise<Uint8Array> {
   const cipherText = utils.normalizeBase64ToBuf(msg)
   const importedKey = typeof key === 'string' ? await keys.importKey(key, opts) : key
   const alg = opts?.alg || DEFAULT_SYMM_ALG
@@ -43,13 +43,13 @@ export async function decryptBytes(
     { name: alg,
       // AES-CTR uses a counter, AES-GCM/AES-CBC use an initialization vector
       iv: alg === SymmAlg.AES_CTR ? undefined : iv,
-      counter: alg === SymmAlg.AES_CTR ? new Uint8Array(iv) : undefined,
+      counter: alg === SymmAlg.AES_CTR ? iv : undefined,
       length: alg === SymmAlg.AES_CTR ? DEFAULT_CTR_LEN : undefined,
     },
     importedKey,
     cipherBytes
   )
-  return msgBuff
+  return new Uint8Array(msgBuff)
 }
 
 export async function encrypt(
@@ -58,7 +58,7 @@ export async function encrypt(
   opts?: Partial<SymmKeyOpts>
 ): Promise<string> {
   const cipherText = await encryptBytes(msg, key, opts)
-  return uint8arrays.toString(new Uint8Array(cipherText), "base64pad")
+  return uint8arrays.toString(cipherText, "base64pad")
 }
 
 export async function decrypt(
@@ -67,7 +67,7 @@ export async function decrypt(
   opts?: Partial<SymmKeyOpts>
 ): Promise<string> {
   const msgBytes = await decryptBytes(msg, key, opts)
-  return uint8arrays.toString(new Uint8Array(msgBytes), "utf8")
+  return uint8arrays.toString(msgBytes, "utf8")
 }
 
 

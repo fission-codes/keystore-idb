@@ -1,6 +1,6 @@
-export type Msg = ArrayBuffer | string | Uint8Array
+export type Msg = Uint8Array | string | ArrayBuffer
 
-export type CipherText = ArrayBuffer
+export type CipherText = Uint8Array
 export type SymmKey = CryptoKey
 
 export type PublicKey = CryptoKey
@@ -21,7 +21,7 @@ export type Config = {
 export type SymmKeyOpts = {
   alg: SymmAlg
   length: SymmKeyLength
-  iv: ArrayBuffer
+  iv: Uint8Array
 }
 
 export enum CryptoSystem {

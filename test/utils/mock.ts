@@ -1,14 +1,14 @@
 import * as uint8arrays from "uint8arrays"
 
-const iv = (new Uint8Array([1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4])).buffer
+const iv = new Uint8Array([1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4])
 const msgStr = "test msg bytes"
-const msgBytes = uint8arrays.fromString(msgStr).buffer
+const msgBytes = uint8arrays.fromString(msgStr)
 const sigStr = "dGVzdCBzaWduYXR1cmU="
-const sigBytes = uint8arrays.fromString(sigStr, "base64pad").buffer
+const sigBytes = uint8arrays.fromString(sigStr, "base64pad")
 const cipherStr = "dGVzdCBlbmNyeXB0ZWQgYnl0ZXM="
-const cipherBytes = uint8arrays.fromString(cipherStr, "base64pad").buffer
-const cipherWithIVBytes = uint8arrays.concat([new Uint8Array(iv), new Uint8Array(cipherBytes)]).buffer
-const cipherWithIVStr = uint8arrays.toString(new Uint8Array(cipherWithIVBytes), "base64pad")
+const cipherBytes = uint8arrays.fromString(cipherStr, "base64pad")
+const cipherWithIVBytes = uint8arrays.concat([iv, cipherBytes])
+const cipherWithIVStr = uint8arrays.toString(cipherWithIVBytes, "base64pad")
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const mock = {

@@ -16,7 +16,7 @@ export async function makeKey(opts?: Partial<SymmKeyOpts>): Promise<SymmKey> {
 }
 
 export async function importKey(base64key: string, opts?: Partial<SymmKeyOpts>): Promise<SymmKey> {
-  const buf = uint8arrays.fromString(base64key, "base64pad").buffer
+  const buf = uint8arrays.fromString(base64key, "base64pad")
   return webcrypto.subtle.importKey(
     'raw',
     buf,

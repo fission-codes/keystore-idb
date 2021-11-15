@@ -65,7 +65,7 @@ export default class KeyStoreBase {
     const mergedCfg = config.merge(this.cfg, cfg)
     const key = await this.getSymmKey(keyName, cfg)
     const cipherText = await aes.encryptBytes(
-      uint8arrays.fromString(msg, "utf8").buffer,
+      uint8arrays.fromString(msg, "utf8"),
       key,
       config.symmKeyOpts(mergedCfg)
     )
@@ -76,7 +76,7 @@ export default class KeyStoreBase {
     const mergedCfg = config.merge(this.cfg, cfg)
     const key = await this.getSymmKey(keyName, cfg)
     const msgBytes = await aes.decryptBytes(
-      uint8arrays.fromString(cipherText, "base64pad").buffer,
+      uint8arrays.fromString(cipherText, "base64pad"),
       key,
       config.symmKeyOpts(mergedCfg)
     )

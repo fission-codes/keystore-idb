@@ -64,12 +64,12 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     const mergedCfg = config.merge(this.cfg, cfg)
     const exchangeKey = await this.exchangeKey()
 
-    return uint8arrays.toString(new Uint8Array(await operations.encrypt(
+    return uint8arrays.toString(await operations.encrypt(
       msg,
       exchangeKey.privateKey as PrivateKey,
       publicKey,
       mergedCfg.curve
-    )), "base64pad")
+    ), "base64pad")
   }
 
   async decrypt(

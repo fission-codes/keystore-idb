@@ -10,12 +10,12 @@ import { HashAlg, KeyUse, Msg, PrivateKey, PublicKey } from '../types.js'
 export async function sign(
   msg: Msg,
   privateKey: PrivateKey,
-): Promise<ArrayBuffer> {
-  return webcrypto.subtle.sign(
+): Promise<Uint8Array> {
+  return new Uint8Array(await webcrypto.subtle.sign(
     { name: RSA_WRITE_ALG, saltLength: SALT_LENGTH },
     privateKey,
     normalizeAssumingUtf8(msg)
-  )
+  ))
 }
 
 export async function verify(
@@ -38,7 +38,7 @@ export async function encrypt(
   msg: Msg,
   publicKey: string | PublicKey,
   hashAlg: HashAlg = DEFAULT_HASH_ALG
-): Promise<ArrayBuffer> {
+): Promise<Uint8Array> {
   return webcrypto.subtle.encrypt(
     { name: RSA_EXCHANGE_ALG },
     typeof publicKey === "string"
@@ -51,7 +51,7 @@ export async function encrypt(
 export async function decrypt(
   msg: Msg,
   privateKey: PrivateKey
-): Promise<ArrayBuffer> {
+): Promise<Uint8Array> {
   const normalized = normalizeAssumingBase64(msg)
   return webcrypto.subtle.decrypt(
     { name: RSA_EXCHANGE_ALG },

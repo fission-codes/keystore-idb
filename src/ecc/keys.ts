@@ -25,7 +25,7 @@ export async function importPublicKey(base64Key: string, curve: EccCurve, use: K
   const alg = use === KeyUse.Exchange ? ECC_EXCHANGE_ALG : ECC_WRITE_ALG
   const uses: KeyUsage[] =
     use === KeyUse.Exchange ? [] : ['verify']
-  const buf = uint8arrays.fromString(base64Key, "base64pad").buffer
+  const buf = uint8arrays.fromString(base64Key, "base64pad")
   return webcrypto.subtle.importKey(
     'raw',
     buf,

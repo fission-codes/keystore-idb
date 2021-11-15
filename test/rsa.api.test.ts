@@ -68,7 +68,7 @@ describe('rsa API', () => {
     simpleReq: () => rsa.importPublicKey(mock.keyBase64, HashAlg.SHA_256, KeyUse.Exchange),
     simpleParams: [
       'spki',
-      uint8arrays.fromString(mock.keyBase64, "base64pad").buffer,
+      uint8arrays.fromString(mock.keyBase64, "base64pad"),
       { name: 'RSA-OAEP', hash: {name: 'SHA-256'}},
       true,
       ['encrypt']
@@ -84,7 +84,7 @@ describe('rsa API', () => {
         req: () => rsa.importPublicKey(mock.keyBase64, HashAlg.SHA_256, KeyUse.Write),
         params: [
           'spki',
-          uint8arrays.fromString(mock.keyBase64).buffer,
+          uint8arrays.fromString(mock.keyBase64, "base64pad"),
           { name: 'RSASSA-PKCS1-v1_5', hash: {name: 'SHA-256'}},
           true,
           ['verify']
@@ -248,7 +248,7 @@ describe('rsa API', () => {
   cryptoMethod({
     desc: 'getPublicKey',
     setMock: fake => webcrypto.subtle.exportKey = fake,
-    mockResp: uint8arrays.fromString(mock.keyBase64, "base64pad").buffer,
+    mockResp: uint8arrays.fromString(mock.keyBase64, "base64pad"),
     expectedResp: mock.keyBase64,
     simpleReq: () => rsa.getPublicKey(mock.keys),
     simpleParams: [

@@ -36,7 +36,7 @@ export async function importPublicKey(base64Key: string, hashAlg: HashAlg, use: 
   checkValidKeyUse(use)
   const alg = use === KeyUse.Exchange ? RSA_EXCHANGE_ALG : RSA_WRITE_ALG
   const uses: KeyUsage[] = use === KeyUse.Exchange ? ['encrypt'] : ['verify']
-  const buf = uint8arrays.fromString(stripKeyHeader(base64Key), "base64pad").buffer
+  const buf = uint8arrays.fromString(stripKeyHeader(base64Key), "base64pad")
   return webcrypto.subtle.importKey(
     'spki',
     buf,

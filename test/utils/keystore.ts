@@ -50,7 +50,7 @@ export const keystoreMethod = (opts: KeystoreMethodOpts): void => {
         expect(fakes[i]).toBeCalledTimes(1)
       })
 
-      it(`should call the library function with the expected params`, () => {
+      it(`should call ${mock.meth} with the expected params`, () => {
         expect(fakes[i].mock.calls[0]).toEqual(mock.params)
       })
     })

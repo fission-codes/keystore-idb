@@ -66,7 +66,7 @@ export default class KeyStoreBase {
     const mergedCfg = config.merge(this.cfg, cfg)
     const key = await this.getSymmKey(keyName, cfg)
     const cipherText = await aes.encryptBytes(
-      uint8arrays.fromString(msg, "utf8"),
+      uint8arrays.fromString(msg, "utf8").buffer,
       key,
       config.symmKeyOpts(mergedCfg)
     )

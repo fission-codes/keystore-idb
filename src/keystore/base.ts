@@ -1,3 +1,5 @@
+import * as uint8arrays from "uint8arrays"
+
 import aes from '../aes/index.js'
 import idb from '../idb.js'
 import utils from '../utils.js'
@@ -64,21 +66,21 @@ export default class KeyStoreBase {
     const mergedCfg = config.merge(this.cfg, cfg)
     const key = await this.getSymmKey(keyName, cfg)
     const cipherText = await aes.encryptBytes(
-      utils.strToArrBuf(msg, mergedCfg.charSize),
+      uint8arrays.fromString(msg, "utf8"),
       key,
       config.symmKeyOpts(mergedCfg)
     )
-    return utils.arrBufToBase64(cipherText)
+    return uint8arrays.toString(new Uint8Array(cipherText), "base64pad")
   }
 
   async decryptWithSymmKey(cipherText: string, keyName: string, cfg?: Partial<Config>): Promise<string> {
     const mergedCfg = config.merge(this.cfg, cfg)
     const key = await this.getSymmKey(keyName, cfg)
     const msgBytes = await aes.decryptBytes(
-      utils.base64ToArrBuf(cipherText),
+      uint8arrays.fromString(cipherText, "base64pad").buffer,
       key,
       config.symmKeyOpts(mergedCfg)
     )
-    return utils.arrBufToStr(msgBytes, mergedCfg.charSize)
+    return uint8arrays.toString(new Uint8Array(msgBytes), "utf8")
   }
 }

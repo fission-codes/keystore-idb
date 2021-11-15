@@ -1,3 +1,5 @@
+import * as uint8arrays from "uint8arrays"
+
 import IDB from '../idb.js'
 import keys from './keys.js'
 import operations from './operations.js'
@@ -31,12 +33,11 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     const mergedCfg = config.merge(this.cfg, cfg)
     const writeKey = await this.writeKey()
 
-    return utils.arrBufToBase64(await operations.sign(
+    return uint8arrays.toString(new Uint8Array(await operations.sign(
       msg,
       writeKey.privateKey as PrivateKey,
-      mergedCfg.charSize,
       mergedCfg.hashAlg
-    ))
+    )), "base64pad")
   }
 
   async verify(
@@ -51,7 +52,6 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
       msg,
       sig,
       publicKey,
-      mergedCfg.charSize,
       mergedCfg.curve,
       mergedCfg.hashAlg
     )
@@ -65,13 +65,12 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     const mergedCfg = config.merge(this.cfg, cfg)
     const exchangeKey = await this.exchangeKey()
 
-    return utils.arrBufToBase64(await operations.encrypt(
+    return uint8arrays.toString(new Uint8Array(await operations.encrypt(
       msg,
       exchangeKey.privateKey as PrivateKey,
       publicKey,
-      mergedCfg.charSize,
       mergedCfg.curve
-    ))
+    )), "base64pad")
   }
 
   async decrypt(
@@ -82,14 +81,14 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     const mergedCfg = config.merge(this.cfg, cfg)
     const exchangeKey = await this.exchangeKey()
 
-    return utils.arrBufToStr(
-      await operations.decrypt(
+    return uint8arrays.toString(
+      new Uint8Array(await operations.decrypt(
         cipherText,
         exchangeKey.privateKey as PrivateKey,
         publicKey,
         mergedCfg.curve
-      ),
-      mergedCfg.charSize
+      )),
+      "utf8"
     )
   }
 

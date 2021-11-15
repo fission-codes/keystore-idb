@@ -1,4 +1,6 @@
 import { webcrypto } from 'one-webcrypto'
+import * as uint8arrays from "uint8arrays"
+
 import keys from './keys.js'
 import utils from '../utils.js'
 import { DEFAULT_SYMM_ALG, DEFAULT_CTR_LEN } from '../constants.js'
@@ -9,7 +11,7 @@ export async function encryptBytes(
   key: SymmKey | string,
   opts?: Partial<SymmKeyOpts>
 ): Promise<CipherText> {
-  const data = utils.normalizeUtf16ToBuf(msg)
+  const data = utils.normalizeUnicodeToBuf(msg)
   const importedKey = typeof key === 'string' ? await keys.importKey(key, opts) : key
   const alg = opts?.alg || DEFAULT_SYMM_ALG
   const iv = opts?.iv || utils.randomBuf(16)
@@ -24,7 +26,7 @@ export async function encryptBytes(
     importedKey,
     data
   )
-  return utils.joinBufs(iv, cipherBuf)
+  return uint8arrays.concat([new Uint8Array(iv), new Uint8Array(cipherBuf)]).buffer
 }
 
 export async function decryptBytes(
@@ -56,7 +58,7 @@ export async function encrypt(
   opts?: Partial<SymmKeyOpts>
 ): Promise<string> {
   const cipherText = await encryptBytes(msg, key, opts)
-  return utils.arrBufToBase64(cipherText)
+  return uint8arrays.toString(new Uint8Array(cipherText), "base64pad")
 }
 
 export async function decrypt(
@@ -65,13 +67,13 @@ export async function decrypt(
   opts?: Partial<SymmKeyOpts>
 ): Promise<string> {
   const msgBytes = await decryptBytes(msg, key, opts)
-  return utils.arrBufToStr(msgBytes, 16)
+  return uint8arrays.toString(new Uint8Array(msgBytes), "utf8")
 }
 
 
 export async function exportKey(key: SymmKey): Promise<string> {
   const raw = await webcrypto.subtle.exportKey('raw', key)
-  return utils.arrBufToBase64(raw)
+  return uint8arrays.toString(new Uint8Array(raw), "base64pad")
 }
 
 export default {

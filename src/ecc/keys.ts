@@ -1,5 +1,6 @@
 import { webcrypto } from 'one-webcrypto'
-import utils from '../utils.js'
+import * as uint8arrays from "uint8arrays"
+
 import { ECC_EXCHANGE_ALG, ECC_WRITE_ALG } from '../constants.js'
 import { EccCurve, KeyUse, PublicKey } from '../types.js'
 import { checkValidKeyUse } from '../errors.js'
@@ -24,7 +25,7 @@ export async function importPublicKey(base64Key: string, curve: EccCurve, use: K
   const alg = use === KeyUse.Exchange ? ECC_EXCHANGE_ALG : ECC_WRITE_ALG
   const uses: KeyUsage[] =
     use === KeyUse.Exchange ? [] : ['verify']
-  const buf = utils.base64ToArrBuf(base64Key)
+  const buf = uint8arrays.fromString(base64Key, "base64pad").buffer
   return webcrypto.subtle.importKey(
     'raw',
     buf,

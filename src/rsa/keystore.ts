@@ -1,3 +1,4 @@
+import * as uint8arrays from "uint8arrays"
 import IDB from '../idb.js'
 import keys from './keys.js'
 import operations from './operations.js'
@@ -29,14 +30,12 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
 
 
   async sign(msg: Msg, cfg?: Partial<Config>): Promise<string> {
-    const mergedCfg = config.merge(this.cfg, cfg)
     const writeKey = await this.writeKey()
 
-    return utils.arrBufToBase64(await operations.sign(
+    return uint8arrays.toString(new Uint8Array(await operations.sign(
       msg,
       writeKey.privateKey as PrivateKey,
-      mergedCfg.charSize
-    ))
+    )), "base64pad")
   }
 
   async verify(
@@ -51,7 +50,6 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
       msg,
       sig,
       publicKey,
-      mergedCfg.charSize,
       mergedCfg.hashAlg
     )
   }
@@ -63,28 +61,24 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
   ): Promise<string> {
     const mergedCfg = config.merge(this.cfg, cfg)
 
-    return utils.arrBufToBase64(await operations.encrypt(
+    return uint8arrays.toString(new Uint8Array(await operations.encrypt(
       msg,
       publicKey,
-      mergedCfg.charSize,
       mergedCfg.hashAlg
-    ))
+    )), "base64pad")
   }
 
   async decrypt(
     cipherText: Msg,
-    publicKey?: string | PublicKey, // unused param so that keystore interfaces match
-    cfg?: Partial<Config>
   ): Promise<string> {
     const exchangeKey = await this.exchangeKey()
-    const mergedCfg = config.merge(this.cfg, cfg)
 
-    return utils.arrBufToStr(
-      await operations.decrypt(
+    return uint8arrays.toString(
+      new Uint8Array(await operations.decrypt(
         cipherText,
         exchangeKey.privateKey as PrivateKey,
-      ),
-      mergedCfg.charSize
+      )),
+      "utf8"
     )
   }
 

@@ -1,9 +1,9 @@
 import RSAKeyStore from '../src/rsa/keystore'
 import keys from '../src/rsa/keys'
 import operations from '../src/rsa/operations'
-import config, { defaultConfig } from '../src/config'
+import config from '../src/config'
 import idb from '../src/idb'
-import { DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG } from '../src/constants'
+import { DEFAULT_HASH_ALG } from '../src/constants'
 import { KeyUse, RsaSize, HashAlg, CryptoSystem } from '../src/types'
 import { mock, keystoreMethod } from './utils'
 
@@ -82,7 +82,6 @@ describe("RSAKeyStore API", () => {
         params: [
           mock.msgStr,
           mock.writeKeys.privateKey,
-          DEFAULT_CHAR_SIZE
         ]
       }
     ],
@@ -103,7 +102,6 @@ describe("RSAKeyStore API", () => {
           mock.msgStr,
           mock.sigStr,
           mock.keyBase64,
-          DEFAULT_CHAR_SIZE,
           DEFAULT_HASH_ALG
         ]
       }
@@ -124,7 +122,6 @@ describe("RSAKeyStore API", () => {
         params: [
           mock.msgStr,
           mock.keyBase64,
-          DEFAULT_CHAR_SIZE,
           DEFAULT_HASH_ALG
         ]
       }

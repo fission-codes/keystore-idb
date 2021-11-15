@@ -1,4 +1,5 @@
 import { webcrypto } from 'one-webcrypto'
+import * as uint8arrays from 'uint8arrays'
 import aes from '../src/aes'
 import utils from '../src/utils'
 import { SymmAlg, SymmKeyLength } from '../src/types'
@@ -44,7 +45,7 @@ describe('aes API', () => {
     simpleReq: () => aes.importKey(mock.keyBase64),
     simpleParams: [
       'raw',
-      utils.base64ToArrBuf(mock.keyBase64),
+      uint8arrays.fromString(mock.keyBase64, "base64pad").buffer,
       { name: 'AES-CTR', length: 256 },
       true,
       [ 'encrypt', 'decrypt']
@@ -140,7 +141,7 @@ describe('aes API', () => {
   cryptoMethod({
     desc: 'exportKey',
     setMock: fake => webcrypto.subtle.exportKey = fake,
-    mockResp: utils.base64ToArrBuf(mock.keyBase64),
+    mockResp: uint8arrays.fromString(mock.keyBase64, "base64pad").buffer,
     expectedResp: mock.keyBase64,
     simpleReq: () => aes.exportKey(mock.symmKey),
     simpleParams: [

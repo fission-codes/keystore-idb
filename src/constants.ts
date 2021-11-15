@@ -1,4 +1,4 @@
-import { EccCurve, RsaSize, SymmAlg, SymmKeyLength, HashAlg, CharSize } from './types.js'
+import { EccCurve, RsaSize, SymmAlg, SymmKeyLength, HashAlg } from './types.js'
 
 export const ECC_EXCHANGE_ALG = 'ECDH'
 export const ECC_WRITE_ALG = 'ECDSA'
@@ -15,7 +15,6 @@ export const DEFAULT_SYMM_LEN = SymmKeyLength.B256
 export const DEFAULT_CTR_LEN = 64
 
 export const DEFAULT_HASH_ALG = HashAlg.SHA_256
-export const DEFAULT_CHAR_SIZE = CharSize.B16
 
 export const DEFAULT_STORE_NAME = 'keystore'
 export const DEFAULT_EXCHANGE_KEY_NAME = 'exchange-key'
@@ -33,7 +32,6 @@ export default {
   DEFAULT_SYMM_ALG,
   DEFAULT_CTR_LEN,
   DEFAULT_HASH_ALG,
-  DEFAULT_CHAR_SIZE,
   DEFAULT_STORE_NAME,
   DEFAULT_EXCHANGE_KEY_NAME,
   DEFAULT_WRITE_KEY_NAME,

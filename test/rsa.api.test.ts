@@ -1,8 +1,9 @@
 import { webcrypto } from 'one-webcrypto'
+import * as uint8arrays from 'uint8arrays'
 import rsa from '../src/rsa'
 import errors from '../src/errors'
 import utils from '../src/utils'
-import { DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG } from '../src/constants'
+import { DEFAULT_HASH_ALG } from '../src/constants'
 import { KeyUse, RsaSize, HashAlg } from '../src/types'
 import { mock, cryptoMethod } from './utils'
 
@@ -67,7 +68,7 @@ describe('rsa API', () => {
     simpleReq: () => rsa.importPublicKey(mock.keyBase64, HashAlg.SHA_256, KeyUse.Exchange),
     simpleParams: [
       'spki',
-      utils.base64ToArrBuf(mock.keyBase64),
+      uint8arrays.fromString(mock.keyBase64, "base64pad").buffer,
       { name: 'RSA-OAEP', hash: {name: 'SHA-256'}},
       true,
       ['encrypt']
@@ -83,7 +84,7 @@ describe('rsa API', () => {
         req: () => rsa.importPublicKey(mock.keyBase64, HashAlg.SHA_256, KeyUse.Write),
         params: [
           'spki',
-          utils.base64ToArrBuf(mock.keyBase64),
+          uint8arrays.fromString(mock.keyBase64).buffer,
           { name: 'RSASSA-PKCS1-v1_5', hash: {name: 'SHA-256'}},
           true,
           ['verify']
@@ -119,7 +120,6 @@ describe('rsa API', () => {
     simpleReq: () => rsa.sign(
       mock.msgStr,
       mock.keys.privateKey,
-      DEFAULT_CHAR_SIZE
     ),
     simpleParams: [
       { name: 'RSASSA-PKCS1-v1_5', saltLength: 128 },
@@ -159,7 +159,6 @@ describe('rsa API', () => {
       mock.msgStr,
       mock.sigStr,
       mock.keyBase64,
-      DEFAULT_CHAR_SIZE,
       DEFAULT_HASH_ALG
     ),
     simpleParams: [
@@ -198,7 +197,6 @@ describe('rsa API', () => {
     simpleReq: () => rsa.encrypt(
       mock.msgStr,
       mock.keyBase64,
-      DEFAULT_CHAR_SIZE,
       DEFAULT_HASH_ALG
     ),
     simpleParams: [
@@ -250,7 +248,7 @@ describe('rsa API', () => {
   cryptoMethod({
     desc: 'getPublicKey',
     setMock: fake => webcrypto.subtle.exportKey = fake,
-    mockResp: utils.base64ToArrBuf(mock.keyBase64),
+    mockResp: uint8arrays.fromString(mock.keyBase64, "base64pad").buffer,
     expectedResp: mock.keyBase64,
     simpleReq: () => rsa.getPublicKey(mock.keys),
     simpleParams: [

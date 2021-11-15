@@ -1,8 +1,8 @@
 import { webcrypto } from 'one-webcrypto'
+import * as uint8arrays from 'uint8arrays'
 import ecc from '../src/ecc'
 import errors from '../src/errors'
-import utils from '../src/utils'
-import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE } from '../src/constants'
+import { DEFAULT_ECC_CURVE } from '../src/constants'
 import { KeyUse, EccCurve, HashAlg, SymmAlg, SymmKeyLength } from '../src/types'
 import { mock, cryptoMethod, arrBufEq } from './utils'
 
@@ -52,7 +52,7 @@ describe('ecc API', () => {
     simpleReq: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_256, KeyUse.Exchange),
     simpleParams: [
       'raw',
-      utils.base64ToArrBuf(mock.keyBase64),
+      uint8arrays.fromString(mock.keyBase64, "base64pad").buffer,
       { name: 'ECDH', namedCurve: 'P-256' },
       true,
       []
@@ -68,7 +68,7 @@ describe('ecc API', () => {
         req: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_256, KeyUse.Write),
         params: [
           'raw',
-          utils.base64ToArrBuf(mock.keyBase64),
+          uint8arrays.fromString(mock.keyBase64, "base64pad").buffer,
           { name: 'ECDSA', namedCurve: 'P-256' },
           true,
           ['verify']
@@ -98,7 +98,6 @@ describe('ecc API', () => {
         req: () => ecc.sign(
           mock.msgBytes,
           mock.keys.privateKey,
-          DEFAULT_CHAR_SIZE,
           HashAlg.SHA_512
         ),
         params: (params: any) => params[0]?.hash?.name === 'SHA-512'
@@ -115,7 +114,6 @@ describe('ecc API', () => {
     simpleReq: () => ecc.sign(
       mock.msgStr,
       mock.keys.privateKey,
-      DEFAULT_CHAR_SIZE,
       HashAlg.SHA_256
     ),
     simpleParams: [
@@ -150,7 +148,6 @@ describe('ecc API', () => {
           mock.msgBytes,
           mock.sigBytes,
           mock.keys.publicKey,
-          DEFAULT_CHAR_SIZE,
           DEFAULT_ECC_CURVE,
           HashAlg.SHA_512
         ),
@@ -169,7 +166,6 @@ describe('ecc API', () => {
       mock.msgStr,
       mock.sigStr,
       mock.keyBase64,
-      DEFAULT_CHAR_SIZE,
       DEFAULT_ECC_CURVE,
       HashAlg.SHA_256
     ),
@@ -212,7 +208,6 @@ describe('ecc API', () => {
           mock.msgBytes,
           mock.keys.privateKey,
           mock.keys.publicKey,
-          DEFAULT_CHAR_SIZE,
           DEFAULT_ECC_CURVE,
           { alg: SymmAlg.AES_CBC }
         ),
@@ -224,7 +219,6 @@ describe('ecc API', () => {
           mock.msgBytes,
           mock.keys.privateKey,
           mock.keys.publicKey,
-          DEFAULT_CHAR_SIZE,
           DEFAULT_ECC_CURVE,
           { iv: mock.iv }
         ),
@@ -236,7 +230,6 @@ describe('ecc API', () => {
           mock.msgBytes,
           mock.keys.privateKey,
           mock.keys.publicKey,
-          DEFAULT_CHAR_SIZE,
           DEFAULT_ECC_CURVE,
           { alg: SymmAlg.AES_CBC, iv: mock.iv }
         ),
@@ -259,7 +252,6 @@ describe('ecc API', () => {
       mock.msgStr,
       mock.keys.privateKey,
       mock.keyBase64,
-      DEFAULT_CHAR_SIZE,
       DEFAULT_ECC_CURVE
     ),
     simpleParams: [
@@ -344,7 +336,7 @@ describe('ecc API', () => {
   cryptoMethod({
     desc: 'getPublicKey',
     setMock: fake => webcrypto.subtle.exportKey = fake,
-    mockResp: utils.base64ToArrBuf(mock.keyBase64),
+    mockResp: uint8arrays.fromString(mock.keyBase64, "base64pad").buffer,
     expectedResp: mock.keyBase64,
     simpleReq: () => ecc.getPublicKey(mock.keys),
     simpleParams: [

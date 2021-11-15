@@ -13,7 +13,6 @@ export type Config = {
   symmAlg: SymmAlg
   symmLen: SymmKeyLength
   hashAlg: HashAlg
-  charSize: CharSize
   storeName: string
   exchangeKeyName: string
   writeKeyName: string
@@ -59,11 +58,6 @@ export enum HashAlg {
   SHA_256 = 'SHA-256',
   SHA_384 = 'SHA-384',
   SHA_512 = 'SHA-512',
-}
-
-export enum CharSize {
-  B8 = 8,
-  B16 = 16,
 }
 
 export enum KeyUse {

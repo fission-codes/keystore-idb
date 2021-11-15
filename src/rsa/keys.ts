@@ -1,4 +1,6 @@
 import { webcrypto } from 'one-webcrypto'
+import * as uint8arrays from "uint8arrays"
+
 import { RSA_EXCHANGE_ALG, RSA_WRITE_ALG } from '../constants.js'
 import { RsaSize, HashAlg, KeyUse, PublicKey } from '../types.js'
 import utils from '../utils.js'
@@ -34,7 +36,7 @@ export async function importPublicKey(base64Key: string, hashAlg: HashAlg, use: 
   checkValidKeyUse(use)
   const alg = use === KeyUse.Exchange ? RSA_EXCHANGE_ALG : RSA_WRITE_ALG
   const uses: KeyUsage[] = use === KeyUse.Exchange ? ['encrypt'] : ['verify']
-  const buf = utils.base64ToArrBuf(stripKeyHeader(base64Key))
+  const buf = uint8arrays.fromString(stripKeyHeader(base64Key), "base64pad").buffer
   return webcrypto.subtle.importKey(
     'spki',
     buf,

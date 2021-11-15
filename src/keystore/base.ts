@@ -69,7 +69,7 @@ export default class KeyStoreBase {
       key,
       config.symmKeyOpts(mergedCfg)
     )
-    return uint8arrays.toString(new Uint8Array(cipherText), "base64pad")
+    return uint8arrays.toString(cipherText, "base64pad")
   }
 
   async decryptWithSymmKey(cipherText: string, keyName: string, cfg?: Partial<Config>): Promise<string> {

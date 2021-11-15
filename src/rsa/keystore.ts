@@ -31,10 +31,10 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
   async sign(msg: Msg, cfg?: Partial<Config>): Promise<string> {
     const writeKey = await this.writeKey()
 
-    return uint8arrays.toString(new Uint8Array(await operations.sign(
+    return uint8arrays.toString(await operations.sign(
       msg,
       writeKey.privateKey as PrivateKey,
-    )), "base64pad")
+    ), "base64pad")
   }
 
   async verify(
@@ -60,11 +60,11 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
   ): Promise<string> {
     const mergedCfg = config.merge(this.cfg, cfg)
 
-    return uint8arrays.toString(new Uint8Array(await operations.encrypt(
+    return uint8arrays.toString(await operations.encrypt(
       msg,
       publicKey,
       mergedCfg.hashAlg
-    )), "base64pad")
+    ), "base64pad")
   }
 
   async decrypt(
@@ -73,10 +73,10 @@ export class RSAKeyStore extends KeyStoreBase implements KeyStore {
     const exchangeKey = await this.exchangeKey()
 
     return uint8arrays.toString(
-      new Uint8Array(await operations.decrypt(
+      await operations.decrypt(
         cipherText,
         exchangeKey.privateKey as PrivateKey,
-      )),
+      ),
       "utf8"
     )
   }

@@ -4,7 +4,7 @@ import { CryptoSystem, SymmAlg, SymmKeyLength } from '../src/types'
 import utils from '../src/utils'
 import { mock } from './utils'
 
-describe('config', () => {
+describe('config API', () => {
   describe('eccEnabled', () => {
 
     describe('structural clone works', () => {

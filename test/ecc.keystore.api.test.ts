@@ -9,7 +9,7 @@ import { mock, keystoreMethod } from './utils'
 
 jest.mock('../src/idb')
 
-describe("ECCKeyStore", () => {
+describe("ECCKeyStore API", () => {
   describe("init", () => {
 
     let response: any
@@ -33,7 +33,7 @@ describe("ECCKeyStore", () => {
     })
 
     it('should initialize a keystore with expected params', () => {
-      let cfg = config.normalize({
+      const cfg = config.normalize({
         type: CryptoSystem.ECC,
         exchangeKeyName: 'test-exchange',
         writeKeyName: 'test-write'

@@ -8,7 +8,7 @@ import IDB from '../src/idb'
 
 jest.mock('../src/idb')
 
-describe('keystore', () => {
+describe('keystore API', () => {
   describe('init', () => {
     describe('ecc enabled', () => {
 

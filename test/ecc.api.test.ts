@@ -6,7 +6,7 @@ import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE } from '../src/constants'
 import { KeyUse, EccCurve, HashAlg, SymmAlg, SymmKeyLength } from '../src/types'
 import { mock, cryptoMethod, arrBufEq } from './utils'
 
-describe('ecc', () => {
+describe('ecc API', () => {
 
   cryptoMethod({
     desc: 'makeKeypair',

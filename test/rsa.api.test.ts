@@ -6,7 +6,7 @@ import { DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG } from '../src/constants'
 import { KeyUse, RsaSize, HashAlg } from '../src/types'
 import { mock, cryptoMethod } from './utils'
 
-describe('rsa', () => {
+describe('rsa API', () => {
 
   cryptoMethod({
     desc: 'makeKeypair',

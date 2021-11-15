@@ -4,7 +4,7 @@ import utils from '../src/utils'
 import { SymmAlg, SymmKeyLength } from '../src/types'
 import { mock, cryptoMethod, arrBufEq } from './utils'
 
-describe('aes', () => {
+describe('aes API', () => {
 
   cryptoMethod({
     desc: 'makeKey',

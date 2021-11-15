@@ -3,15 +3,6 @@ import * as uint8arrays from 'uint8arrays'
 import { Msg } from './types.js'
 
 
-function strToArrBuf(str: string, charSize: number): ArrayBuffer {
-  const view =
-    charSize === 8 ? new Uint8Array(str.length) : new Uint16Array(str.length)
-  for (let i = 0, strLen = str.length; i < strLen; i++) {
-    view[i] = str.charCodeAt(i)
-  }
-  return view.buffer
-}
-
 export function publicExponent(): Uint8Array {
   return new Uint8Array([0x01, 0x00, 0x01])
 }
@@ -22,30 +13,15 @@ export function randomBuf(length: number): ArrayBuffer {
   return arr.buffer
 }
 
-export const normalizeUtf8ToBuf = (msg: Msg): ArrayBuffer => {
-  return normalizeToBuf(msg, (str) => strToArrBuf(str, 8))
-}
-
-export const normalizeUtf16ToBuf = (msg: Msg): ArrayBuffer => {
-  return normalizeToBuf(msg, (str) => strToArrBuf(str, 16))
-}
-
-export const normalizeBase64ToBuf = (msg: Msg): ArrayBuffer => {
+export const normalizeAssumingBase64 = (msg: Msg): ArrayBuffer => {
   return normalizeToBuf(msg, base64 => uint8arrays.fromString(base64, "base64pad").buffer)
 }
 
-// TODO: Rename.
-export const normalizeUnicodeToBuf = (msg: Msg): ArrayBuffer => {
-  if (typeof msg === "string") {
-    return uint8arrays.fromString(msg, "utf8").buffer
-  }
-  if (msg instanceof Uint8Array) {
-    return msg.buffer
-  }
-  return msg
+export const normalizeAssumingUtf8 = (msg: Msg): ArrayBuffer => {
+  return normalizeToBuf(msg, str => uint8arrays.fromString(str, "utf8").buffer)
 }
 
-export const normalizeToBuf = (msg: Msg, strConv: (str: string) => ArrayBuffer): ArrayBuffer => {
+const normalizeToBuf = (msg: Msg, strConv: (str: string) => ArrayBuffer): ArrayBuffer => {
   if (typeof msg === 'string') {
     return strConv(msg)
   } else if (typeof msg === 'object' && msg.byteLength !== undefined) {
@@ -69,10 +45,8 @@ export async function structuralClone<T>(obj: T): Promise<T> {
 export default {
   publicExponent,
   randomBuf,
-  normalizeUtf8ToBuf,
-  normalizeUtf16ToBuf,
-  normalizeBase64ToBuf,
-  normalizeUnicodeToBuf,
+  normalizeBase64ToBuf: normalizeAssumingBase64,
+  normalizeUnicodeToBuf: normalizeAssumingUtf8,
   normalizeToBuf,
   structuralClone
 }

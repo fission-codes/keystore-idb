@@ -3,7 +3,7 @@ import { webcrypto } from 'one-webcrypto'
 
 import aes from '../aes/index.js'
 import keys from './keys.js'
-import { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils.js'
+import { normalizeAssumingBase64, normalizeAssumingUtf8 } from '../utils.js'
 import { DEFAULT_ECC_CURVE, DEFAULT_HASH_ALG, ECC_EXCHANGE_ALG, ECC_WRITE_ALG, DEFAULT_SYMM_ALG, DEFAULT_SYMM_LEN } from '../constants.js'
 import { EccCurve, Msg, PrivateKey, PublicKey, HashAlg, KeyUse, SymmKey, SymmKeyOpts } from '../types.js'
 
@@ -16,7 +16,7 @@ export async function sign(
   return webcrypto.subtle.sign(
     { name: ECC_WRITE_ALG, hash: { name: hashAlg }},
     privateKey,
-    normalizeUnicodeToBuf(msg)
+    normalizeAssumingUtf8(msg)
   )
 }
 
@@ -32,8 +32,8 @@ export async function verify(
     typeof publicKey === "string"
       ? await keys.importPublicKey(publicKey, curve, KeyUse.Write)
       : publicKey,
-    normalizeBase64ToBuf(sig),
-    normalizeUnicodeToBuf(msg)
+    normalizeAssumingBase64(sig),
+    normalizeAssumingUtf8(msg)
   )
 }
 
@@ -49,7 +49,7 @@ export async function encrypt(
     : publicKey
 
   const cipherKey = await getSharedKey(privateKey, importedPublicKey, opts)
-  return aes.encryptBytes(normalizeUnicodeToBuf(msg), cipherKey, opts)
+  return aes.encryptBytes(normalizeAssumingUtf8(msg), cipherKey, opts)
 }
 
 export async function decrypt(
@@ -64,7 +64,7 @@ export async function decrypt(
     : publicKey
 
   const cipherKey = await getSharedKey(privateKey, importedPublicKey, opts)
-  return aes.decryptBytes(normalizeBase64ToBuf(msg), cipherKey, opts)
+  return aes.decryptBytes(normalizeAssumingBase64(msg), cipherKey, opts)
 }
 
 export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {

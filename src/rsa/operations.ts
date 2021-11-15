@@ -2,7 +2,7 @@ import * as uint8arrays from "uint8arrays"
 import { webcrypto } from 'one-webcrypto'
 
 import keys from './keys.js'
-import { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils.js'
+import { normalizeAssumingBase64, normalizeAssumingUtf8 } from '../utils.js'
 import { DEFAULT_HASH_ALG, RSA_EXCHANGE_ALG, RSA_WRITE_ALG, SALT_LENGTH } from '../constants.js'
 import { HashAlg, KeyUse, Msg, PrivateKey, PublicKey } from '../types.js'
 
@@ -14,7 +14,7 @@ export async function sign(
   return webcrypto.subtle.sign(
     { name: RSA_WRITE_ALG, saltLength: SALT_LENGTH },
     privateKey,
-    normalizeUnicodeToBuf(msg)
+    normalizeAssumingUtf8(msg)
   )
 }
 
@@ -29,8 +29,8 @@ export async function verify(
     typeof publicKey === "string"
       ? await keys.importPublicKey(publicKey, hashAlg, KeyUse.Write)
       : publicKey,
-    normalizeBase64ToBuf(sig),
-    normalizeUnicodeToBuf(msg)
+    normalizeAssumingBase64(sig),
+    normalizeAssumingUtf8(msg)
   )
 }
 
@@ -44,7 +44,7 @@ export async function encrypt(
     typeof publicKey === "string"
       ? await keys.importPublicKey(publicKey, hashAlg, KeyUse.Exchange)
       : publicKey,
-    normalizeUnicodeToBuf(msg)
+    normalizeAssumingUtf8(msg)
   )
 }
 
@@ -52,7 +52,7 @@ export async function decrypt(
   msg: Msg,
   privateKey: PrivateKey
 ): Promise<ArrayBuffer> {
-  const normalized = normalizeBase64ToBuf(msg)
+  const normalized = normalizeAssumingBase64(msg)
   return webcrypto.subtle.decrypt(
     { name: RSA_EXCHANGE_ALG },
     privateKey,

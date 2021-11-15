@@ -2,7 +2,6 @@ import * as uint8arrays from "uint8arrays"
 
 import aes from '../aes/index.js'
 import idb from '../idb.js'
-import utils from '../utils.js'
 import config from '../config.js'
 import { Config } from '../types.js'
 import { checkIsKeyPair } from '../errors.js'

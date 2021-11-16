@@ -1,15 +1,15 @@
-import ECCKeyStore from '../src/ecc/keystore'
-import keys from '../src/ecc/keys'
-import operations from '../src/ecc/operations'
-import config, { defaultConfig } from '../src/config'
+import RSAKeyStore from '../src/rsa/keystore'
+import keys from '../src/rsa/keys'
+import operations from '../src/rsa/operations'
+import config from '../src/config'
 import idb from '../src/idb'
-import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE, DEFAULT_HASH_ALG } from '../src/constants'
-import { EccCurve, KeyUse, CryptoSystem } from '../src/types'
+import { DEFAULT_HASH_ALG } from '../src/constants'
+import { KeyUse, RsaSize, HashAlg, CryptoSystem } from '../src/types'
 import { mock, keystoreMethod } from './utils'
 
 jest.mock('../src/idb')
 
-describe("ECCKeyStore", () => {
+describe("RSAKeyStore API", () => {
   describe("init", () => {
 
     let response: any
@@ -29,16 +29,16 @@ describe("ECCKeyStore", () => {
         makeFn()
       })
 
-      response = await ECCKeyStore.init({ exchangeKeyName: 'test-exchange', writeKeyName: 'test-write' })
+      response = await RSAKeyStore.init({ exchangeKeyName: 'test-exchange', writeKeyName: 'test-write' })
     })
 
     it('should initialize a keystore with expected params', () => {
-      let cfg = config.normalize({
-        type: CryptoSystem.ECC,
+      const cfg = config.normalize({
+        type: CryptoSystem.RSA,
         exchangeKeyName: 'test-exchange',
         writeKeyName: 'test-write'
       })
-      const keystore = new ECCKeyStore(cfg, mock.idbStore)
+      const keystore = new RSAKeyStore(cfg, mock.idbStore)
       expect(response).toStrictEqual(keystore)
     })
 
@@ -54,14 +54,16 @@ describe("ECCKeyStore", () => {
 
     it('should call makeKeypair with correct params (exchange key)', () => {
       expect(fakeMake.mock.calls[0]).toEqual([
-        EccCurve.P_256,
+        RsaSize.B2048,
+        HashAlg.SHA_256,
         KeyUse.Exchange
       ])
     })
 
     it('should call makeKeypair with correct params (write key)', () => {
       expect(fakeMake.mock.calls[1]).toEqual([
-        EccCurve.P_256,
+        RsaSize.B2048,
+        HashAlg.SHA_256,
         KeyUse.Write
       ])
     })
@@ -71,7 +73,7 @@ describe("ECCKeyStore", () => {
 
   keystoreMethod({
     desc: 'sign',
-    type: 'ecc',
+    type: 'rsa',
     mocks: [
       {
         mod: operations,
@@ -80,8 +82,6 @@ describe("ECCKeyStore", () => {
         params: [
           mock.msgStr,
           mock.writeKeys.privateKey,
-          DEFAULT_CHAR_SIZE,
-          DEFAULT_HASH_ALG
         ]
       }
     ],
@@ -92,7 +92,7 @@ describe("ECCKeyStore", () => {
 
   keystoreMethod({
     desc: 'verify',
-    type: 'ecc',
+    type: 'rsa',
     mocks: [
       {
         mod: operations,
@@ -102,8 +102,6 @@ describe("ECCKeyStore", () => {
           mock.msgStr,
           mock.sigStr,
           mock.keyBase64,
-          DEFAULT_CHAR_SIZE,
-          DEFAULT_ECC_CURVE,
           DEFAULT_HASH_ALG
         ]
       }
@@ -115,7 +113,7 @@ describe("ECCKeyStore", () => {
 
   keystoreMethod({
     desc: 'encrypt',
-    type: 'ecc',
+    type: 'rsa',
     mocks: [
       {
         mod: operations,
@@ -123,10 +121,8 @@ describe("ECCKeyStore", () => {
         resp: mock.cipherBytes,
         params: [
           mock.msgStr,
-          mock.keys.privateKey,
           mock.keyBase64,
-          DEFAULT_CHAR_SIZE,
-          DEFAULT_ECC_CURVE
+          DEFAULT_HASH_ALG
         ]
       }
     ],
@@ -137,7 +133,7 @@ describe("ECCKeyStore", () => {
 
   keystoreMethod({
     desc: 'decrypt',
-    type: 'ecc',
+    type: 'rsa',
     mocks: [
       {
         mod: operations,
@@ -145,11 +141,9 @@ describe("ECCKeyStore", () => {
         resp: mock.msgBytes,
         params: [
           mock.cipherStr,
-          mock.keys.privateKey,
-          mock.keyBase64,
-          DEFAULT_ECC_CURVE
+          mock.keys.privateKey
         ]
-      }
+      },
     ],
     reqFn: (ks) => ks.decrypt(mock.cipherStr, mock.keyBase64),
     expectedResp: mock.msgStr,
@@ -158,7 +152,7 @@ describe("ECCKeyStore", () => {
 
   keystoreMethod({
     desc: 'publicExchangeKey',
-    type: 'ecc',
+    type: 'rsa',
     mocks: [
       {
         mod: operations,
@@ -176,7 +170,7 @@ describe("ECCKeyStore", () => {
 
   keystoreMethod({
     desc: 'publicWriteKey',
-    type: 'ecc',
+    type: 'rsa',
     mocks: [
       {
         mod: operations,

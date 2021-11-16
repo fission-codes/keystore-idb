@@ -1,84 +1,37 @@
 import { webcrypto } from 'one-webcrypto'
 import * as uint8arrays from 'uint8arrays'
-import { CharSize, Msg } from './types.js'
+import { Msg } from './types.js'
 
-
-export function arrBufToStr(buf: ArrayBuffer, charSize: CharSize): string {
-  const arr = charSize === 8 ? new Uint8Array(buf) : new Uint16Array(buf)
-  return Array.from(arr)
-    .map(b => String.fromCharCode(b))
-    .join('')
-}
-
-export function arrBufToBase64(buf: ArrayBuffer): string {
-  return uint8arrays.toString(new Uint8Array(buf), "base64pad")
-}
-
-export function strToArrBuf(str: string, charSize: CharSize): ArrayBuffer {
-  const view =
-    charSize === 8 ? new Uint8Array(str.length) : new Uint16Array(str.length)
-  for (let i = 0, strLen = str.length; i < strLen; i++) {
-    view[i] = str.charCodeAt(i)
-  }
-  return view.buffer
-}
-
-export function base64ToArrBuf(string: string): ArrayBuffer {
-  return uint8arrays.fromString(string, "base64pad").buffer
-}
 
 export function publicExponent(): Uint8Array {
   return new Uint8Array([0x01, 0x00, 0x01])
 }
 
-export function randomBuf(length: number): ArrayBuffer {
-  const arr = new Uint8Array(length)
-  webcrypto.getRandomValues(arr)
-  return arr.buffer
+export function randomBuf(length: number): Uint8Array {
+  return webcrypto.getRandomValues(new Uint8Array(length))
 }
 
-export function joinBufs(fst: ArrayBuffer, snd: ArrayBuffer): ArrayBuffer {
-  const view1 = new Uint8Array(fst)
-  const view2 = new Uint8Array(snd)
-  const joined = new Uint8Array(view1.length + view2.length)
-  joined.set(view1)
-  joined.set(view2, view1.length)
-  return joined.buffer
+export const normalizeAssumingBase64 = (msg: Msg): Uint8Array => {
+  return normalizeToBuf(msg, base64 => uint8arrays.fromString(base64, "base64pad"))
 }
 
-export const normalizeUtf8ToBuf = (msg: Msg): ArrayBuffer => {
-  return normalizeToBuf(msg, (str) => strToArrBuf(str, CharSize.B8))
+export const normalizeAssumingUtf8 = (msg: Msg): Uint8Array => {
+  return normalizeToBuf(msg, str => uint8arrays.fromString(str, "utf8"))
 }
 
-export const normalizeUtf16ToBuf = (msg: Msg): ArrayBuffer => {
-  return normalizeToBuf(msg, (str) => strToArrBuf(str, CharSize.B16))
-}
-
-export const normalizeBase64ToBuf = (msg: Msg): ArrayBuffer => {
-  return normalizeToBuf(msg, base64ToArrBuf)
-}
-
-export const normalizeUnicodeToBuf = (msg: Msg, charSize: CharSize) => {
-  switch (charSize) {
-    case 8: return normalizeUtf8ToBuf(msg)
-    default: return normalizeUtf16ToBuf(msg)
-  }
-}
-
-export const normalizeToBuf = (msg: Msg, strConv: (str: string) => ArrayBuffer): ArrayBuffer => {
+const normalizeToBuf = (msg: Msg, strConv: (str: string) => Uint8Array): Uint8Array => {
   if (typeof msg === 'string') {
     return strConv(msg)
-  } else if (typeof msg === 'object' && msg.byteLength !== undefined) {
     // this is the best runtime check I could find for ArrayBuffer/Uint8Array
-    const temp = new Uint8Array(msg)
-    return temp.buffer
+  } else if (typeof msg === 'object' && msg.byteLength !== undefined) {
+    return new Uint8Array(msg)
   } else {
-    throw new Error("Improper value. Must be a string, ArrayBuffer, Uint8Array")
+    throw new Error("Improper value. Must be a Uint8Array, string or ArrayBuffer")
   }
 }
 
 /* istanbul ignore next */
-export async function structuralClone(obj: any) {
+export async function structuralClone<T>(obj: T): Promise<T> {
   return new Promise(resolve => {
     const { port1, port2 } = new MessageChannel()
     port2.onmessage = ev => resolve(ev.data)
@@ -87,16 +40,10 @@ export async function structuralClone(obj: any) {
 }
 
 export default {
-  arrBufToStr,
-  arrBufToBase64,
-  strToArrBuf,
-  base64ToArrBuf,
   publicExponent,
   randomBuf,
-  joinBufs,
-  normalizeUtf8ToBuf,
-  normalizeUtf16ToBuf,
-  normalizeBase64ToBuf,
+  normalizeBase64ToBuf: normalizeAssumingBase64,
+  normalizeUnicodeToBuf: normalizeAssumingUtf8,
   normalizeToBuf,
   structuralClone
 }

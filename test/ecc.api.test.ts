@@ -1,12 +1,12 @@
 import { webcrypto } from 'one-webcrypto'
+import * as uint8arrays from 'uint8arrays'
 import ecc from '../src/ecc'
 import errors from '../src/errors'
-import utils from '../src/utils'
-import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE } from '../src/constants'
+import { DEFAULT_ECC_CURVE } from '../src/constants'
 import { KeyUse, EccCurve, HashAlg, SymmAlg, SymmKeyLength } from '../src/types'
-import { mock, cryptoMethod, arrBufEq } from './utils'
+import { mock, cryptoMethod } from './utils'
 
-describe('ecc', () => {
+describe('ecc API', () => {
 
   cryptoMethod({
     desc: 'makeKeypair',
@@ -52,7 +52,7 @@ describe('ecc', () => {
     simpleReq: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_256, KeyUse.Exchange),
     simpleParams: [
       'raw',
-      utils.base64ToArrBuf(mock.keyBase64),
+      uint8arrays.fromString(mock.keyBase64, "base64pad"),
       { name: 'ECDH', namedCurve: 'P-256' },
       true,
       []
@@ -68,7 +68,7 @@ describe('ecc', () => {
         req: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_256, KeyUse.Write),
         params: [
           'raw',
-          utils.base64ToArrBuf(mock.keyBase64),
+          uint8arrays.fromString(mock.keyBase64, "base64pad"),
           { name: 'ECDSA', namedCurve: 'P-256' },
           true,
           ['verify']
@@ -98,7 +98,6 @@ describe('ecc', () => {
         req: () => ecc.sign(
           mock.msgBytes,
           mock.keys.privateKey,
-          DEFAULT_CHAR_SIZE,
           HashAlg.SHA_512
         ),
         params: (params: any) => params[0]?.hash?.name === 'SHA-512'
@@ -115,7 +114,6 @@ describe('ecc', () => {
     simpleReq: () => ecc.sign(
       mock.msgStr,
       mock.keys.privateKey,
-      DEFAULT_CHAR_SIZE,
       HashAlg.SHA_256
     ),
     simpleParams: [
@@ -150,7 +148,6 @@ describe('ecc', () => {
           mock.msgBytes,
           mock.sigBytes,
           mock.keys.publicKey,
-          DEFAULT_CHAR_SIZE,
           DEFAULT_ECC_CURVE,
           HashAlg.SHA_512
         ),
@@ -169,7 +166,6 @@ describe('ecc', () => {
       mock.msgStr,
       mock.sigStr,
       mock.keyBase64,
-      DEFAULT_CHAR_SIZE,
       DEFAULT_ECC_CURVE,
       HashAlg.SHA_256
     ),
@@ -189,9 +185,10 @@ describe('ecc', () => {
     setMock: fake => {
       webcrypto.subtle.encrypt = fake
       webcrypto.subtle.deriveKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
-      webcrypto.getRandomValues = jest.fn(() => new Promise(r => r(new Uint8Array(16)))) as any
+      webcrypto.getRandomValues = jest.fn(() => mock.iv) as any
     },
     mockResp: mock.cipherBytes,
+    expectedResp: mock.cipherWithIVBytes,
     simpleReq: () => ecc.encrypt(
       mock.msgBytes,
       mock.keys.privateKey,
@@ -199,7 +196,7 @@ describe('ecc', () => {
     ),
     simpleParams: [
       { name: 'AES-CTR',
-        counter: new Uint8Array(16),
+        counter: mock.iv,
         length: 64
       },
       mock.symmKey,
@@ -212,7 +209,6 @@ describe('ecc', () => {
           mock.msgBytes,
           mock.keys.privateKey,
           mock.keys.publicKey,
-          DEFAULT_CHAR_SIZE,
           DEFAULT_ECC_CURVE,
           { alg: SymmAlg.AES_CBC }
         ),
@@ -224,11 +220,10 @@ describe('ecc', () => {
           mock.msgBytes,
           mock.keys.privateKey,
           mock.keys.publicKey,
-          DEFAULT_CHAR_SIZE,
           DEFAULT_ECC_CURVE,
           { iv: mock.iv }
         ),
-        params: (params: any) => arrBufEq(params[0]?.counter, mock.iv)
+        params: (params: any) => uint8arrays.equals(params[0]?.counter, mock.iv)
       },
       {
         desc: 'handles an IV with AES-CBC',
@@ -236,7 +231,6 @@ describe('ecc', () => {
           mock.msgBytes,
           mock.keys.privateKey,
           mock.keys.publicKey,
-          DEFAULT_CHAR_SIZE,
           DEFAULT_ECC_CURVE,
           { alg: SymmAlg.AES_CBC, iv: mock.iv }
         ),
@@ -252,19 +246,19 @@ describe('ecc', () => {
     setMock: fake => {
       webcrypto.subtle.encrypt = fake
       webcrypto.subtle.deriveKey = jest.fn(() => new Promise(r => r(mock.symmKey)))
-      webcrypto.getRandomValues = jest.fn(() => new Promise(r => r(new Uint8Array(16)))) as any
+      webcrypto.getRandomValues = jest.fn(() => mock.iv) as any
     },
     mockResp: mock.cipherBytes,
+    expectedResp: mock.cipherWithIVBytes,
     simpleReq: () => ecc.encrypt(
       mock.msgStr,
       mock.keys.privateKey,
       mock.keyBase64,
-      DEFAULT_CHAR_SIZE,
       DEFAULT_ECC_CURVE
     ),
     simpleParams: [
       { name: 'AES-CTR',
-        counter: new Uint8Array(16),
+        counter: mock.iv,
         length: 64
       },
       mock.symmKey,
@@ -298,9 +292,9 @@ describe('ecc', () => {
         params: (params: any) => (
           params[0].name === 'AES-CTR'
           && params[0].length === 64
-          && arrBufEq(params[0].counter.buffer, mock.iv)
+          && uint8arrays.equals(params[0].counter, mock.iv)
           && params[1] === mock.symmKey
-          && arrBufEq(params[2], mock.cipherBytes)
+          && uint8arrays.equals(params[2], mock.cipherBytes)
         )
       },
       {
@@ -314,8 +308,8 @@ describe('ecc', () => {
         ),
         params: (params: any) => (
           params[0]?.name === 'AES-CBC'
-          && arrBufEq(params[0].iv, mock.iv)
-          && arrBufEq(params[2], mock.cipherBytes)
+          && uint8arrays.equals(params[0].iv, mock.iv)
+          && uint8arrays.equals(params[2], mock.cipherBytes)
         )
       }
     ],
@@ -344,7 +338,7 @@ describe('ecc', () => {
   cryptoMethod({
     desc: 'getPublicKey',
     setMock: fake => webcrypto.subtle.exportKey = fake,
-    mockResp: utils.base64ToArrBuf(mock.keyBase64),
+    mockResp: uint8arrays.fromString(mock.keyBase64, "base64pad"),
     expectedResp: mock.keyBase64,
     simpleReq: () => ecc.getPublicKey(mock.keys),
     simpleParams: [

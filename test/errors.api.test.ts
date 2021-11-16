@@ -2,7 +2,7 @@ import errors from '../src/errors'
 import mock from './utils/mock'
 import { CryptoSystem, KeyUse } from '../src/types'
 
-describe('errors', () => {
+describe('errors API', () => {
 
   describe('checkIsKeyPair', () => {
     it('throws on null', () => {

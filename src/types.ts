@@ -1,6 +1,6 @@
-export type Msg = ArrayBuffer | string | Uint8Array
+export type Msg = Uint8Array | string | ArrayBuffer
 
-export type CipherText = ArrayBuffer
+export type CipherText = Uint8Array
 export type SymmKey = CryptoKey
 
 export type PublicKey = CryptoKey
@@ -13,7 +13,6 @@ export type Config = {
   symmAlg: SymmAlg
   symmLen: SymmKeyLength
   hashAlg: HashAlg
-  charSize: CharSize
   storeName: string
   exchangeKeyName: string
   writeKeyName: string
@@ -22,7 +21,7 @@ export type Config = {
 export type SymmKeyOpts = {
   alg: SymmAlg
   length: SymmKeyLength
-  iv: ArrayBuffer
+  iv: Uint8Array
 }
 
 export enum CryptoSystem {
@@ -59,11 +58,6 @@ export enum HashAlg {
   SHA_256 = 'SHA-256',
   SHA_384 = 'SHA-384',
   SHA_512 = 'SHA-512',
-}
-
-export enum CharSize {
-  B8 = 8,
-  B16 = 16,
 }
 
 export enum KeyUse {

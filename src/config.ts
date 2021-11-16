@@ -6,7 +6,6 @@ import {
   DEFAULT_SYMM_ALG,
   DEFAULT_SYMM_LEN,
   DEFAULT_HASH_ALG,
-  DEFAULT_CHAR_SIZE,
   DEFAULT_STORE_NAME,
   DEFAULT_EXCHANGE_KEY_NAME,
   DEFAULT_WRITE_KEY_NAME
@@ -21,7 +20,6 @@ export const defaultConfig = {
   symmAlg: DEFAULT_SYMM_ALG,
   symmLen: DEFAULT_SYMM_LEN,
   hashAlg: DEFAULT_HASH_ALG,
-  charSize: DEFAULT_CHAR_SIZE,
   storeName: DEFAULT_STORE_NAME,
   exchangeKeyName: DEFAULT_EXCHANGE_KEY_NAME,
   writeKeyName: DEFAULT_WRITE_KEY_NAME
@@ -29,7 +27,7 @@ export const defaultConfig = {
 
 export function normalize(
   maybeCfg?: Partial<Config>,
-  eccEnabled: boolean = true
+  eccEnabled = true
 ): Config {
   let cfg
   if (!maybeCfg) {

@@ -5,7 +5,7 @@ import { mock, keystoreMethod } from './utils'
 
 const defaultOpts = { alg: config.defaultConfig.symmAlg, length: config.defaultConfig.symmLen }
 
-describe("KeyStoreBase", () => {
+describe("KeyStoreBase API", () => {
 
   keystoreMethod({
     desc: 'keyExists',

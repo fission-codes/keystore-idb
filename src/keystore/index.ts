@@ -7,7 +7,7 @@ import { Config, KeyStore } from '../types.js'
 
 export async function init(maybeCfg?: Partial<Config>): Promise<KeyStore>{
   const eccEnabled = await config.eccEnabled()
-  if(!eccEnabled && maybeCfg?.type === 'ecc'){
+  if (!eccEnabled && maybeCfg?.type === 'ecc') {
     throw ECCNotEnabled
   }
 
@@ -15,9 +15,9 @@ export async function init(maybeCfg?: Partial<Config>): Promise<KeyStore>{
 
   checkValidCryptoSystem(cfg.type)
 
-  if(cfg.type === 'ecc'){
+  if (cfg.type === 'ecc') {
     return ECCKeyStore.init(cfg)
-  }else {
+  } else {
     return RSAKeyStore.init(cfg)
   }
 }

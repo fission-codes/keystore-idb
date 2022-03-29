@@ -31,9 +31,28 @@ export function publicExponent(): Uint8Array {
   return new Uint8Array([0x01, 0x00, 0x01])
 }
 
-export function randomBuf(length: number): ArrayBuffer {
+export function randomBuf(length: number, max = 255): ArrayBuffer {
+  if (max > 255) {
+    throw new Error("max must be less than 256")
+  }
+
   const arr = new Uint8Array(length)
-  webcrypto.getRandomValues(arr)
+
+  if (max == 255) {
+    webcrypto.getRandomValues(arr)
+    return arr.buffer
+  }
+
+  let index = 0
+  const tmp = new Uint8Array(1)
+  while (index < arr.length) {
+    webcrypto.getRandomValues(tmp)
+    if (tmp[0] <= max) {
+      arr[index] = tmp[0]
+      index++
+    }
+  }
+
   return arr.buffer
 }
 

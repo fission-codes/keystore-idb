@@ -1,5 +1,6 @@
 import { webcrypto } from 'one-webcrypto'
 import * as uint8arrays from 'uint8arrays'
+import errors from './errors.js'
 import { CharSize, Msg } from './types.js'
 
 
@@ -33,7 +34,7 @@ export function publicExponent(): Uint8Array {
 
 export function randomBuf(length: number, max = 255): ArrayBuffer {
   if (max > 255) {
-    throw new Error("max must be less than 256")
+    throw errors.InvalidMaxValue
   }
 
   const arr = new Uint8Array(length)

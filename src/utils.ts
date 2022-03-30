@@ -32,7 +32,7 @@ export function publicExponent(): Uint8Array {
   return new Uint8Array([0x01, 0x00, 0x01])
 }
 
-export function randomBuf(length: number, max = 255): ArrayBuffer {
+export function randomBuf(length: number, { max }: { max: number } = { max: 255 }): ArrayBuffer {
   if (max < 1 || max > 255) {
     throw errors.InvalidMaxValue
   }

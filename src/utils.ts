@@ -1,5 +1,6 @@
 import { webcrypto } from 'one-webcrypto'
 import * as uint8arrays from 'uint8arrays'
+import errors from './errors.js'
 import { CharSize, Msg } from './types.js'
 
 
@@ -31,9 +32,31 @@ export function publicExponent(): Uint8Array {
   return new Uint8Array([0x01, 0x00, 0x01])
 }
 
-export function randomBuf(length: number): ArrayBuffer {
+export function randomBuf(length: number, { max }: { max: number } = { max: 255 }): ArrayBuffer {
+  if (max < 1 || max > 255) {
+    throw errors.InvalidMaxValue
+  }
+
   const arr = new Uint8Array(length)
-  webcrypto.getRandomValues(arr)
+
+  if (max == 255) {
+    webcrypto.getRandomValues(arr)
+    return arr.buffer
+  }
+
+  let index = 0
+  const interval = max + 1
+  const divisibleMax = Math.floor(256 / interval) * interval
+  const tmp = new Uint8Array(1)
+
+  while (index < arr.length) {
+    webcrypto.getRandomValues(tmp)
+    if (tmp[0] < divisibleMax) {
+      arr[index] = tmp[0] % interval
+      index++
+    }
+  }
+
   return arr.buffer
 }
 

@@ -30,11 +30,6 @@ module.exports = {
     "src/**/*.{js,ts}"
   ],
   globals: {
-    globalThis: {
-      crypto: {
-        subtle: {}
-      }
-    },
     localForage: {}
   },
   restoreMocks: true

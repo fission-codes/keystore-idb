@@ -1,5 +1,9 @@
 # Changelog
 
+### v0.15.5
+
+- Support a `max` parameter (based on rejection sampling) in `randomBuf` rng.
+
 ### v0.15.4
 
 - Bump one-webcrypto to 1.0.3 for wider bundler support.

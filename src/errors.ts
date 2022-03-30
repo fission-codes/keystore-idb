@@ -6,7 +6,7 @@ export const NotKey = new Error("Retrieved an asymmetric keypair when an symmetr
 export const ECCNotEnabled = new Error("ECC is not enabled for this browser. Please use RSA instead.")
 export const UnsupportedCrypto = new Error("Cryptosystem not supported. Please use ECC or RSA")
 export const InvalidKeyUse = new Error("Invalid key use. Please use 'exchange' or 'write")
-export const InvalidMaxValue = Error("Max must be less than 256")
+export const InvalidMaxValue = new Error("Max must be less than 256 and greater than 0")
 
 export function checkIsKeyPair(keypair: any): CryptoKeyPair {
   if (!keypair || keypair === null) {

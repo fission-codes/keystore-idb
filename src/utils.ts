@@ -33,7 +33,7 @@ export function publicExponent(): Uint8Array {
 }
 
 export function randomBuf(length: number, max = 255): ArrayBuffer {
-  if (max > 255) {
+  if (max < 1 || max > 255) {
     throw errors.InvalidMaxValue
   }
 
@@ -45,11 +45,14 @@ export function randomBuf(length: number, max = 255): ArrayBuffer {
   }
 
   let index = 0
+  const interval = max + 1
+  const divisibleMax = Math.floor(256 / interval) * interval
   const tmp = new Uint8Array(1)
+
   while (index < arr.length) {
     webcrypto.getRandomValues(tmp)
-    if (tmp[0] <= max) {
-      arr[index] = tmp[0]
+    if (tmp[0] < divisibleMax) {
+      arr[index] = tmp[0] % interval
       index++
     }
   }

@@ -19,6 +19,10 @@ export type Config = {
   writeKeyName: string
 }
 
+export type CryptoConfig = {
+  crypto: Crypto
+}
+
 export type SymmKeyOpts = {
   alg: SymmAlg
   length: SymmKeyLength

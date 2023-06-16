@@ -15,7 +15,7 @@ export class ECCKeyStore extends KeyStoreBase implements KeyStore {
     })
     const { curve, storeName, exchangeKeyName, writeKeyName } = cfg
 
-    const store = IDB.createStore(storeName)
+    const store = await IDB.createStore(storeName)
     await IDB.createIfDoesNotExist(exchangeKeyName, () => (
       keys.makeKeypair(curve, KeyUse.Exchange)
     ), store)

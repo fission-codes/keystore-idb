@@ -1,8 +1,14 @@
 import localforage from 'localforage'
+import { driverWithoutSerialization } from "@aveq-research/localforage-asyncstorage-driver";
+
 import { checkIsKeyPair, checkIsKey } from './errors.js'
 
 /* istanbul ignore next */
-export function createStore(name: string): LocalForage {
+export async function createStore(name: string): Promise<LocalForage> {
+  const driver = driverWithoutSerialization()
+  await localforage.defineDriver(driver)
+  await localforage.setDriver(driver._driver)
+
   return localforage.createInstance({ name })
 }
 

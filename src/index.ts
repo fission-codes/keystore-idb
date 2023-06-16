@@ -1,5 +1,6 @@
 import { init, clear } from './keystore/index.js'
 
+import * as aes from './aes/index.js'
 import * as ecc from './ecc/index.js'
 import * as rsa from './rsa/index.js'
 import * as config from './config.js'
@@ -15,6 +16,7 @@ export default {
   ...constants,
   ...config,
   ...utils,
+  aes,
   ecc,
   rsa,
   idb,

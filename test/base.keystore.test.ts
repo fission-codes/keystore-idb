@@ -3,13 +3,12 @@ import idb from '../src/idb'
 import config from '../src/config'
 import { mock, keystoreMethod } from './utils'
 
-const defaultOpts = { alg: config.defaultConfig.symmAlg, length: config.defaultConfig.symmLen }
+const defaultOpts = { alg: config.defaultConfig.symmAlg, length: config.defaultConfig.symmKeyLength }
 
 describe("KeyStoreBase", () => {
 
   keystoreMethod({
     desc: 'keyExists',
-    type: 'rsa',
     mocks: [
       {
         mod: idb,
@@ -28,7 +27,6 @@ describe("KeyStoreBase", () => {
 
   keystoreMethod({
     desc: 'getSymmKey (exists)',
-    type: 'rsa',
     mocks: [
       {
         mod: idb,
@@ -46,7 +44,6 @@ describe("KeyStoreBase", () => {
 
   keystoreMethod({
     desc: 'getSymmKey (does not exist)',
-    type: 'rsa',
     mocks: [
       {
         mod: idb,
@@ -84,7 +81,6 @@ describe("KeyStoreBase", () => {
 
   keystoreMethod({
     desc: 'importSymmKey',
-    type: 'rsa',
     mocks: [
       {
         mod: aes,
@@ -112,7 +108,6 @@ describe("KeyStoreBase", () => {
 
   keystoreMethod({
     desc: 'exportSymmKey',
-    type: 'rsa',
     mocks: [
       {
         mod: idb,
@@ -139,7 +134,6 @@ describe("KeyStoreBase", () => {
 
   keystoreMethod({
     desc: 'encryptWithSymmKey',
-    type: 'rsa',
     mocks: [
       {
         mod: idb,
@@ -168,7 +162,6 @@ describe("KeyStoreBase", () => {
 
   keystoreMethod({
     desc: 'decryptWithSymmKey',
-    type: 'rsa',
     mocks: [
       {
         mod: idb,
@@ -197,7 +190,6 @@ describe("KeyStoreBase", () => {
 
   keystoreMethod({
     desc: 'deleteKey',
-    type: 'rsa',
     mocks: [
       {
         mod: idb,
@@ -214,19 +206,18 @@ describe("KeyStoreBase", () => {
   })
 
   keystoreMethod({
-    desc: 'destory',
-    type: 'rsa',
+    desc: 'clear',
     mocks: [
       {
         mod: idb,
-        meth: 'dropStore', 
+        meth: 'clear', 
         resp: undefined,
         params: [
           mock.idbStore
         ]
       }
     ],
-    reqFn: (ks) => ks.destroy(),
+    reqFn: (ks) => ks.clear(),
     expectedResp: undefined
   })
 

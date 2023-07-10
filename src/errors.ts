@@ -4,9 +4,14 @@ export const KeyDoesNotExist = new Error("Key does not exist. Make sure you prop
 export const NotKeyPair = new Error("Retrieved a symmetric key when an asymmetric keypair was expected. Please use a different key name.")
 export const NotKey = new Error("Retrieved an asymmetric keypair when an symmetric key was expected. Please use a different key name.")
 export const ECCNotEnabled = new Error("ECC is not enabled for this browser. Please use RSA instead.")
-export const UnsupportedCrypto = new Error("Cryptosystem not supported. Please use ECC or RSA")
+export const UnsupportedAsymmCrypto = new Error("Cryptosystem not supported. Please use ECC")
+export const UnsupportedSymmCrypto = new Error("Cryptosystem not supported. Please use AES-GCM")
+export const UnsupportedSymmWrappingCrypto = new Error("Cryptosystem not supported. Please use AES-KW")
+export const UnsupportedKeyFormat = new Error("Key format not supported for this cryptosystem or operation")
 export const InvalidKeyUse = new Error("Invalid key use. Please use 'exchange' or 'write")
 export const InvalidMaxValue = new Error("Max must be less than 256 and greater than 0")
+export const InvalidIvLength = new Error("IV must be 16 bytes")
+export const InvalidCipherTextLength = new Error("Cipher text must align on AES-GCM block (16 bytes) boundary")
 
 export function checkIsKeyPair(keypair: any): CryptoKeyPair {
   if (!keypair || keypair === null) {
@@ -27,7 +32,7 @@ export function checkIsKey(key: any): CryptoKey {
 }
 
 export function checkValidCryptoSystem(type: CryptoSystem): void {
-  checkValid(type, [CryptoSystem.ECC, CryptoSystem.RSA], UnsupportedCrypto)
+  checkValid(type, [CryptoSystem.ECC, CryptoSystem.RSA], UnsupportedAsymmCrypto)
 }
 
 export function checkValidKeyUse(use: KeyUse): void {
@@ -46,11 +51,13 @@ export default {
   NotKeyPair,
   NotKey,
   ECCNotEnabled,
-  UnsupportedCrypto,
+  UnsupportedAsymmCrypto,
   InvalidKeyUse,
   checkIsKeyPair,
   checkIsKey,
   checkValidCryptoSystem,
   checkValidKeyUse,
   InvalidMaxValue,
+  InvalidIvLength,
+  InvalidCipherTextLength
 }

@@ -67,51 +67,22 @@ describe('config', () => {
 
     it('merges with default config', () => {
       const cfg = config.normalize({
-        exchangeKeyName: 'test'
+        exchangeKeyPairName: 'test'
       })
       const modifiedDef = {
         ...config.defaultConfig,
-        exchangeKeyName: 'test'
+        exchangeKeyPairName: 'test'
       }
       expect(cfg).toEqual(modifiedDef)
     })
-
-    it('sets ecc if enabled', () => {
-      const cfg = config.normalize({}, true)
-      const modifiedDef = {
-        ...config.defaultConfig,
-        type: 'ecc'
-      }
-      expect(cfg).toEqual(modifiedDef)
-    })
-
-    it('sets rsa if ecc not enabled', () => {
-      const cfg = config.normalize({}, false)
-      const modifiedDef = {
-        ...config.defaultConfig,
-        type: 'rsa'
-      }
-      expect(cfg).toEqual(modifiedDef)
-    })
-
-
-    it('does not overwrite type if user defined', () => {
-      const cfg = config.normalize({type: CryptoSystem.RSA}, true)
-      const modifiedDef = {
-        ...config.defaultConfig,
-        type: 'rsa'
-      }
-      expect(cfg).toEqual(modifiedDef)
-    })
-  })
 
   describe('merge', () => {
     it('it correctly merges configs', () => {
-      const merged = config.merge(config.defaultConfig, { symmAlg: SymmAlg.AES_CBC, symmLen: SymmKeyLength.B192 })
+      const merged = config.merge(config.defaultConfig, { symmAlg: SymmAlg.AES_GCM, symmKeyLength: SymmKeyLength.B512 })
       expect(merged).toEqual({
         ...config.defaultConfig,
-        symmAlg: SymmAlg.AES_CBC,
-        symmLen: SymmKeyLength.B192
+        symmAlg: SymmAlg.AES_GCM,
+        symmLen: SymmKeyLength.B512
       })
     })
 
@@ -120,5 +91,6 @@ describe('config', () => {
       expect(merged).toEqual(config.defaultConfig)
     })
   })
+})
 
 })

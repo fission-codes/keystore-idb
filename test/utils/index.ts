@@ -1,3 +1,3 @@
-export * from './crypto'
-export * from './keystore'
-export * from './mock'
+export * from './crypto';
+export * from './keystore';
+export * from './mock';

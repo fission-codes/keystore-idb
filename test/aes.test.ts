@@ -1,41 +1,31 @@
 import { webcrypto } from 'one-webcrypto'
 import aes from '../src/aes'
+import * as common from '../src/common'
 import utils from '../src/utils'
-import { SymmAlg, SymmKeyLength } from '../src/types'
+import { ExportKeyFormat, SymmAlg, SymmKeyLength } from '../src/types'
 import { mock, cryptoMethod, arrBufEq } from './utils'
 
 describe('aes', () => {
 
   cryptoMethod({
-    desc: 'makeKey',
+    desc: 'genKey',
     setMock: fake => webcrypto.subtle.generateKey = fake,
     mockResp: mock.symmKey,
-    simpleReq: () => aes.makeKey(),
+    simpleReq: () => aes.genKey(),
     simpleParams: [
-      { name: 'AES-CTR', length: 256 },
+      { name: 'AES-GCM', length: 256 },
       true,
       [ 'encrypt', 'decrypt']
     ],
     paramChecks: [
       {
-        desc: 'handles multiple key algorithms',
-        req: () => aes.makeKey({ alg: SymmAlg.AES_CBC }),
-        params: (params: any) => params[0]?.name === 'AES-CBC'
-      },
-      {
-        desc: 'handles multiple key algorithms',
-        req: () => aes.makeKey({ alg: SymmAlg.AES_GCM }),
+        desc: 'handles only AES-GCM',
+        req: () => aes.genKey({ alg: SymmAlg.AES_GCM }),
         params: (params: any) => params[0]?.name === 'AES-GCM'
-      },
-      {
-        desc: 'handles multiple key lengths',
-        req: () => aes.makeKey({ length: SymmKeyLength.B256 }),
-        params: (params: any) => params[0]?.length === 256
       }
     ],
     shouldThrows: [ ]
   })
-
 
   cryptoMethod({
     desc: 'importKey',
@@ -43,17 +33,17 @@ describe('aes', () => {
     mockResp: mock.symmKey,
     simpleReq: () => aes.importKey(mock.keyBase64),
     simpleParams: [
-      'raw',
+      ExportKeyFormat.RAW,
       utils.base64ToArrBuf(mock.keyBase64),
-      { name: 'AES-CTR', length: 256 },
+      { name: 'AES-GCM', length: 256 },
       true,
       [ 'encrypt', 'decrypt']
     ],
     paramChecks: [
       {
-        desc: 'handles multiple key algorithms',
-        req: () => aes.importKey(mock.keyBase64, { alg: SymmAlg.AES_CBC }),
-        params: (params: any) => params[2]?.name === 'AES-CBC'
+        desc: 'handles only AES-GCM',
+        req: () => aes.importKey(mock.keyBase64, { alg: SymmAlg.AES_GCM }),
+        params: (params: any) => params[2]?.name === 'AES-GCM'
       },
       {
         desc: 'handles multiple key lengths',
@@ -74,25 +64,15 @@ describe('aes', () => {
     },
     mockResp: mock.cipherBytes,
     expectedResp: mock.cipherWithIVStr,
-    simpleReq: () => aes.encrypt(mock.msgStr, mock.keyBase64, { iv: mock.iv }),
+    simpleReq: () => aes.importKey(mock.keyBase64).then(key => aes.encrypt(mock.msgStr, key)),
     paramChecks: [
       {
-        desc: 'correctly passes params with AES-CTR',
-        req: () => aes.encrypt(mock.msgStr, mock.keyBase64, { iv: mock.iv }),
+        desc: 'correctly passes params with AES-GCM',
+        req: () => aes.importKey(mock.keyBase64).then(key => aes.encrypt(mock.msgStr, key)),
         params: (params: any) => (
           params[0]?.name === 'AES-CTR'
           && params[0]?.length === 64
           && arrBufEq(params[0]?.counter, mock.iv)
-          && params[1] === mock.symmKey
-          && arrBufEq(params[2], mock.msgBytes)
-        )
-      },
-      {
-        desc: 'correctly passes params with AES-CBC',
-        req: () => aes.encrypt(mock.msgStr, mock.keyBase64, { alg: SymmAlg.AES_CBC, iv: mock.iv }),
-        params: (params: any) => (
-          params[0]?.name === 'AES-CBC'
-          && arrBufEq(params[0]?.iv, mock.iv)
           && params[1] === mock.symmKey
           && arrBufEq(params[2], mock.msgBytes)
         )
@@ -110,25 +90,16 @@ describe('aes', () => {
     },
     mockResp: mock.msgBytes,
     expectedResp: mock.msgStr,
-    simpleReq: () => aes.decrypt(mock.cipherWithIVStr, mock.keyBase64),
+    simpleReq: () => aes.importKey(mock.keyBase64).then(key => aes.decrypt(mock.cipherWithIVStr, key)),
     paramChecks: [
       {
         desc: 'correctly passes params with AES-CTR',
-        req: () => aes.decrypt(mock.cipherWithIVStr, mock.keyBase64),
+        req: () => aes.importKey(mock.keyBase64).then(key => aes.decrypt(mock.cipherWithIVStr, key)),
         params: (params: any) => (
-          params[0].name === 'AES-CTR'
+          params[0].name === 'AES-GCM'
           && params[0].length === 64
           && arrBufEq(params[0].counter.buffer, mock.iv)
           && params[1] === mock.symmKey
-          && arrBufEq(params[2], mock.cipherBytes)
-        )
-      },
-      {
-        desc: 'correctly passes params with AES-CBC',
-        req: () => aes.decrypt(mock.cipherWithIVStr, mock.keyBase64, { alg: SymmAlg.AES_CBC }),
-        params: (params: any) => (
-          params[0]?.name === 'AES-CBC'
-          && arrBufEq(params[0].iv, mock.iv)
           && arrBufEq(params[2], mock.cipherBytes)
         )
       }
@@ -136,20 +107,17 @@ describe('aes', () => {
     shouldThrows: []
   })
 
-
   cryptoMethod({
     desc: 'exportKey',
     setMock: fake => webcrypto.subtle.exportKey = fake,
     mockResp: utils.base64ToArrBuf(mock.keyBase64),
     expectedResp: mock.keyBase64,
-    simpleReq: () => aes.exportKey(mock.symmKey),
+    simpleReq: () => common.exportKey(mock.symmKey, ExportKeyFormat.RAW),
     simpleParams: [
-      'raw',
-      mock.symmKey
+      mock.symmKey,
+      ExportKeyFormat.RAW
     ],
     paramChecks: [],
     shouldThrows: []
   })
-
-
 })

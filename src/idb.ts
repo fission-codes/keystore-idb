@@ -6,6 +6,11 @@ export function createStore(name: string): LocalForage {
   return localforage.createInstance({ name })
 }
 
+export async function create(id: string, makeFn: () => Promise<CryptoKeyPair | CryptoKey>, store: LocalForage = localforage): Promise<void> {
+  const key = await makeFn()
+  await put(id, key, store)
+}
+
 export async function createIfDoesNotExist(id: string, makeFn: () => Promise<CryptoKeyPair | CryptoKey>, store: LocalForage = localforage): Promise<void> {
   if(await exists(id, store)) {
     return
@@ -54,7 +59,7 @@ export async function dropStore(store: LocalForage): Promise<void> {
 export async function clear(store?: LocalForage): Promise<void> {
   if(store){
     return dropStore(store)
-  }else {
+  } else {
     return localforage.clear()
   }
 }

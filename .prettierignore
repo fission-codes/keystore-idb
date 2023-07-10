@@ -1,0 +1,8 @@
+.yarn
+.next
+dist
+node_modules
+
+cache
+artifacts
+

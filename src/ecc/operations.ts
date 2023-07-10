@@ -1,89 +1,155 @@
-import aes from '../aes/index.js'
-import keys from './keys.js'
-import utils, { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils.js'
-import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE, DEFAULT_HASH_ALG, ECC_EXCHANGE_ALG, ECC_WRITE_ALG, DEFAULT_SYMM_ALG, DEFAULT_SYMM_LEN } from '../constants.js'
-import { CharSize, EccCurve, Msg, PrivateKey, PublicKey, HashAlg, KeyUse, SymmKey, SymmKeyOpts } from '../types.js'
-import { webcrypto } from 'one-webcrypto'
-
+import aes from '../aes/index.js';
+import { normalizeBase64ToBuf, normalizeUnicodeToBuf } from '../utils.js';
+import {
+  DEFAULT_CHAR_SIZE,
+  DEFAULT_HASH_ALG,
+  ECC_EXCHANGE_ALG,
+  ECC_WRITE_ALG,
+  DEFAULT_SYMM_ALG,
+  DEFAULT_SYMM_LEN,
+  DEFAULT_SYMM_WRAPPING_ALG,
+} from '../constants.js';
+import {
+  CharSize,
+  Msg,
+  PrivateKey,
+  PublicKey,
+  HashAlg,
+  SymmKey,
+  SymmKeyOpts,
+  SymmWrappingKey,
+  SymmWrappingKeyOpts,
+  ExportKeyFormat,
+} from '../types.js';
+import { webcrypto } from 'one-webcrypto';
 
 export async function sign(
   msg: Msg,
   privateKey: PrivateKey,
   charSize: CharSize = DEFAULT_CHAR_SIZE,
-  hashAlg: HashAlg = DEFAULT_HASH_ALG,
+  hashAlg: HashAlg = DEFAULT_HASH_ALG
 ): Promise<ArrayBuffer> {
   return webcrypto.subtle.sign(
-    { name: ECC_WRITE_ALG, hash: { name: hashAlg }},
+    { name: ECC_WRITE_ALG, hash: { name: hashAlg } },
     privateKey,
     normalizeUnicodeToBuf(msg, charSize)
-  )
+  );
 }
 
 export async function verify(
   msg: Msg,
   sig: Msg,
-  publicKey: string | PublicKey,
+  publicKey: PublicKey,
   charSize: CharSize = DEFAULT_CHAR_SIZE,
-  curve: EccCurve = DEFAULT_ECC_CURVE,
   hashAlg: HashAlg = DEFAULT_HASH_ALG
 ): Promise<boolean> {
   return webcrypto.subtle.verify(
-    { name: ECC_WRITE_ALG, hash: { name: hashAlg }},
-    typeof publicKey === "string"
-      ? await keys.importPublicKey(publicKey, curve, KeyUse.Write)
-      : publicKey,
+    { name: ECC_WRITE_ALG, hash: { name: hashAlg } },
+    publicKey,
     normalizeBase64ToBuf(sig),
     normalizeUnicodeToBuf(msg, charSize)
-  )
+  );
 }
 
 export async function encrypt(
   msg: Msg,
   privateKey: PrivateKey,
-  publicKey: string | PublicKey,
+  publicKey: PublicKey,
   charSize: CharSize = DEFAULT_CHAR_SIZE,
-  curve: EccCurve = DEFAULT_ECC_CURVE,
   opts?: Partial<SymmKeyOpts>
 ): Promise<ArrayBuffer> {
-  const importedPublicKey = typeof publicKey === "string"
-    ? await keys.importPublicKey(publicKey, curve, KeyUse.Exchange)
-    : publicKey
-
-  const cipherKey = await getSharedKey(privateKey, importedPublicKey, opts)
-  return aes.encryptBytes(normalizeUnicodeToBuf(msg, charSize), cipherKey, opts)
+  const cipherKey = await getSharedSymmKey(privateKey, publicKey, opts);
+  return aes.encryptBytes(
+    normalizeUnicodeToBuf(msg, charSize),
+    cipherKey,
+    opts
+  );
 }
 
 export async function decrypt(
   msg: Msg,
   privateKey: PrivateKey,
-  publicKey: string | PublicKey,
-  curve: EccCurve = DEFAULT_ECC_CURVE,
+  publicKey: PublicKey,
   opts?: Partial<SymmKeyOpts>
 ): Promise<ArrayBuffer> {
-  const importedPublicKey = typeof publicKey === "string"
-    ? await keys.importPublicKey(publicKey, curve, KeyUse.Exchange)
-    : publicKey
-
-  const cipherKey = await getSharedKey(privateKey, importedPublicKey, opts)
-  return aes.decryptBytes(normalizeBase64ToBuf(msg), cipherKey, opts)
+  const cipherKey = await getSharedSymmKey(privateKey, publicKey, opts);
+  return aes.decryptBytes(normalizeBase64ToBuf(msg), cipherKey, opts);
 }
 
-export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
-  const raw = await webcrypto.subtle.exportKey('raw', keypair.publicKey as PublicKey)
-  return utils.arrBufToBase64(raw)
+export async function wrapKey(
+  format: ExportKeyFormat,
+  key: CryptoKey,
+  wrappingKey: PrivateKey,
+  publicKey: PublicKey,
+  opts?: Partial<SymmWrappingKeyOpts>
+): Promise<string> {
+  const wrappingCipherKey = await getSharedSymmWrappingKey(
+    wrappingKey,
+    publicKey,
+    opts
+  );
+  return aes.wrapKey(format, key, wrappingCipherKey, opts);
 }
 
-export async function getSharedKey(privateKey: PrivateKey, publicKey: PublicKey, opts?: Partial<SymmKeyOpts>): Promise<SymmKey> {
+export async function unwrapKey(
+  format: ExportKeyFormat,
+  wrappedKey: string,
+  unwrappingKey: PrivateKey,
+  publicKey: PublicKey,
+  params: AlgorithmIdentifier,
+  uses: KeyUsage[],
+  opts?: Partial<SymmWrappingKeyOpts>
+): Promise<CryptoKey> {
+  const wrappingCipherKey = await getSharedSymmWrappingKey(
+    unwrappingKey,
+    publicKey,
+    opts
+  );
+  return aes.unwrapKey(
+    format,
+    wrappedKey,
+    wrappingCipherKey,
+    params,
+    true,
+    uses,
+    opts
+  );
+}
+
+/* Key Derivation Helpers */
+
+async function getSharedSymmKey(
+  privateKey: PrivateKey,
+  publicKey: PublicKey,
+  opts?: Partial<SymmKeyOpts>
+): Promise<SymmKey> {
   return webcrypto.subtle.deriveKey(
     { name: ECC_EXCHANGE_ALG, public: publicKey },
     privateKey,
     {
       name: opts?.alg || DEFAULT_SYMM_ALG,
-      length: opts?.length || DEFAULT_SYMM_LEN
+      length: opts?.length || DEFAULT_SYMM_LEN,
     },
     false,
     ['encrypt', 'decrypt']
-  )
+  );
+}
+
+async function getSharedSymmWrappingKey(
+  privateKey: PrivateKey,
+  publicKey: PublicKey,
+  opts?: Partial<SymmWrappingKeyOpts>
+): Promise<SymmWrappingKey> {
+  return webcrypto.subtle.deriveKey(
+    { name: ECC_EXCHANGE_ALG, public: publicKey },
+    privateKey,
+    {
+      name: opts?.alg || DEFAULT_SYMM_WRAPPING_ALG,
+      length: opts?.length || DEFAULT_SYMM_LEN,
+    },
+    false,
+    ['wrapKey', 'unwrapKey']
+  );
 }
 
 export default {
@@ -91,6 +157,6 @@ export default {
   verify,
   encrypt,
   decrypt,
-  getPublicKey,
-  getSharedKey
-}
+  wrapKey,
+  unwrapKey,
+};

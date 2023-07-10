@@ -43,25 +43,6 @@ describe('errors', () => {
     })
   })
 
-
-  describe('checkValidCryptoSystem', () => {
-    it('throws on bad input', () => {
-      expect(() => {
-        errors.checkValidCryptoSystem("nonsense" as any)
-      }).toThrow(errors.UnsupportedCrypto)
-    })
-
-    describe('passes on valid inputs', () => {
-      [CryptoSystem.ECC, CryptoSystem.RSA].map((val: CryptoSystem) => {
-        it(`passes on ${val}`, () => {
-          errors.checkValidCryptoSystem(val)
-          expect(true)
-        })
-      })
-    })
-  })
-
-
   describe('checkValidKeyUse', () => {
     it('throws on bad input', () => {
       expect(() => {

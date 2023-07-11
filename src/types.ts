@@ -72,6 +72,7 @@ export enum SymmWrappingAlg {
 
 export enum SymmKeyLength {
   B256 = 256,
+  B384 = 384,
   B512 = 512,
 }
 

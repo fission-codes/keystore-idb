@@ -1,6 +1,6 @@
 import config from '../config.js';
 import IDB from '../idb.js';
-import { ECCNotEnabled, checkIsKey } from '../errors.js';
+import { ECCNotEnabled, KeyDoesNotExist } from '../errors.js';
 import aes from '../aes/index.js';
 import ecc from '../ecc/index.js';
 import idb from '../idb.js';
@@ -388,8 +388,12 @@ export default class KeyStore implements KeyStoreInterface {
   // Getters and Exporters
   async getSymmKey(keyName: string): Promise<CryptoKey> {
     const maybeKey = await idb.getKey(keyName, this.store);
-    return checkIsKey(maybeKey);
+    if (maybeKey === null) {
+      throw KeyDoesNotExist;
+    }
+    return maybeKey;
   }
+
   async exportSymmKey(keyName: string): Promise<string> {
     const key = await this.getSymmKey(keyName);
     return common.exportKey(key, ExportKeyFormat.RAW);

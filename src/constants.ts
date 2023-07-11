@@ -1,4 +1,4 @@
-import { EccCurve, SymmAlg, SymmWrappingAlg, SymmKeyLength, HashAlg, CharSize } from './types.js'
+import { EccCurve, SymmAlg, SymmWrappingAlg, SymmKeyLength, HashAlg, CharSize, SaltLength } from './types.js'
 
 // This library is highly opinionated towards ECC. If you want to use RSA, you'll need to change these values, and
 // refactor the code to support RSA.
@@ -6,7 +6,7 @@ export const ECC_EXCHANGE_ALG = 'ECDH'
 export const ECC_WRITE_ALG = 'ECDSA'
 
 export const DEFAULT_ECC_CURVE = EccCurve.P_384
-export const DEFAULT_SALT_LENGTH = 128
+export const DEFAULT_SALT_LENGTH = SaltLength.B128 
 
 export const DEFAULT_SYMM_ALG = SymmAlg.AES_GCM
 export const DEFAULT_SYMM_WRAPPING_ALG = SymmWrappingAlg.AES_KW

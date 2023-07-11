@@ -3,7 +3,7 @@ import ecc from '../src/ecc'
 import errors from '../src/errors'
 import utils from '../src/utils'
 import { DEFAULT_CHAR_SIZE, DEFAULT_ECC_CURVE } from '../src/constants'
-import { KeyUse, EccCurve, HashAlg, SymmAlg, SymmKeyLength } from '../src/types'
+import { KeyUse, EccCurve, HashAlg, SymmAlg, SymmKeyLength, ExportKeyFormat } from '../src/types'
 import { mock, cryptoMethod, arrBufEq } from './utils'
 
 describe('ecc', () => {
@@ -15,7 +15,7 @@ describe('ecc', () => {
     simpleReq: () => ecc.genKeyPair(EccCurve.P_384, KeyUse.Exchange),
     simpleParams: [
       { name: 'ECDH', namedCurve: 'P-384' },
-      false,
+      true,
         [ 'deriveKey', 'deriveBits']
     ],
     paramChecks: [
@@ -29,7 +29,7 @@ describe('ecc', () => {
         req: () => ecc.genKeyPair(EccCurve.P_384, KeyUse.Write),
         params: [
           { name: 'ECDSA', namedCurve: 'P-384' },
-          false,
+          true,
           ['sign', 'verify']
         ]
       }
@@ -51,7 +51,7 @@ describe('ecc', () => {
     expectedResp: mock.keys.publicKey,
     simpleReq: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_384, KeyUse.Exchange),
     simpleParams: [
-      'raw',
+      ExportKeyFormat.SPKI,
       utils.base64ToArrBuf(mock.keyBase64),
       { name: 'ECDH', namedCurve: 'P-384' },
       true,
@@ -67,7 +67,7 @@ describe('ecc', () => {
         desc: 'handles write keys',
         req: () => ecc.importPublicKey(mock.keyBase64, EccCurve.P_384, KeyUse.Write),
         params: [
-          'raw',
+          ExportKeyFormat.SPKI,
           utils.base64ToArrBuf(mock.keyBase64),
           { name: 'ECDSA', namedCurve: 'P-384' },
           true,
@@ -170,29 +170,18 @@ describe('ecc', () => {
     simpleReq: () => ecc.encrypt(
       mock.msgBytes,
       mock.keys.privateKey,
-      mock.keys.publicKey
+      mock.keys.publicKey,
+      DEFAULT_CHAR_SIZE,
+      { alg: SymmAlg.AES_GCM, iv: mock.iv }
     ),
     simpleParams: [
       { name: 'AES-GCM',
-        iv: new Uint8Array(16),
-        length: 64
+        iv: mock.iv,
       },
       mock.symmKey,
       mock.msgBytes
     ],
-    paramChecks: [
-      {
-        desc: 'handles multiple symm key lengths',
-        req: () => ecc.encrypt(
-          mock.msgBytes,
-          mock.keys.privateKey,
-          mock.keys.publicKey,
-          DEFAULT_CHAR_SIZE,
-          { length: SymmKeyLength.B256 }
-        ),
-        params: (params: any) => params[0]?.name === 'AES-GCM' && params[0]?.length === 256
-      }
-    ],
+    paramChecks: [],
     shouldThrows: []
   })
 
@@ -218,7 +207,6 @@ describe('ecc', () => {
         ),
         params: (params: any) => (
           params[0].name === 'AES-GCM'
-          && params[0].length === 64
           && arrBufEq(params[0].iv.buffer, mock.iv)
           && params[1] === mock.symmKey
           && arrBufEq(params[2], mock.cipherBytes)

@@ -36,7 +36,7 @@ describe('aes', () => {
       ExportKeyFormat.RAW,
       utils.base64ToArrBuf(mock.keyBase64),
       { name: 'AES-GCM', length: 256 },
-      true,
+      false,
       [ 'encrypt', 'decrypt']
     ],
     paramChecks: [
@@ -64,15 +64,14 @@ describe('aes', () => {
     },
     mockResp: mock.cipherBytes,
     expectedResp: mock.cipherWithIVStr,
-    simpleReq: () => aes.importKey(mock.keyBase64).then(key => aes.encrypt(mock.msgStr, key)),
+    simpleReq: () => aes.importKey(mock.keyBase64).then(key => aes.encrypt(mock.msgStr, key, { iv: mock.iv })),
     paramChecks: [
       {
         desc: 'correctly passes params with AES-GCM',
-        req: () => aes.importKey(mock.keyBase64).then(key => aes.encrypt(mock.msgStr, key)),
+        req: () => aes.importKey(mock.keyBase64).then(key => aes.encrypt(mock.msgStr, key, { iv: mock.iv })),
         params: (params: any) => (
-          params[0]?.name === 'AES-CTR'
-          && params[0]?.length === 64
-          && arrBufEq(params[0]?.counter, mock.iv)
+          params[0]?.name === 'AES-GCM'
+          && arrBufEq(params[0]?.iv, mock.iv)
           && params[1] === mock.symmKey
           && arrBufEq(params[2], mock.msgBytes)
         )
@@ -93,12 +92,11 @@ describe('aes', () => {
     simpleReq: () => aes.importKey(mock.keyBase64).then(key => aes.decrypt(mock.cipherWithIVStr, key)),
     paramChecks: [
       {
-        desc: 'correctly passes params with AES-CTR',
+        desc: 'correctly passes params with AES-GCM',
         req: () => aes.importKey(mock.keyBase64).then(key => aes.decrypt(mock.cipherWithIVStr, key)),
         params: (params: any) => (
           params[0].name === 'AES-GCM'
-          && params[0].length === 64
-          && arrBufEq(params[0].counter.buffer, mock.iv)
+          && arrBufEq(params[0].iv, mock.iv)
           && params[1] === mock.symmKey
           && arrBufEq(params[2], mock.cipherBytes)
         )
@@ -114,8 +112,8 @@ describe('aes', () => {
     expectedResp: mock.keyBase64,
     simpleReq: () => common.exportKey(mock.symmKey, ExportKeyFormat.RAW),
     simpleParams: [
-      mock.symmKey,
-      ExportKeyFormat.RAW
+      ExportKeyFormat.RAW,
+      mock.symmKey
     ],
     paramChecks: [],
     shouldThrows: []

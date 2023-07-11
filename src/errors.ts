@@ -3,7 +3,7 @@ import { KeyUse, CryptoSystem } from './types.js'
 export const KeyDoesNotExist = new Error("Key does not exist. Make sure you properly instantiated the keystore.")
 export const NotKeyPair = new Error("Retrieved a symmetric key when an asymmetric keypair was expected. Please use a different key name.")
 export const NotKey = new Error("Retrieved an asymmetric keypair when an symmetric key was expected. Please use a different key name.")
-export const ECCNotEnabled = new Error("ECC is not enabled for this browser. Please use RSA instead.")
+export const ECCNotEnabled = new Error("ECC is not enabled for this browser.")
 export const UnsupportedAsymmCrypto = new Error("Cryptosystem not supported. Please use ECC")
 export const UnsupportedSymmCrypto = new Error("Cryptosystem not supported. Please use AES-GCM")
 export const UnsupportedSymmWrappingCrypto = new Error("Cryptosystem not supported. Please use AES-KW")

@@ -1,5 +1,5 @@
 {
-  "name": "keystore-idb",
+  "name": "banyan-keystore",
   "version": "0.15.5",
   "description": "In-browser key management with IndexedDB and the Web Crypto API",
   "keywords": [],

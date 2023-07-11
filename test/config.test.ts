@@ -82,7 +82,7 @@ describe('config', () => {
       expect(merged).toEqual({
         ...config.defaultConfig,
         symmAlg: SymmAlg.AES_GCM,
-        symmLen: SymmKeyLength.B512
+        symmKeyLength: SymmKeyLength.B512
       })
     })
 

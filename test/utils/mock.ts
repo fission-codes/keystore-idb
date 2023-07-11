@@ -6,7 +6,7 @@ const msgStr = 'test msg bytes';
 const msgBytes = utils.strToArrBuf(msgStr, 16);
 const sigStr = 'dGVzdCBzaWduYXR1cmU=';
 const sigBytes = utils.base64ToArrBuf(sigStr);
-const cipherStr = 'dGVzdCBlbmNyeXB0ZWQgYnl0ZXM=';
+const cipherStr = 'dGVzdCBlbmghUkpUiplJIUNhkMNyeXB0ZWQgYnl0ZXM=';
 const cipherBytes = utils.base64ToArrBuf(cipherStr);
 const cipherWithIVBytes = utils.joinCipherText(iv, cipherBytes);
 const cipherWithIVStr = utils.arrBufToBase64(cipherWithIVBytes);
@@ -22,7 +22,12 @@ export const mock = {
   } as any,
   writeKeys: {
     publicKey: { type: 'write-pub' } as any,
-    privateKey: { type: 'write-priv' } as any,
+    privateKey: {
+      algorithm: { name: 'ECDSA', namedCurve: 'P-384' },
+      type: 'private',
+      extractable: true,
+      usages: ['sign', 'verify'],
+    } as CryptoKey,
   } as any,
   encryptForKey: {
     publicKey: { type: 'encrypt-pub' } as any,

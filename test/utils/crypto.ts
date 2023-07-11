@@ -42,6 +42,7 @@ export const cryptoMethod = (opts: WebCryptoReqOpts): void => {
 
     it('returns expected response', async () => {
       const response = await opts.simpleReq();
+      // console.log(response);
       if (opts.expectedResp) {
         expect(response).toEqual(opts.expectedResp);
       } else {
@@ -69,7 +70,7 @@ export const cryptoMethod = (opts: WebCryptoReqOpts): void => {
 
     opts.shouldThrows.forEach((test) => {
       it(test.desc, async () => {
-        let error: any;
+        let error;
         try {
           await test.req();
         } catch (err) {

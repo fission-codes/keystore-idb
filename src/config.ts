@@ -50,6 +50,7 @@ export function normalize(
 // If it throws an error, use RSA, otherwise use ECC
 export async function eccEnabled(): Promise<boolean> {
   const keypair = await ecc.genKeyPair(DEFAULT_ECC_CURVE, KeyUse.Exchange)
+
   try {
     await utils.structuralClone(keypair)
   } catch (err) {

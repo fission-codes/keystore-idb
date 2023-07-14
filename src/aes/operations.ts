@@ -1,12 +1,10 @@
 import { webcrypto } from 'one-webcrypto';
 import utils from '../utils.js';
-import { DEFAULT_SYMM_ALG } from '../constants.js';
+import { DEFAULT_SALT_LENGTH, DEFAULT_SYMM_ALG } from '../constants.js';
 import {
   SymmKey,
   SymmKeyOpts,
   SymmWrappingKey,
-  SymmWrappingKeyOpts,
-  SymmWrappingAlg,
   SymmAlg,
   CipherText,
   Msg,
@@ -15,10 +13,16 @@ import {
 import {
   InvalidIvLength,
   InvalidCipherTextLength,
-  UnsupportedSymmWrappingCrypto,
   UnsupportedSymmCrypto,
 } from '../errors.js';
 
+/**
+ * Encrypt a message with a symmetric key
+ * @param msg The message to encrypt
+ * @param key The symmetric key to use for encryption
+ * @param opts The options for encryption
+ * @returns The CipherText (which is just an ArrayBuffer) of form [iv, '.', cipherBytes]
+ */
 export async function encryptBytes(
   msg: Msg,
   key: SymmKey,
@@ -33,7 +37,7 @@ export async function encryptBytes(
     throw UnsupportedSymmCrypto;
   }
 
-  const iv = opts?.iv || utils.randomBuf(16);
+  const iv = opts?.iv || utils.randomBuf(DEFAULT_SALT_LENGTH);
   const cipherBuf = await webcrypto.subtle.encrypt(
     {
       name: alg,
@@ -45,6 +49,16 @@ export async function encryptBytes(
   return utils.joinCipherText(iv, cipherBuf);
 }
 
+/**
+ * Decrypt a CipherText of form [iv, '.', cipherBytes] with a symmetric key
+ * @param msg The message to decrypt
+ * @param key The symmetric key to use for decryption
+ * @param opts The options for decryption
+ * returns The decrypted message within an ArrayBuffer
+ * throws InvalidIvLength
+ * throws InvalidCipherTextLength
+ * throws UnsupportedSymmCrypto
+ */
 export async function decryptBytes(
   msg: Msg,
   key: SymmKey,
@@ -64,10 +78,7 @@ export async function decryptBytes(
   // Check lengths
   if (iv.byteLength !== 16) {
     throw InvalidIvLength;
-  } else if (
-    cipherBytes.byteLength === 0 ||
-    cipherBytes.byteLength % 16 !== 0
-  ) {
+  } else if (cipherBytes.byteLength === 0) {
     throw InvalidCipherTextLength;
   }
 
@@ -82,6 +93,16 @@ export async function decryptBytes(
   return msgBuff;
 }
 
+/*
+ * Encrypt a message with a symmetric key
+ * @param msg The message to encrypt
+ * @param key The symmetric key to use for encryption
+ * @param opts The options for encryption
+ * @returns The CipherText (which is just an ArrayBuffer) of form [iv, '.', cipherBytes]
+ * @throws UnsupportedSymmCrypto
+ * @throws InvalidIvLength
+ * @throws InvalidCipherTextLength
+ */
 export async function encrypt(
   msg: Msg,
   key: SymmKey,
@@ -91,6 +112,16 @@ export async function encrypt(
   return utils.arrBufToBase64(cipherText);
 }
 
+/**
+ * Decrypt a CipherText of form [iv, '.', cipherBytes] with a symmetric key
+ * @param msg The message to decrypt
+ * @param key The symmetric key to use for decryption
+ * @param opts The options for decryption
+ * @returns The decrypted message
+ * @throws UnsupportedSymmCrypto
+ * @throws InvalidIvLength
+ * @throws InvalidCipherTextLength
+ */
 export async function decrypt(
   msg: Msg,
   key: SymmKey,
@@ -100,54 +131,50 @@ export async function decrypt(
   return utils.arrBufToStr(msgBytes, 16);
 }
 
+/**
+ * Wrap a symmetric key with another symmetric key using AES-KW
+ * key: The symmetric key to wrap
+ * wrappingKey: The symmetric key to use for wrapping
+ * opts: The options for wrapping
+ * returns The wrapped key as an ArrayBuffer
+ */
 export async function wrapKey(
-  format: ExportKeyFormat,
   key: CryptoKey,
-  wrappingKey: SymmWrappingKey,
-  opts?: Partial<SymmWrappingKeyOpts>
-): Promise<string> {
-  const alg = opts?.alg || SymmWrappingAlg.AES_KW;
-
-  // Note: we only support AES-KW here
-  // If you want support for more symmetric key wrapping algorithms, add implementations here
-  if (alg !== SymmWrappingAlg.AES_KW) {
-    throw UnsupportedSymmWrappingCrypto;
-  }
-
-  const cipherText = await webcrypto.subtle.wrapKey(format, key, wrappingKey, {
-    name: alg,
-  });
-  return utils.arrBufToBase64(cipherText);
+  wrappingKey: SymmWrappingKey
+): Promise<CipherText> {
+  return await webcrypto.subtle.wrapKey(
+    ExportKeyFormat.RAW,
+    key,
+    wrappingKey,
+    'AES-KW'
+  );
 }
 
+/**
+ * Unwrap a symmetric key with another symmetric key using AES-KW
+ * wrappedKey: The wrapped key as an ArrayBuffer
+ * unwrappingKey: The symmetric key to use for unwrapping
+ * unwrappedKeyAlgParams: The algorithm parameters for the unwrapped key
+ * extractable: Whether the unwrapped key is extractable
+ * keyUsages: The usages for the unwrapped key
+ * returns The unwrapped key as a CryptoKey
+ */
 export async function unwrapKey(
-  format: ExportKeyFormat,
-  wrappedKey: string,
+  wrappedKey: CipherText,
   unwrappingKey: SymmWrappingKey,
   unwrappedKeyAlgParams: AlgorithmIdentifier,
   extractable: boolean,
-  keyUsages: KeyUsage[],
-  opts?: Partial<SymmWrappingKeyOpts>
+  keyUsages: KeyUsage[]
 ): Promise<CryptoKey> {
-  const alg = opts?.alg || SymmWrappingAlg.AES_KW;
-
-  // Note: we only support AES-KW here
-  // If you want support for more symmetric key wrapping algorithms, add implementations here
-  if (alg !== SymmWrappingAlg.AES_KW) {
-    throw UnsupportedSymmWrappingCrypto;
-  }
-
-  const cipherText = utils.normalizeBase64ToBuf(wrappedKey);
-  const key = await webcrypto.subtle.unwrapKey(
-    format,
-    cipherText,
+  return await webcrypto.subtle.unwrapKey(
+    ExportKeyFormat.RAW,
+    wrappedKey,
     unwrappingKey,
-    { name: alg },
+    'AES-KW',
     unwrappedKeyAlgParams,
     extractable,
     keyUsages
   );
-  return key;
 }
 
 export default {

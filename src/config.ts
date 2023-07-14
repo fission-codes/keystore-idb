@@ -4,16 +4,15 @@ import {
   ECC_WRITE_ALG,
   DEFAULT_ECC_CURVE,
   DEFAULT_SYMM_ALG,
-  DEFAULT_SYMM_LEN,
+  DEFAULT_SYMM_KEY_LENGTH,
   DEFAULT_HASH_ALG,
-  DEFAULT_SALT_LENGTH,
   DEFAULT_CHAR_SIZE,
   DEFAULT_STORE_NAME,
   DEFAULT_EXCHANGE_KEY_PAIR_NAME,
   DEFAULT_WRITE_KEY_PAIR_NAME,
-  DEFAULT_PASS_KEY_NAME
+  DEFAULT_ESCROW_KEY_NAME,
 } from './constants.js'
-import { Config, KeyUse, CryptoSystem, SymmKeyOpts, SymmWrappingKeyOpts } from './types.js'
+import { Config, KeyUse, CryptoSystem, SymmKeyOpts } from './types.js'
 import utils from './utils.js'
 
 export const defaultConfig = {
@@ -21,14 +20,13 @@ export const defaultConfig = {
   writeAlg: ECC_WRITE_ALG,
   curve: DEFAULT_ECC_CURVE,
   symmAlg: DEFAULT_SYMM_ALG,
-  symmKeyLength: DEFAULT_SYMM_LEN,
+  symmKeyLength: DEFAULT_SYMM_KEY_LENGTH,
   hashAlg: DEFAULT_HASH_ALG,
-  saltLength: DEFAULT_SALT_LENGTH,
   charSize: DEFAULT_CHAR_SIZE,
   storeName: DEFAULT_STORE_NAME,
   exchangeKeyPairName: DEFAULT_EXCHANGE_KEY_PAIR_NAME,
   writeKeyPairName: DEFAULT_WRITE_KEY_PAIR_NAME,
-  passKeyName: DEFAULT_PASS_KEY_NAME
+  escrowKeyName: DEFAULT_ESCROW_KEY_NAME
 } as Config
 
 export function normalize(
@@ -70,15 +68,10 @@ export function symmKeyOpts(cfg: Config): Partial<SymmKeyOpts> {
   return { alg: cfg.symmAlg, length: cfg.symmKeyLength }
 }
 
-export function symmWrappingKeyOpts(cfg: Config): Partial<SymmWrappingKeyOpts> {
-  return { alg: cfg.symmWrappingAlg, length: cfg.symmKeyLength }
-}
-
 export default {
   defaultConfig,
   normalize,
   eccEnabled,
   merge,
   symmKeyOpts,
-  symmWrappingKeyOpts
 }

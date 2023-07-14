@@ -1,8 +1,7 @@
 import { webcrypto } from 'one-webcrypto';
 import * as uint8arrays from 'uint8arrays';
 import errors from './errors';
-import { CharSize, Msg } from './types';
-import jsSHA from 'jssha';
+import { CharSize, EccCurve, Msg } from './types';
 import { DEFAULT_SALT_LENGTH } from './constants';
 
 /* Cryto */
@@ -12,12 +11,22 @@ export function publicExponent(): Uint8Array {
 	return new Uint8Array([0x01, 0x00, 0x01]);
 }
 
-// Fingerprint an ArrayBuffer
-export function fingerprint(buf: ArrayBuffer): string {
-	const sha = new jsSHA('SHA-256', 'ARRAYBUFFER');
-	sha.update(new Uint8Array(buf));
-	return sha.getHash('HEX');
+export function eccCurveToBitLength(namedCurve: EccCurve): number {
+	// Get the integer following 'P-'
+	const bitLength = parseInt(namedCurve.slice(2), 10);
+	if (isNaN(bitLength) || bitLength % 8 !== 0) {
+		throw errors.InvalidEccCurve;
+	}
+	return bitLength;	
 }
+
+// Interpret a Uint8Array as a fingerprint
+export function fingerprintFromBuf(buf: Uint8Array): string {
+	return Array.from(buf)
+		.map((b) => b.toString(16).padStart(2, '0'))
+		.join(':');
+}
+
 
 // How we join an iv and cipher into a cipher text
 export function joinCipherText(
@@ -26,30 +35,32 @@ export function joinCipherText(
 ): ArrayBuffer {
 	const wrapIvBuf = new Uint8Array(ivBuf);
 	const wrapCipherBuf = new Uint8Array(cipherBuf);
-	const delimeter = new Uint8Array(['.'.charCodeAt(0)]);
 	const joined = new Uint8Array(
-		wrapIvBuf.length + delimeter.length + wrapCipherBuf.length
+		wrapIvBuf.length + 1 + wrapCipherBuf.length
 	);
 	joined.set(wrapIvBuf);
-	joined.set(delimeter, wrapCipherBuf.length);
-	joined.set(wrapCipherBuf, wrapIvBuf.length + delimeter.length);
+	// Set the delimeter at the end of the iv. It's a period (46)
+	joined.set([46], wrapIvBuf.length);
+	joined.set(wrapCipherBuf, wrapIvBuf.length + 1);
 	return joined.buffer;
 }
 
 // How we split a cipher text into an iv and cipher
 export function splitCipherText(
-	cipherText: ArrayBuffer
+	cipherText: ArrayBuffer,
+	saltLength: number = DEFAULT_SALT_LENGTH
 ): [ArrayBuffer, ArrayBuffer] {
 	const wrapCipherText = new Uint8Array(cipherText);
-	const delimeter = new Uint8Array(['.'.charCodeAt(0)]);
-	const ivBuf = wrapCipherText.slice(0, 16);
-	const cipherBuf = wrapCipherText.slice(16 + delimeter.length);
-	return [ivBuf, cipherBuf];
-}
+	// delimeter is a period
+	const ivBuf = wrapCipherText.slice(0, saltLength);
+	// Check for delimeter -- the DEFAULT_SALT_LENGTH + 1 th byte should be a period (46)
+	if (wrapCipherText[saltLength] !== 46) {
+		throw errors.InvalidCipherText;
+	}
 
-// Generate a random salt
-export function randomSalt(length: number = DEFAULT_SALT_LENGTH): ArrayBuffer {
-	return randomBuf(length, { max: 255 });
+	const cipherBuf = wrapCipherText.slice(saltLength + 1);
+
+	return [ivBuf, cipherBuf];
 }
 
 /* Normalize _ to ArrayBuffer */
@@ -173,9 +184,9 @@ export async function structuralClone(obj: any) {
 
 export default {
 	joinCipherText,
-	fingerprint,
+	fingerprintFromBuf,
+	eccCurveToBitLength,
 	splitCipherText,
-	randomSalt,
 	arrBufToStr,
 	arrBufToBase64,
 	strToArrBuf,

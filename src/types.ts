@@ -15,9 +15,8 @@ export type Config = {
 
   // Symmetric Configuration
   symmAlg: SymmAlg
-  symmWrappingAlg: SymmWrappingAlg
   symmKeyLength: SymmKeyLength
-  saltLength: SaltLength
+  // derivedBitLength: DerivedBitLength
   
   // Hash Configuration
   hashAlg: HashAlg
@@ -27,18 +26,18 @@ export type Config = {
   storeName: string
   exchangeKeyPairName: string
   writeKeyPairName: string
-  passKeyName: string
+  escrowKeyName: string
+}
+
+export type EscrowedKeyPair = {
+  publicKeyStr: string
+  wrappedPrivateKeyStr: string
 }
 
 export type SymmKeyOpts = {
   alg: SymmAlg
   length: SymmKeyLength
   iv: ArrayBuffer
-}
-
-export type SymmWrappingKeyOpts = {
-  alg: SymmWrappingAlg
-  length: SymmKeyLength
 }
 
 export enum ExportKeyFormat {
@@ -49,24 +48,14 @@ export enum ExportKeyFormat {
 
 export enum CryptoSystem {
   ECC = 'ecc',
-  RSA = 'rsa',
 }
 
 export enum EccCurve {
   P_384 = 'P-384',
-  P_521 = 'P-521',
-}
-
-export enum RsaSize {
-  B3072 = 3072,
-  B4096 = 4096
 }
 
 export enum SymmAlg {
   AES_GCM = 'AES-GCM',
-}
-
-export enum SymmWrappingAlg {
   AES_KW = 'AES-KW',
 }
 
@@ -82,10 +71,6 @@ export enum HashAlg {
   SHA_512 = 'SHA-512',
 }
 
-export enum SaltLength {
-  B128 = 128,
-}
-
 export enum CharSize {
   B8 = 8,
   B16 = 16,
@@ -96,7 +81,7 @@ export enum KeyUse {
   Write = 'write',
 }
 
-export interface KeyStoreInterface {
+export interface KeyStore {
   cfg: Config
 
   /* Keystore Management */
@@ -104,74 +89,18 @@ export interface KeyStoreInterface {
   keyExists(keyName: string): Promise<boolean>
   keyPairExists(keyPairName: string): Promise<boolean>
   deleteKey(keyName: string): Promise<void>
-  clear(): Promise<void>
+  destroy(): Promise<void>
 
   /* Asymmetric Keys -- defines the keystore */
-
-  // Key Generation and Import
-  genExchangeKeyPair(cfg?: Partial<Config>): Promise<void>
-  genWriteKeyPair(cfg?: Partial<Config>): Promise<void>
-  unwrapExhangeKeyPair(
-    publicKeyStr: string,
-    wrappedPrivateKeyStr: string,
-    cfg?: Partial<Config>
-  ): Promise<void>
-  unwrapWriteKeyPair(
-    publicKeyStr: string,
-    wrappedPrivateKeyStr: string,
-    cfg?: Partial<Config>
-  ): Promise<void>
 
   // Getters and Exporters
   getExchangeKeyPair: () => Promise<CryptoKeyPair>
   getWriteKeyPair: () => Promise<CryptoKeyPair>
-  wrapExchangeKeyPair: () => Promise<{ publicKey: string, wrappedPrivateKey: string }>
-  wrapWriteKeyPair: () => Promise<{ publicKey: string, wrappedPrivateKey: string }>
 
-  // Utilities
-  publicExchangeKeyFingerprint(): Promise<string>
-  publicWriteKeyFingerprint(): Promise<string>
+  /* Escrow Key -- used to wrap and recover assymmetric keys */
 
-  // Key Operations
-  sign(
-    msg: string,
-    cfg?: Partial<Config>
-  ): Promise<string>
-  verify(
-    msg: string,
-    sig: string,
-    publicKey: string,
-    cfg?: Partial<Config>
-  ): Promise<boolean>
-  encrypt(
-    msg: string,
-    publicKey: string,
-    cfg?: Partial<Config>
-  ): Promise<string>
-  decrypt(
-    cipherText: string,
-    publicKey: string,
-    cfg?: Partial<Config>
-  ): Promise<string>
-  wrapKey(
-    key: CryptoKey,
-    publicKey: string,
-    cfg?: Partial<Config>
-  ): Promise<string>
-  unwrapKey(
-    wrappedKey: string,
-    publicKey: string,
-    keyParams: AlgorithmIdentifier,
-    uses: KeyUsage[],
-    cfg?: Partial<Config>
-  ): Promise<CryptoKey>
-
-
-  /* Pass Key -- used to wrap and recover assymmetric keys */
-
-  // Key Generation and Import
-  derivePassKey(
-    seedphrase: string,
+  deriveEscrowKey(
+    passphrase: string,
     saltStr?: string,
     cfg?: Partial<Config>
   ): Promise<string>
@@ -181,17 +110,13 @@ export interface KeyStoreInterface {
   // Key Generation and Import
   genSymmKey(
     keyName: string,
+    uses: KeyUsage[],
     cfg?: Partial<Config>
   ): Promise<void>
   importSymmKey(
     keyStr: string,
     keyName: string,
-    cfg?: Partial<Config>
-  ): Promise<void>
-  deriveSymmKey(
-    keyName: string,
-    seedphrase: string,
-    salt: ArrayBuffer,
+    uses: KeyUsage[],
     cfg?: Partial<Config>
   ): Promise<void>
 
@@ -208,8 +133,21 @@ export interface KeyStoreInterface {
     cfg?: Partial<Config>
   ): Promise<string>
   decryptWithSymmKey(
-    cipherBytes: string,
+    cipherText: string,
     keyName: string,
     cfg?: Partial<Config>
   ): Promise<string>
+  wrapKeyWithSymmKey(
+    keyToWrap: CryptoKey,
+    keyName: string,
+    cfg?: Partial<Config>
+  ): Promise<CipherText>
+  unwrapKeyWithSymmKey(
+    wrappedKey: CipherText,
+    keyName: string,
+    keyParams: AlgorithmIdentifier,
+    extractable: boolean,
+    uses: KeyUsage[],
+    cfg?: Partial<Config>
+  ): Promise<CryptoKey>
 }
